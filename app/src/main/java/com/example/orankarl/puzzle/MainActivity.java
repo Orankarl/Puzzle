@@ -47,6 +47,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onLoginButtonPressed() {
+        final Toast t = Toast.makeText(this, "", Toast.LENGTH_SHORT);
+        final Api api = new Api("192.168.1.202", 5000);
+        api.login("test", "test", loginRes -> {
+            if (loginRes.status == -1)
+                return;
+            api.userInfo(loginRes.token, res -> {
+                t.setText(res._id);
+                t.show();
+            });
+        });
         setContentView(new MainSurfaceView(this));
     }
 
