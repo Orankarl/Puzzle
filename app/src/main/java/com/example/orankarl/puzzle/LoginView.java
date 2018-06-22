@@ -1,5 +1,6 @@
 package com.example.orankarl.puzzle;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -7,15 +8,12 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.os.Message;
-import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.os.Handler;
-import android.view.Window;
+import android.widget.EditText;
 
-public class MainSurfaceView extends SurfaceView implements SurfaceHolder.Callback, Runnable {
+public class LoginView extends SurfaceView implements SurfaceHolder.Callback, Runnable{
     private Context context;
     private SurfaceHolder holder;
     private Paint paint;
@@ -26,7 +24,7 @@ public class MainSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     private Resources resources = this.getResources();
     MenuButton buttonStart;
     boolean flag = true;
-    public MainSurfaceView(Context context) {
+    public LoginView(Context context) {
         super(context);
         this.context = context;
         holder = this.getHolder();
@@ -37,11 +35,10 @@ public class MainSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     }
 
     private void init() {
-        Bitmap bmpButton = BitmapFactory.decodeResource(resources, R.drawable.button_start);
-        Bitmap bmpButtonPressed = BitmapFactory.decodeResource(resources, R.drawable.button_restart);
-        int posX = MainSurfaceView.screenW/2 - bmpButton.getWidth()/2;
-        int posY = MainSurfaceView.screenH/2 - bmpButton.getHeight()/2;
-        buttonStart = new MenuButton(context, bmpButton, bmpButtonPressed, posX, posY);
+        Bitmap bmpButton = BitmapFactory.decodeResource(resources, R.drawable.button_login);
+        int posX = LoginView.screenW/2 - bmpButton.getWidth()/2;
+        int posY = LoginView.screenH * 3 / 4 - bmpButton.getHeight()/2;
+        buttonStart = new MenuButton(context, bmpButton, bmpButton, posX, posY);
     }
 
     public void draw() {
@@ -49,6 +46,15 @@ public class MainSurfaceView extends SurfaceView implements SurfaceHolder.Callba
             canvas = holder.lockCanvas();
             if (canvas != null) {
                 canvas.drawColor(Color.WHITE);
+
+                EditText ed = new EditText(context);
+                ed.setText("test");
+                ed.setDrawingCacheEnabled(true);
+                ed.measure(MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED), MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
+                ed.layout(0, 0, ed.getMeasuredWidth(), ed.getMeasuredHeight());
+                ed.buildDrawingCache(true);
+                Bitmap b = ed.getDrawingCache();
+                canvas.drawBitmap(b, 0, 0, null);
 
                 buttonStart.draw(canvas, paint);
             }
@@ -61,7 +67,7 @@ public class MainSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        buttonStart.onTouchEvent(event, 0);
+        buttonStart.onTouchEvent(event, 3);
         return true;
     }
 
