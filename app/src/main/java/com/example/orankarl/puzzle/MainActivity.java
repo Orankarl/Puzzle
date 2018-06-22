@@ -23,7 +23,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onButtonPressed() {
-        Toast.makeText(this, "Button Pressed", Toast.LENGTH_LONG).show();
+        final Toast t = Toast.makeText(this, "", Toast.LENGTH_SHORT);
+        final Api api = new Api("192.168.1.202", 5000);
+        api.login("test", "test", loginRes -> {
+            if (loginRes.status == -1)
+                return;
+            api.userInfo(loginRes.token, res -> {
+                t.setText(res._id);
+                t.show();
+            });
+        });
     }
 
 
