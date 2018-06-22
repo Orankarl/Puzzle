@@ -82,6 +82,9 @@ public class MenuButton {
                         case 2:
                             activity.onBeginButtonPressed();
                             break;
+                        case 3:
+                            activity.onLoginButtonPressed();
+                            break;
                     }
                 }
             }

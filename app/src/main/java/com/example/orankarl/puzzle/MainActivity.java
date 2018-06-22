@@ -26,7 +26,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        setContentView(new MainSurfaceView(this));
+        //setContentView(new MainSurfaceView(this));
+        setContentView(new LoginView(this));
     }
 
     public void onButtonPressed() {
@@ -43,6 +44,10 @@ public class MainActivity extends AppCompatActivity {
 
     public void onBeginButtonPressed() {
         Toast.makeText(this, "Game start", Toast.LENGTH_LONG).show();
+    }
+
+    public void onLoginButtonPressed() {
+        setContentView(new MainSurfaceView(this));
     }
 
     @Override
