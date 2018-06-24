@@ -4,12 +4,15 @@ import android.content.ContentResolver;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Point;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.InputType;
+import android.text.method.PasswordTransformationMethod;
 import android.view.Gravity;
 import android.view.View;
 import android.view.Menu;
@@ -25,29 +28,43 @@ import java.io.FileNotFoundException;
 public class MainActivity extends AppCompatActivity {
 
 
-    SurfaceViewEditText username;
+    public static SurfaceViewEditText editText_username;
+    SurfaceViewEditText editText_password;
+
+    Api api;
+    boolean login_flag = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        //setContentView(new MainSurfaceView(this));
 
-        username = new SurfaceViewEditText(this);
-//        editText.setVisibility(View.INVISIBLE);
-        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
-                FrameLayout.LayoutParams.WRAP_CONTENT,
-                FrameLayout.LayoutParams.WRAP_CONTENT);
-        params.gravity = Gravity.CENTER;
         setContentView(new LoginView(this));
-        addContentView(username, params);
-        setEditTextVisibility(View.INVISIBLE);
+
+        Point size = new Point();
+        getWindowManager().getDefaultDisplay().getSize(size);
+
+        editText_username = new SurfaceViewEditText(this);
+        FrameLayout.LayoutParams username_params = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
+        editText_username.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+        editText_username.setHint("3-20位用户名");
+        username_params.leftMargin = size.x / 2;
+        username_params.topMargin = size.y / 3;
+        addContentView(editText_username, username_params);
+
+        FrameLayout.LayoutParams password_params = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
+        editText_password = new SurfaceViewEditText(this);
+        editText_password.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        editText_password.setTransformationMethod(PasswordTransformationMethod.getInstance());
+        password_params.leftMargin = size.x / 2;
+        password_params.topMargin = size.y / 2;
+        addContentView(editText_password, password_params);
     }
 
-    public void setEditTextVisibility(int isVisible) {
+    /*public void setEditTextVisibility(int isVisible) {
         username.setVisibility(isVisible);
-    }
+    }*/
 
     public void onButtonPressed() {
         Toast.makeText(this, "Button Pressed", Toast.LENGTH_LONG).show();
@@ -66,19 +83,46 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onLoginButtonPressed() {
+        String username = editText_username.getText().toString();
+        String password = editText_password.getText().toString();
+        //Toast.makeText(this, "Username is " + username + '\n' + "Password is " + password, Toast.LENGTH_LONG).show();
+
         final Toast t = Toast.makeText(this, "", Toast.LENGTH_SHORT);
-        final Api api = new Api("192.168.1.202", 5000);
-        api.login("test", "test", loginRes -> {
-            if (loginRes.status == -1)
+        api = new Api("45.77.183.226", 5000);
+        api.login(username, password, loginRes -> {
+            if (loginRes.status == -1) {
+                t.setText("Username or Password Error!\nLogin Failed!");
+                t.show();
                 return;
+            }
             api.userInfo(loginRes.token, res -> {
-                t.setText(res._id);
+                login_flag = true;
+                t.setText("Login Success!\nPlease Wait...");
                 t.show();
             });
         });
-        setContentView(new MainSurfaceView(this));
+        if (login_flag) {
+            setContentView(new MainSurfaceView(this));
+            login_flag = false;
+        }
     }
 
+    public void onRegistButtonPressed() {
+        String username = editText_username.getText().toString();
+        String password = editText_password.getText().toString();
+
+        final Toast t = Toast.makeText(this, "", Toast.LENGTH_SHORT);
+        api = new Api("45.77.183.226", 5000);
+        api.register(username, password, loginRes -> {
+            if (loginRes.status == -1) {
+                t.setText("Regist Failed!");
+                t.show();
+                return;
+            }
+            t.setText("Regist Success!" + '\n' + "Username is " + username + '\n' + "Password is " + password);
+            t.show();
+        });
+    }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         Bitmap bitmap = null;

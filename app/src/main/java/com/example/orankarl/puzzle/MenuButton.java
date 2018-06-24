@@ -16,6 +16,7 @@ public class MenuButton {
     private Bitmap bmpBackground, bmpButton, bmpButtonPressed;
     private int posX, posY;
     private boolean isPressed;
+
     public MenuButton(Context context, Bitmap bmpButton, Bitmap bmpButtonPressed, int x, int y) {
         this.context = context;
         this.bmpButton = bmpButton;
@@ -84,6 +85,9 @@ public class MenuButton {
                             break;
                         case 3:
                             activity.onLoginButtonPressed();
+                            break;
+                        case 4:
+                            activity.onRegistButtonPressed();
                             break;
                     }
                 }

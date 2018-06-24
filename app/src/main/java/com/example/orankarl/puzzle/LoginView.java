@@ -11,7 +11,6 @@ import android.graphics.Paint;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.widget.EditText;
 
 public class LoginView extends SurfaceView implements SurfaceHolder.Callback, Runnable{
     private Context context;
@@ -22,7 +21,8 @@ public class LoginView extends SurfaceView implements SurfaceHolder.Callback, Ru
 
     public static int screenW, screenH;
     private Resources resources = this.getResources();
-    MenuButton buttonStart;
+    MenuButton buttonLogin;
+    MenuButton buttonRegist;
     boolean flag = true;
     public LoginView(Context context) {
         super(context);
@@ -35,10 +35,14 @@ public class LoginView extends SurfaceView implements SurfaceHolder.Callback, Ru
     }
 
     private void init() {
-        Bitmap bmpButton = BitmapFactory.decodeResource(resources, R.drawable.button_login);
-        int posX = LoginView.screenW/2 - bmpButton.getWidth()/2;
-        int posY = LoginView.screenH * 3 / 4 - bmpButton.getHeight()/2;
-        buttonStart = new MenuButton(context, bmpButton, bmpButton, posX, posY);
+        Bitmap loginButton = BitmapFactory.decodeResource(resources, R.drawable.button_login);
+        int posX = LoginView.screenW * 2 / 3 - loginButton.getWidth() / 2;
+        int posY = LoginView.screenH * 3 / 4 - loginButton.getHeight() / 2;
+        buttonLogin = new MenuButton(context, loginButton, loginButton, posX, posY);
+
+        Bitmap registButton = BitmapFactory.decodeResource(resources, R.drawable.button_regist);
+        posX = LoginView.screenW / 3 - loginButton.getWidth() / 2;
+        buttonRegist = new MenuButton(context, registButton, registButton, posX, posY);
     }
 
     public void draw() {
@@ -46,17 +50,15 @@ public class LoginView extends SurfaceView implements SurfaceHolder.Callback, Ru
             canvas = holder.lockCanvas();
             if (canvas != null) {
                 canvas.drawColor(Color.WHITE);
-
-                EditText ed = new EditText(context);
-                ed.setText("test");
-                ed.setDrawingCacheEnabled(true);
-                ed.measure(MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED), MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
-                ed.layout(0, 0, ed.getMeasuredWidth(), ed.getMeasuredHeight());
-                ed.buildDrawingCache(true);
-                Bitmap b = ed.getDrawingCache();
-                canvas.drawBitmap(b, 0, 0, null);
-
-                buttonStart.draw(canvas, paint);
+                buttonLogin.draw(canvas, paint);
+                buttonRegist.draw(canvas, paint);
+                Paint textPaint = new Paint();
+                textPaint.setColor(Color.BLACK);
+                textPaint.setTextSize(80);
+                String text1 = "Username: ";
+                String text2 = "Password: ";
+                canvas.drawText(text1, screenW / 2 - getTextWidth(textPaint, text1), screenH / 3 + 100 , textPaint);
+                canvas.drawText(text2, screenW / 2 - getTextWidth(textPaint, text2), screenH / 2 + 100 , textPaint);
             }
         } catch (Exception e) {
 
@@ -65,9 +67,23 @@ public class LoginView extends SurfaceView implements SurfaceHolder.Callback, Ru
         }
     }
 
+    public static int getTextWidth(Paint paint, String str) {
+        int iRet = 0;
+        if (str != null && str.length() > 0) {
+            int len = str.length();
+            float[] widths = new float[len];
+            paint.getTextWidths(str, widths);
+            for (int j = 0; j < len; j++) {
+                iRet += (int) Math.ceil(widths[j]);
+            }
+        }
+        return iRet;
+    }
+
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        buttonStart.onTouchEvent(event, 3);
+        buttonLogin.onTouchEvent(event, 3);
+        buttonRegist.onTouchEvent(event, 4);
         return true;
     }
 
