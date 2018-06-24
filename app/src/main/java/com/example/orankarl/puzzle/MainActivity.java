@@ -10,16 +10,22 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Gravity;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import java.io.FileNotFoundException;
 
 public class MainActivity extends AppCompatActivity {
+
+
+    SurfaceViewEditText username;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,7 +33,20 @@ public class MainActivity extends AppCompatActivity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         //setContentView(new MainSurfaceView(this));
+
+        username = new SurfaceViewEditText(this);
+//        editText.setVisibility(View.INVISIBLE);
+        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.WRAP_CONTENT,
+                FrameLayout.LayoutParams.WRAP_CONTENT);
+        params.gravity = Gravity.CENTER;
         setContentView(new LoginView(this));
+        addContentView(username, params);
+        setEditTextVisibility(View.INVISIBLE);
+    }
+
+    public void setEditTextVisibility(int isVisible) {
+        username.setVisibility(isVisible);
     }
 
     public void onButtonPressed() {
