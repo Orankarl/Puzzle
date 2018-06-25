@@ -35,10 +35,13 @@ public class LoginView extends SurfaceView implements SurfaceHolder.Callback, Ru
     }
 
     private void init() {
-        Bitmap loginButton = BitmapFactory.decodeResource(resources, R.drawable.button_login);
+//        Bitmap loginButton = BitmapFactory.decodeResource(resources, R.drawable.button_login);
+        Bitmap loginButton = BitmapFactory.decodeResource(resources, R.drawable.start);
+        Bitmap loginButtonPressed = BitmapFactory.decodeResource(resources, R.drawable.start_pressed);
         int posX = LoginView.screenW * 2 / 3 - loginButton.getWidth() / 2;
         int posY = LoginView.screenH * 3 / 4 - loginButton.getHeight() / 2;
-        buttonLogin = new MenuButton(context, loginButton, loginButton, posX, posY);
+//        buttonLogin = new MenuButton(context, loginButton, loginButton, posX, posY);
+        buttonLogin = new MenuButton(context, loginButton, loginButtonPressed, posX, posY);
 
         Bitmap registerButton = BitmapFactory.decodeResource(resources, R.drawable.button_register);
         posX = LoginView.screenW / 3 - loginButton.getWidth() / 2;

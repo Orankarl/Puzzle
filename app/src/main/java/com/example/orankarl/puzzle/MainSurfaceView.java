@@ -38,10 +38,8 @@ public class MainSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     }
 
     private void init() {
-//        Bitmap bmpButton = BitmapFactory.decodeResource(resources, R.drawable.button_start);
-//        Bitmap bmpButtonPressed = BitmapFactory.decodeResource(resources, R.drawable.button_restart);
-        Bitmap bmpButton = BitmapFactory.decodeResource(resources, R.drawable.start);
-        Bitmap bmpButtonPressed = BitmapFactory.decodeResource(resources, R.drawable.start_pressed);
+        Bitmap bmpButton = BitmapFactory.decodeResource(resources, R.drawable.button_start);
+        Bitmap bmpButtonPressed = BitmapFactory.decodeResource(resources, R.drawable.button_restart);
         Bitmap bmpButtonChangeAccount = BitmapFactory.decodeResource(resources, R.drawable.button_change_account);
         int posX = MainSurfaceView.screenW / 2 - bmpButton.getWidth() / 2;
         int posY = MainSurfaceView.screenH / 3 - bmpButton.getHeight() / 2;
