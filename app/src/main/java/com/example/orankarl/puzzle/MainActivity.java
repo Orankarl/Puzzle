@@ -40,8 +40,6 @@ public class MainActivity extends AppCompatActivity {
     public static SurfaceViewEditText editText_username;
     SurfaceViewEditText editText_password;
 
-    Api api;
-
     LocalDatabase mDbHelper;
     String token_tmp = "";
     String myToken = "";
