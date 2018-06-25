@@ -74,8 +74,8 @@ public class LoginView extends SurfaceView implements SurfaceHolder.Callback, Ru
                 textPaint.setTextSize(TEXT_SIZE);
                 String text1 = "Username: ";
                 String text2 = "Password: ";
-                canvas.drawText(text1, screenW / 2 - getTextWidth(textPaint, text1), screenH / 3 + 100 * ratioHeight , textPaint);
-                canvas.drawText(text2, screenW / 2 - getTextWidth(textPaint, text2), screenH / 2 + 100 * ratioHeight , textPaint);
+                canvas.drawText(text1, 0, 9, screenW / 2 - getTextWidth(textPaint, text1), screenH / 3 + textPaint.getTextSize() , textPaint);
+                canvas.drawText(text2, 0, 9, screenW / 2 - getTextWidth(textPaint, text2), screenH / 2 + textPaint.getTextSize() , textPaint);
             }
         } catch (Exception e) {
 

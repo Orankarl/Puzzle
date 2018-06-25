@@ -52,7 +52,8 @@ public class MainActivity extends AppCompatActivity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
 
-        setContentView(new LoginView(this));
+        LoginView v = new LoginView(this);
+        setContentView(v);
 
         Point size = new Point();
         getWindowManager().getDefaultDisplay().getSize(size);
@@ -61,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
         FrameLayout.LayoutParams username_params = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
         editText_username.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
         editText_username.setHint("3-20位用户名");
+        editText_username.setPadding(editText_username.getPaddingLeft(),0,editText_username.getPaddingRight(),editText_username.getPaddingBottom());
         username_params.leftMargin = size.x / 2;
         username_params.topMargin = size.y / 3;
         addContentView(editText_username, username_params);
@@ -70,8 +72,9 @@ public class MainActivity extends AppCompatActivity {
         editText_password.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
         editText_password.setHint("请输入密码");
         editText_password.setTransformationMethod(PasswordTransformationMethod.getInstance());
-        password_params.leftMargin = size.x / 2;
+        editText_password.setPadding(editText_password.getPaddingLeft(),0,editText_password.getPaddingRight(),editText_password.getPaddingBottom());
         password_params.topMargin = size.y / 2;
+        password_params.leftMargin = size.x / 2;
         addContentView(editText_password, password_params);
 
         mDbHelper = new LocalDatabase(this);
