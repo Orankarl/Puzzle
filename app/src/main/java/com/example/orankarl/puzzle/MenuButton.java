@@ -11,6 +11,13 @@ import android.widget.Toast;
 
 import java.util.prefs.PreferenceChangeEvent;
 
+/*
+    A menu button designed for being represented in Custom SurfaceView
+    1. Change image when being pressed
+    2. Able to react to touch events
+    3. Save the context of Activity for function calls
+ */
+
 public class MenuButton {
     private Context context;
     private Bitmap bmpBackground, bmpButton, bmpButtonPressed;

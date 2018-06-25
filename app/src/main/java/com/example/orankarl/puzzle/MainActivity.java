@@ -32,7 +32,6 @@ public class MainActivity extends AppCompatActivity {
     public static SurfaceViewEditText editText_username;
     SurfaceViewEditText editText_password;
 
-    Api api;
     boolean login_flag = false;
 
     @Override
