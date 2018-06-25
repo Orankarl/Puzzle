@@ -16,6 +16,7 @@ public class MenuButton {
     private Bitmap bmpBackground, bmpButton, bmpButtonPressed;
     private int posX, posY;
     private boolean isPressed;
+
     public MenuButton(Context context, Bitmap bmpButton, Bitmap bmpButtonPressed, int x, int y) {
         this.context = context;
         this.bmpButton = bmpButton;
@@ -42,7 +43,7 @@ public class MenuButton {
         }
     }
 
-    public void onTouchEvent(MotionEvent event) {
+    public void onTouchEvent(MotionEvent event, int whichClick) {
         // 获取当前触控位置
         int pointX = (int) event.getX();
         int pointyY = (int) event.getY();
@@ -71,7 +72,24 @@ public class MenuButton {
                     isPressed = false;//抬起后重置 还原Button状态为未按下状态
                     Log.d("StartButton", "UP");
                     MainActivity activity = (MainActivity) context;
-                    activity.onButtonPressed();
+                    //activity.onButtonPressed();
+                    switch (whichClick) {
+                        case 0:
+                            activity.onButtonPressed();
+                            break;
+                        case 1:
+                            activity.onChoosePictureButtonPressed();
+                            break;
+                        case 2:
+                            activity.onBeginButtonPressed();
+                            break;
+                        case 3:
+                            activity.onLoginButtonPressed();
+                            break;
+                        case 4:
+                            activity.onRegistButtonPressed();
+                            break;
+                    }
                 }
             }
         }

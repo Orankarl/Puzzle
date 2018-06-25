@@ -1,5 +1,6 @@
 package com.example.orankarl.puzzle;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -7,15 +8,11 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.os.Message;
-import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.os.Handler;
-import android.view.Window;
 
-public class MainSurfaceView extends SurfaceView implements SurfaceHolder.Callback, Runnable {
+public class LoginView extends SurfaceView implements SurfaceHolder.Callback, Runnable{
     private Context context;
     private SurfaceHolder holder;
     private Paint paint;
@@ -24,9 +21,10 @@ public class MainSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 
     public static int screenW, screenH;
     private Resources resources = this.getResources();
-    MenuButton buttonStart;
+    MenuButton buttonLogin;
+    MenuButton buttonRegist;
     boolean flag = true;
-    public MainSurfaceView(Context context) {
+    public LoginView(Context context) {
         super(context);
         this.context = context;
         holder = this.getHolder();
@@ -37,11 +35,14 @@ public class MainSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     }
 
     private void init() {
-        Bitmap bmpButton = BitmapFactory.decodeResource(resources, R.drawable.button_start);
-        Bitmap bmpButtonPressed = BitmapFactory.decodeResource(resources, R.drawable.button_restart);
-        int posX = MainSurfaceView.screenW/2 - bmpButton.getWidth()/2;
-        int posY = MainSurfaceView.screenH/2 - bmpButton.getHeight()/2;
-        buttonStart = new MenuButton(context, bmpButton, bmpButtonPressed, posX, posY);
+        Bitmap loginButton = BitmapFactory.decodeResource(resources, R.drawable.button_login);
+        int posX = LoginView.screenW * 2 / 3 - loginButton.getWidth() / 2;
+        int posY = LoginView.screenH * 3 / 4 - loginButton.getHeight() / 2;
+        buttonLogin = new MenuButton(context, loginButton, loginButton, posX, posY);
+
+        Bitmap registButton = BitmapFactory.decodeResource(resources, R.drawable.button_regist);
+        posX = LoginView.screenW / 3 - loginButton.getWidth() / 2;
+        buttonRegist = new MenuButton(context, registButton, registButton, posX, posY);
     }
 
     public void draw() {
@@ -49,8 +50,15 @@ public class MainSurfaceView extends SurfaceView implements SurfaceHolder.Callba
             canvas = holder.lockCanvas();
             if (canvas != null) {
                 canvas.drawColor(Color.WHITE);
-
-                buttonStart.draw(canvas, paint);
+                buttonLogin.draw(canvas, paint);
+                buttonRegist.draw(canvas, paint);
+                Paint textPaint = new Paint();
+                textPaint.setColor(Color.BLACK);
+                textPaint.setTextSize(80);
+                String text1 = "Username: ";
+                String text2 = "Password: ";
+                canvas.drawText(text1, screenW / 2 - getTextWidth(textPaint, text1), screenH / 3 + 100 , textPaint);
+                canvas.drawText(text2, screenW / 2 - getTextWidth(textPaint, text2), screenH / 2 + 100 , textPaint);
             }
         } catch (Exception e) {
 
@@ -59,9 +67,23 @@ public class MainSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         }
     }
 
+    public static int getTextWidth(Paint paint, String str) {
+        int iRet = 0;
+        if (str != null && str.length() > 0) {
+            int len = str.length();
+            float[] widths = new float[len];
+            paint.getTextWidths(str, widths);
+            for (int j = 0; j < len; j++) {
+                iRet += (int) Math.ceil(widths[j]);
+            }
+        }
+        return iRet;
+    }
+
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        buttonStart.onTouchEvent(event, 0);
+        buttonLogin.onTouchEvent(event, 3);
+        buttonRegist.onTouchEvent(event, 4);
         return true;
     }
 
