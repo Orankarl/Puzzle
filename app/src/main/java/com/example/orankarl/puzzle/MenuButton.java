@@ -94,7 +94,10 @@ public class MenuButton {
                             activity.onLoginButtonPressed();
                             break;
                         case 4:
-                            activity.onRegistButtonPressed();
+                            activity.onRegisterButtonPressed();
+                            break;
+                        case 5:
+                            activity.onChangeAccountButtonPressed();
                             break;
                     }
                 }

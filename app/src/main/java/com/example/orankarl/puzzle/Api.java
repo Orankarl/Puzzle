@@ -1,6 +1,7 @@
 package com.example.orankarl.puzzle;
 
 import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.NonNull;
 
 import org.json.JSONException;
@@ -44,7 +45,6 @@ public class Api {
         _url = url;
         _port = port;
         _handler = handler;
-
         try {
             _socket = IO.socket("http://" + url + ":" + Integer.toString(port));
         } catch (URISyntaxException e) {
