@@ -1,5 +1,6 @@
 package com.example.orankarl.puzzle;
 
+import android.os.Handler;
 import android.support.annotation.NonNull;
 
 import org.json.JSONException;
@@ -10,7 +11,6 @@ import java.net.URISyntaxException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Iterator;
-import java.util.logging.Handler;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -35,15 +35,15 @@ public class Api {
     private OkHttpClient _client;
     private String _url;
     private int _port;
-    private MediaType _JSON;
     private Socket _socket;
+    private Handler _handler;
 
-    Api(String url, int port)
+    Api(String url, int port, Handler handler)
     {
         _client = new OkHttpClient();
         _url = url;
         _port = port;
-        _JSON = MediaType.parse("application/json; charset=utf-8");
+        _handler = handler;
 
         try {
             _socket = IO.socket("http://" + url + ":" + Integer.toString(port));
@@ -93,7 +93,10 @@ public class Api {
             urlBuilder = JsonToQueryParams(urlBuilder, data);
             requestBuilder = requestBuilder.get();
         } else {
-            RequestBody body = RequestBody.create(_JSON, data.toString());
+            RequestBody body = RequestBody.create(
+                    MediaType.parse("application/json; charset=utf-8"),
+                    data.toString()
+            );
             requestBuilder = requestBuilder.post(body);
         }
         Request request = requestBuilder.url(urlBuilder.build()).build();
@@ -111,7 +114,10 @@ public class Api {
                     if (body != null)
                         data = body.string();
                 }
-                cb.onFinish(data);
+                final String _data = data;
+                _handler.post(() -> {
+                    cb.onFinish(_data);
+                });
             }
         });
     }
