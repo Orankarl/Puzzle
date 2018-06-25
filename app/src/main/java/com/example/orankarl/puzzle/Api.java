@@ -1,15 +1,16 @@
 package com.example.orankarl.puzzle;
 
-import android.os.Message;
 import android.support.annotation.NonNull;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Iterator;
+import java.util.logging.Handler;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -21,8 +22,9 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 
+import com.github.nkzawa.socketio.client.IO;
+import com.github.nkzawa.socketio.client.Socket;
 import com.google.gson.Gson;
-
 
 public class Api {
     interface RequestCallback
@@ -34,12 +36,26 @@ public class Api {
     private String _url;
     private int _port;
     private MediaType _JSON;
+    private Socket _socket;
+
     Api(String url, int port)
     {
         _client = new OkHttpClient();
         _url = url;
         _port = port;
         _JSON = MediaType.parse("application/json; charset=utf-8");
+
+        try {
+            _socket = IO.socket("http://" + url + ":" + Integer.toString(port));
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+        _socket.connect();
+    }
+
+    public boolean connected()
+    {
+        return _socket.connected();
     }
 
     private HttpUrl.Builder JsonToQueryParams(

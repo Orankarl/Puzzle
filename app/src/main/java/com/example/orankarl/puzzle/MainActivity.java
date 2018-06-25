@@ -1,18 +1,13 @@
 package com.example.orankarl.puzzle;
 
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.view.View;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
+    final Api api = new Api("192.168.1.202", 5000);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,15 +18,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onButtonPressed() {
-        final Toast t = Toast.makeText(this, "", Toast.LENGTH_SHORT);
-        final Api api = new Api("192.168.1.202", 5000);
+        final Toast t = Toast.makeText(this, "", Toast.LENGTH_SHORT);;
         api.login("test", "test", loginRes -> {
             if (loginRes.status == -1)
                 return;
-            api.userInfo(loginRes.token, res -> {
-                t.setText(res._id);
-                t.show();
-            });
+            t.setText(loginRes.token);
+            t.show();
         });
     }
 
