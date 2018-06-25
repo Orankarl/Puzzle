@@ -25,6 +25,7 @@ public class MainSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     public static int screenW, screenH;
     private Resources resources = this.getResources();
     MenuButton buttonStart;
+    MenuButton buttonChangeAccount;
     boolean flag = true;
     public MainSurfaceView(Context context) {
         super(context);
@@ -39,9 +40,13 @@ public class MainSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     private void init() {
         Bitmap bmpButton = BitmapFactory.decodeResource(resources, R.drawable.button_start);
         Bitmap bmpButtonPressed = BitmapFactory.decodeResource(resources, R.drawable.button_restart);
-        int posX = MainSurfaceView.screenW/2 - bmpButton.getWidth()/2;
-        int posY = MainSurfaceView.screenH/2 - bmpButton.getHeight()/2;
+        Bitmap bmpButtonChangeAccount = BitmapFactory.decodeResource(resources, R.drawable.button_change_account);
+        int posX = MainSurfaceView.screenW / 2 - bmpButton.getWidth() / 2;
+        int posY = MainSurfaceView.screenH / 3 - bmpButton.getHeight() / 2;
         buttonStart = new MenuButton(context, bmpButton, bmpButtonPressed, posX, posY);
+        posX = MainSurfaceView.screenW / 2 - bmpButtonChangeAccount.getWidth() / 2;
+        posY = MainSurfaceView.screenH * 2 / 3 - bmpButtonChangeAccount.getHeight() / 2;
+        buttonChangeAccount = new MenuButton(context, bmpButtonChangeAccount, bmpButtonChangeAccount, posX, posY);
     }
 
     public void draw() {
@@ -51,6 +56,7 @@ public class MainSurfaceView extends SurfaceView implements SurfaceHolder.Callba
                 canvas.drawColor(Color.WHITE);
 
                 buttonStart.draw(canvas, paint);
+                buttonChangeAccount.draw(canvas, paint);
             }
         } catch (Exception e) {
 
@@ -62,6 +68,7 @@ public class MainSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         buttonStart.onTouchEvent(event, 0);
+        buttonChangeAccount.onTouchEvent(event, 5);
         return true;
     }
 

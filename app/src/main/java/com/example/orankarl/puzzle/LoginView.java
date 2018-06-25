@@ -22,7 +22,7 @@ public class LoginView extends SurfaceView implements SurfaceHolder.Callback, Ru
     public static int screenW, screenH;
     private Resources resources = this.getResources();
     MenuButton buttonLogin;
-    MenuButton buttonRegist;
+    MenuButton buttonRegister;
     boolean flag = true;
     public LoginView(Context context) {
         super(context);
@@ -40,9 +40,9 @@ public class LoginView extends SurfaceView implements SurfaceHolder.Callback, Ru
         int posY = LoginView.screenH * 3 / 4 - loginButton.getHeight() / 2;
         buttonLogin = new MenuButton(context, loginButton, loginButton, posX, posY);
 
-        Bitmap registButton = BitmapFactory.decodeResource(resources, R.drawable.button_regist);
+        Bitmap registerButton = BitmapFactory.decodeResource(resources, R.drawable.button_register);
         posX = LoginView.screenW / 3 - loginButton.getWidth() / 2;
-        buttonRegist = new MenuButton(context, registButton, registButton, posX, posY);
+        buttonRegister = new MenuButton(context, registerButton, registerButton, posX, posY);
     }
 
     public void draw() {
@@ -51,7 +51,7 @@ public class LoginView extends SurfaceView implements SurfaceHolder.Callback, Ru
             if (canvas != null) {
                 canvas.drawColor(Color.WHITE);
                 buttonLogin.draw(canvas, paint);
-                buttonRegist.draw(canvas, paint);
+                buttonRegister.draw(canvas, paint);
                 Paint textPaint = new Paint();
                 textPaint.setColor(Color.BLACK);
                 textPaint.setTextSize(80);
@@ -83,7 +83,7 @@ public class LoginView extends SurfaceView implements SurfaceHolder.Callback, Ru
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         buttonLogin.onTouchEvent(event, 3);
-        buttonRegist.onTouchEvent(event, 4);
+        buttonRegister.onTouchEvent(event, 4);
         return true;
     }
 
