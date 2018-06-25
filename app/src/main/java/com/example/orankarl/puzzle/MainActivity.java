@@ -40,17 +40,13 @@ public class MainActivity extends AppCompatActivity {
     public static SurfaceViewEditText editText_username;
     SurfaceViewEditText editText_password;
 
-<<<<<<< HEAD
     boolean login_flag = false;
-=======
-    Api api;
 
     LocalDatabase mDbHelper;
     String token_tmp = "";
     String myToken = "";
 
     Bundle savedInstanceState_tmp;
->>>>>>> fe58ba854fc513b7decfd001d59bdd92060f7fed
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
