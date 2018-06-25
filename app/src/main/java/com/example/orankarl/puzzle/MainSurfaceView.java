@@ -39,14 +39,15 @@ public class MainSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 
     private void init() {
         Bitmap bmpButton = BitmapFactory.decodeResource(resources, R.drawable.button_start);
-        Bitmap bmpButtonPressed = BitmapFactory.decodeResource(resources, R.drawable.button_restart);
-        Bitmap bmpButtonChangeAccount = BitmapFactory.decodeResource(resources, R.drawable.button_change_account);
+        Bitmap bmpButtonPressed = BitmapFactory.decodeResource(resources, R.drawable.button_start_pressed);
+        Bitmap bmpButtonLogout = BitmapFactory.decodeResource(resources, R.drawable.button_logout);
+        Bitmap bmpButtonLogoutPressed = BitmapFactory.decodeResource(resources, R.drawable.button_logout_pressed);
         int posX = MainSurfaceView.screenW / 2 - bmpButton.getWidth() / 2;
         int posY = MainSurfaceView.screenH / 3 - bmpButton.getHeight() / 2;
         buttonStart = new MenuButton(context, bmpButton, bmpButtonPressed, posX, posY);
-        posX = MainSurfaceView.screenW / 2 - bmpButtonChangeAccount.getWidth() / 2;
-        posY = MainSurfaceView.screenH * 2 / 3 - bmpButtonChangeAccount.getHeight() / 2;
-        buttonChangeAccount = new MenuButton(context, bmpButtonChangeAccount, bmpButtonChangeAccount, posX, posY);
+        posX = MainSurfaceView.screenW / 2 - bmpButtonLogout.getWidth() / 2;
+        posY = MainSurfaceView.screenH * 2 / 3 - bmpButtonLogout.getHeight() / 2;
+        buttonChangeAccount = new MenuButton(context, bmpButtonLogout, bmpButtonLogoutPressed, posX, posY);
     }
 
     public void draw() {

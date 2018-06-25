@@ -8,6 +8,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -35,17 +36,16 @@ public class LoginView extends SurfaceView implements SurfaceHolder.Callback, Ru
     }
 
     private void init() {
-//        Bitmap loginButton = BitmapFactory.decodeResource(resources, R.drawable.button_login);
-        Bitmap loginButton = BitmapFactory.decodeResource(resources, R.drawable.start);
-        Bitmap loginButtonPressed = BitmapFactory.decodeResource(resources, R.drawable.start_pressed);
+        Bitmap loginButton = BitmapFactory.decodeResource(resources, R.drawable.button_login);
+        Bitmap loginButtonPressed = BitmapFactory.decodeResource(resources, R.drawable.button_login_pressed);
         int posX = LoginView.screenW * 2 / 3 - loginButton.getWidth() / 2;
         int posY = LoginView.screenH * 3 / 4 - loginButton.getHeight() / 2;
-//        buttonLogin = new MenuButton(context, loginButton, loginButton, posX, posY);
         buttonLogin = new MenuButton(context, loginButton, loginButtonPressed, posX, posY);
 
         Bitmap registerButton = BitmapFactory.decodeResource(resources, R.drawable.button_register);
+        Bitmap registerButtonPressed = BitmapFactory.decodeResource(resources, R.drawable.button_register_pressed);
         posX = LoginView.screenW / 3 - loginButton.getWidth() / 2;
-        buttonRegister = new MenuButton(context, registerButton, registerButton, posX, posY);
+        buttonRegister = new MenuButton(context, registerButton, registerButtonPressed, posX, posY);
     }
 
     public void draw() {
@@ -55,13 +55,27 @@ public class LoginView extends SurfaceView implements SurfaceHolder.Callback, Ru
                 canvas.drawColor(Color.WHITE);
                 buttonLogin.draw(canvas, paint);
                 buttonRegister.draw(canvas, paint);
+
+                float ratioWidth = (float)screenW / 1080;
+                float ratioHeight = (float)screenH / 1812;
+                double RATIO = Math.min(ratioWidth, ratioHeight);
+                if (ratioWidth != ratioHeight) {
+                    if (RATIO == ratioWidth) {
+                        double OFFSET_LEFT = 0;
+                        double OFFSET_TOP = Math.round((screenH - 1812 * RATIO) / 2);
+                    }else {
+                        double OFFSET_LEFT = Math.round((screenW - 1080 * RATIO) / 2);
+                        double OFFSET_TOP = 0;
+                    }
+                }
+                int TEXT_SIZE = (int)Math.round(80 * RATIO);
                 Paint textPaint = new Paint();
                 textPaint.setColor(Color.BLACK);
-                textPaint.setTextSize(80);
+                textPaint.setTextSize(TEXT_SIZE);
                 String text1 = "Username: ";
                 String text2 = "Password: ";
-                canvas.drawText(text1, screenW / 2 - getTextWidth(textPaint, text1), screenH / 3 + 100 , textPaint);
-                canvas.drawText(text2, screenW / 2 - getTextWidth(textPaint, text2), screenH / 2 + 100 , textPaint);
+                canvas.drawText(text1, screenW / 2 - getTextWidth(textPaint, text1), screenH / 3 + 100 * ratioHeight , textPaint);
+                canvas.drawText(text2, screenW / 2 - getTextWidth(textPaint, text2), screenH / 2 + 100 * ratioHeight , textPaint);
             }
         } catch (Exception e) {
 
