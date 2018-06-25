@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
+    final Api api = new Api("45.77.183.226", 5000, new Handler(Looper.getMainLooper()));
 
 
     public static SurfaceViewEditText editText_username;
@@ -96,8 +97,12 @@ public class MainActivity extends AppCompatActivity {
     }*/
 
     public void onButtonPressed() {
-        Toast.makeText(this, "Button Pressed", Toast.LENGTH_LONG).show();
-        setContentView(new ChoosePictureView(this));
+        api.login("test", "test", loginRes -> {
+            if (loginRes.status == -1)
+                return;
+            Toast.makeText(this, loginRes.token, Toast.LENGTH_SHORT).show();
+            setContentView(new ChoosePictureView(this));
+        });
     }
 
     public void onChoosePictureButtonPressed() {
@@ -117,7 +122,6 @@ public class MainActivity extends AppCompatActivity {
         //Toast.makeText(this, "Username is " + username + '\n' + "Password is " + password, Toast.LENGTH_LONG).show();
 
         final Toast t = Toast.makeText(this, "", Toast.LENGTH_SHORT);
-        api = new Api("45.77.183.226", 5000, new Handler(Looper.getMainLooper()));
         api.login(username, password, loginRes -> {
             if (loginRes.status == -1) {
                 t.setText("Username or Password Error!\nLogin Failed!");
@@ -146,7 +150,6 @@ public class MainActivity extends AppCompatActivity {
         String password = editText_password.getText().toString();
 
         final Toast t = Toast.makeText(this, "", Toast.LENGTH_SHORT);
-        api = new Api("45.77.183.226", 5000, new Handler(Looper.getMainLooper()));
         api.register(username, password, loginRes -> {
             if (loginRes.status == -1) {
                 t.setText("Register Failed!");
