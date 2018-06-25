@@ -10,7 +10,7 @@ public class SurfaceViewEditText extends AppCompatEditText {
     public SurfaceViewEditText(Context context) {
         super(context);
 //        setMaxLines(1);
-        setMinWidth(360);
+        setMinWidth(400);
         setSingleLine(true);
     }
 }

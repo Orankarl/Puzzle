@@ -1,5 +1,6 @@
 package com.example.orankarl.puzzle;
 
+import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
 
@@ -34,11 +35,13 @@ public class Api {
     private String _url;
     private int _port;
     private MediaType _JSON;
-    Api(String url, int port)
+    private Handler _handler;
+    Api(String url, int port, Handler handler)
     {
         _client = new OkHttpClient();
         _url = url;
         _port = port;
+        _handler = handler;
         _JSON = MediaType.parse("application/json; charset=utf-8");
     }
 
@@ -95,7 +98,10 @@ public class Api {
                     if (body != null)
                         data = body.string();
                 }
-                cb.onFinish(data);
+                final String _data = data;
+                _handler.post(() -> {
+                    cb.onFinish(_data);
+                });
             }
         });
     }
