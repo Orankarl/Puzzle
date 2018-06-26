@@ -36,7 +36,6 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
     final Api api = new Api("45.77.183.226", 5000, new Handler(Looper.getMainLooper()));
 
-
     public static SurfaceViewEditText editText_username;
     SurfaceViewEditText editText_password;
 
@@ -129,20 +128,24 @@ public class MainActivity extends AppCompatActivity {
                 t.show();
                 return;
             }
-            api.userInfo(loginRes.token, res -> {
-                t.setText("Login Success!\nPlease Wait...");
-                t.show();
-                setContentView(new MainSurfaceView(this));
-                token_tmp = loginRes.token;
 
-                SQLiteDatabase db2 = mDbHelper.getWritableDatabase();
-                db2.execSQL("delete from " + LocalDatabase.FeedEntry.TABLE_NAME);
-
-                SQLiteDatabase db = mDbHelper.getWritableDatabase();
-                ContentValues values = new ContentValues();
-                values.put(LocalDatabase.FeedEntry.COLUMN_NAME_TITLE, token_tmp);
-                db.insert(LocalDatabase.FeedEntry.TABLE_NAME, null, values);
+            api.rank(loginRes.token, 1,rank -> {
+                if (rank.status == 1)
+                    rank.status = 2;
             });
+
+            t.setText("Login Success!\nPlease Wait...");
+            t.show();
+            setContentView(new MainSurfaceView(this));
+            token_tmp = loginRes.token;
+
+            SQLiteDatabase db2 = mDbHelper.getWritableDatabase();
+            db2.execSQL("delete from " + LocalDatabase.FeedEntry.TABLE_NAME);
+
+            SQLiteDatabase db = mDbHelper.getWritableDatabase();
+            ContentValues values = new ContentValues();
+            values.put(LocalDatabase.FeedEntry.COLUMN_NAME_TITLE, token_tmp);
+            db.insert(LocalDatabase.FeedEntry.TABLE_NAME, null, values);
         });
     }
 

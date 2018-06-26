@@ -1,7 +1,6 @@
 package com.example.orankarl.puzzle;
 
 import android.os.Handler;
-import android.os.Message;
 import android.support.annotation.NonNull;
 
 import org.json.JSONException;
@@ -11,7 +10,10 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
+import java.lang.Iterable;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -88,6 +90,31 @@ public class Api {
                 .port(_port)
                 .addPathSegment("api")
                 .addPathSegment(action);
+        _execute(urlBuilder, method, data, cb);
+    }
+
+    private void execute(
+            String[] actions,
+            String method,
+            JSONObject data,
+            RequestCallback cb)
+    {
+        HttpUrl.Builder urlBuilder = new HttpUrl.Builder()
+                .scheme("http")
+                .host(_url)
+                .port(_port)
+                .addPathSegment("api");
+        for (String action: actions)
+            urlBuilder.addPathSegment(action);
+        _execute(urlBuilder, method, data, cb);
+    }
+
+    private void _execute(
+            HttpUrl.Builder urlBuilder,
+            String method,
+            JSONObject data,
+            RequestCallback cb)
+    {
         Request.Builder requestBuilder = new Request.Builder();
         if (method.equals("GET")) {
             urlBuilder = JsonToQueryParams(urlBuilder, data);
@@ -182,6 +209,55 @@ public class Api {
         }
         execute("user", "GET", data, response -> {
             cb.onResponse(new Gson().fromJson(response, UserInfoResponse.class));
+        });
+    }
+
+    class NewResultResponse {
+        int status;
+    }
+    interface NewResultCallback {
+        void onResponse(NewResultResponse response);
+    }
+    public void newResult(String token, int pattern, int time, NewResultCallback cb)
+    {
+        Long timestamp = System.currentTimeMillis();
+        JSONObject data = new JSONObject();
+        try {
+            data.put("token", token);
+            data.put("pattern", pattern);
+            data.put("time", time);
+            data.put("timestamp", timestamp);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        execute("result", "POST", data, response -> {
+            cb.onResponse(new Gson().fromJson(response, NewResultResponse.class));
+        });
+    }
+
+    class RankResponse {
+        int status;
+        RankResponseEntry[] rank;
+    }
+    class RankResponseEntry {
+        int time;
+        Date timestamp;
+        String username;
+        String nickname;
+    }
+    interface RankCallback {
+        void onResponse(RankResponse response);
+    }
+    public void rank(String token, int pattern, RankCallback cb)
+    {
+        JSONObject data = new JSONObject();
+        try {
+            data.put("token", token);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        execute(new String[]{"rank", Integer.toString(pattern)}, "GET", data, response -> {
+            cb.onResponse(new Gson().fromJson(response, RankResponse.class));
         });
     }
 
