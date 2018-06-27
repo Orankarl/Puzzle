@@ -33,6 +33,8 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.example.orankarl.puzzle.MainSurfaceView.isOnline;
+
 public class MainActivity extends AppCompatActivity {
     final Api api = new Api("45.77.183.226", 5000, new Handler(Looper.getMainLooper()));
 
@@ -43,16 +45,18 @@ public class MainActivity extends AppCompatActivity {
     String token_tmp = "";
     String myToken = "";
 
-    Bundle savedInstanceState_tmp;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
 
-        LoginView v = new LoginView(this);
-        setContentView(v);
+        setContentView(new MainSurfaceView(this));
+        isOnline = false;
+    }
+
+    public void onLogButtonPressed() {
+        setContentView(new LoginView(this));
 
         Point size = new Point();
         getWindowManager().getDefaultDisplay().getSize(size);
@@ -87,22 +91,25 @@ public class MainActivity extends AppCompatActivity {
         cursor.close();
 
         if (!myToken.equals("")) {
+            isOnline = true;
             Toast.makeText(this, "Welcome back!", Toast.LENGTH_LONG).show();
-            setContentView(new MainSurfaceView(this));
+            setContentView(new MainSurfaceView2(this));
         }
     }
 
-    /*public void setEditTextVisibility(int isVisible) {
-        username.setVisibility(isVisible);
-    }*/
+    public void onLogoutButtonPressed() {
+        SQLiteDatabase db = mDbHelper.getWritableDatabase();
+        db.execSQL("delete from " + LocalDatabase.FeedEntry.TABLE_NAME);
 
-    public void onButtonPressed() {
-        api.login("test", "test", loginRes -> {
-            if (loginRes.status == -1)
-                return;
-            Toast.makeText(this, loginRes.token, Toast.LENGTH_SHORT).show();
-            setContentView(new ChoosePictureView(this));
-        });
+        Toast.makeText(this, "Logout Success!", Toast.LENGTH_LONG).show();
+
+        setContentView(new MainSurfaceView(this));
+
+        isOnline = false;
+    }
+
+    public void onBeginButtonPressed() {
+        setContentView(new ChoosePictureView(this));
     }
 
     public void onChoosePictureButtonPressed() {
@@ -112,14 +119,13 @@ public class MainActivity extends AppCompatActivity {
         startActivityForResult(intent, 1);
     }
 
-    public void onBeginButtonPressed() {
+    /*public void onBeginButtonPressed() {
         Toast.makeText(this, "Game start", Toast.LENGTH_LONG).show();
-    }
+    }*/
 
     public void onLoginButtonPressed() {
         String username = editText_username.getText().toString();
         String password = editText_password.getText().toString();
-        //Toast.makeText(this, "Username is " + username + '\n' + "Password is " + password, Toast.LENGTH_LONG).show();
 
         final Toast t = Toast.makeText(this, "", Toast.LENGTH_SHORT);
         api.login(username, password, loginRes -> {
@@ -136,7 +142,7 @@ public class MainActivity extends AppCompatActivity {
 
             t.setText("Login Success!\nPlease Wait...");
             t.show();
-            setContentView(new MainSurfaceView(this));
+            setContentView(new MainSurfaceView2(this));
             token_tmp = loginRes.token;
 
             SQLiteDatabase db2 = mDbHelper.getWritableDatabase();
@@ -146,6 +152,8 @@ public class MainActivity extends AppCompatActivity {
             ContentValues values = new ContentValues();
             values.put(LocalDatabase.FeedEntry.COLUMN_NAME_TITLE, token_tmp);
             db.insert(LocalDatabase.FeedEntry.TABLE_NAME, null, values);
+
+            isOnline = true;
         });
     }
 
@@ -165,33 +173,52 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    public void onChangeAccountButtonPressed() {
-        SQLiteDatabase db = mDbHelper.getWritableDatabase();
-        db.execSQL("delete from " + LocalDatabase.FeedEntry.TABLE_NAME);
+    public void backToMainSurfaceView() {
+        setContentView(new MainSurfaceView(this));
+    }
 
-        Toast.makeText(this, "Logout Success!", Toast.LENGTH_LONG).show();
+    public void backToMainSurfaceView2(){
+        setContentView(new MainSurfaceView2(this));
+    }
 
-        setContentView(new LoginView(this));
+    public void onMultiButtonPressed() {
+        setContentView(new RoomView(this));
+    }
 
-        Point size = new Point();
-        getWindowManager().getDefaultDisplay().getSize(size);
+    public void onCreateRoomPressed() {
+        setContentView(new ChoosePictureView(this));
+    }
 
-        editText_username = new SurfaceViewEditText(this);
-        FrameLayout.LayoutParams username_params = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
-        editText_username.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
-        editText_username.setHint("3-20位用户名");
-        username_params.leftMargin = size.x / 2;
-        username_params.topMargin = size.y / 3;
-        addContentView(editText_username, username_params);
+    public void onChoosePatternPressed() {
+        setContentView(new ChoosePatternView(this));
+    }
 
-        FrameLayout.LayoutParams password_params = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
-        editText_password = new SurfaceViewEditText(this);
-        editText_password.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
-        editText_password.setHint("请输入密码");
-        editText_password.setTransformationMethod(PasswordTransformationMethod.getInstance());
-        password_params.leftMargin = size.x / 2;
-        password_params.topMargin = size.y / 2;
-        addContentView(editText_password, password_params);
+    public void backToRoomView() {
+        setContentView(new RoomView(this));
+    }
+
+    public void onRankButtonPressed() {
+        setContentView(new ChoosePatternView(this));
+    }
+
+    public void backToChoosePatternView() {
+        setContentView(new ChoosePatternView(this));
+    }
+
+    public void onChooseSplitPressed() {
+        setContentView(new ChooseSplitView(this));
+    }
+
+    public void showRank() {
+        setContentView(new RankView(this));
+    }
+
+    public void backToChooseSplitView() {
+        setContentView(new ChooseSplitView(this));
+    }
+
+    public void gameStart() {
+        Toast.makeText(this, "游戏开始!", Toast.LENGTH_LONG).show();
     }
 
     @Override

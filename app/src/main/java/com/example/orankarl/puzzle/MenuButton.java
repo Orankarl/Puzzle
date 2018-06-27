@@ -6,10 +6,8 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.util.Log;
 import android.view.MotionEvent;
-import android.widget.Button;
-import android.widget.Toast;
 
-import java.util.prefs.PreferenceChangeEvent;
+import static com.example.orankarl.puzzle.MainSurfaceView.*;
 
 /*
     A menu button designed for being represented in Custom SurfaceView
@@ -81,23 +79,100 @@ public class MenuButton {
                     MainActivity activity = (MainActivity) context;
                     //activity.onButtonPressed();
                     switch (whichClick) {
-                        case 0:
-                            activity.onButtonPressed();
-                            break;
-                        case 1:
-                            activity.onChoosePictureButtonPressed();
-                            break;
-                        case 2:
+                        case 0:    //MainSurface 开始（单人） & MainSurface2 开始（单人）
+                            isSingle = true;
                             activity.onBeginButtonPressed();
                             break;
-                        case 3:
+                        case 1:    //MainSurface 登录
+                            activity.onLogButtonPressed();
+                            break;
+                        case 2:    //MainSurface 排行榜 & MainSurface2 排行榜
+                            isRank = true;
+                            activity.onRankButtonPressed();
+                            break;
+                        case 3:    //Login 登录
                             activity.onLoginButtonPressed();
                             break;
-                        case 4:
+                        case 4:    //Login 注册
                             activity.onRegisterButtonPressed();
                             break;
-                        case 5:
-                            activity.onChangeAccountButtonPressed();
+                        case 5:    //MainSurface2 开始（多人）
+                            isSingle = false;
+                            activity.onMultiButtonPressed();
+                            break;
+                        case 6:    //MainSurface2 注销
+                            activity.onLogoutButtonPressed();
+                            break;
+                        case 7:    //ChoosePicture 选择图片
+                            activity.onChoosePictureButtonPressed();
+                            break;
+                        case 8:    //ChoosePicture 确定，下一步
+                            isRank = false;
+                            activity.onChoosePatternPressed();
+                            break;
+                        case 9:    //Room 创建房间
+                            activity.onCreateRoomPressed();
+                            break;
+                        case 10:    //Room 加入房间
+                            //activity.onJoinRoomPressed();
+                            break;
+                        case 11:    //Room 返回
+                            activity.backToMainSurfaceView2();
+                            break;
+                        case 12:    //ChoosePattern 样式1
+                            pattern = 1;
+                            activity.onChooseSplitPressed();
+                            break;
+                        case 13:    //ChoosePattern 样式2
+                            pattern = 2;
+                            activity.onChooseSplitPressed();
+                            break;
+                        case 14:    //ChoosePattern 返回
+                            if (!isOnline){
+                                activity.backToMainSurfaceView();
+                                break;
+                            }
+                            else if (isRank || isSingle) {
+                                activity.backToMainSurfaceView2();
+                                break;
+                            }
+                            else {
+                                activity.backToRoomView();
+                                break;
+                            }
+                        case 15:    //ChooseSplit 分割1
+                            split = 1;
+                            if (isRank){
+                                activity.showRank();
+                                break;
+                            }
+                            else if (isSingle){
+                                activity.gameStart();
+                                break;
+                            }
+                            else {
+                                //activity.hostInRoom();
+                                break;
+                            }
+                        case 16:    //ChooseSplit 分割2
+                            split = 2;
+                            if (isRank){
+                                activity.showRank();
+                                break;
+                            }
+                            else if (isSingle){
+                                activity.gameStart();
+                                break;
+                            }
+                            else {
+                                //activity.hostInRoom();
+                                break;
+                            }
+                        case 17:    //ChooseSplit 返回
+                            activity.backToChoosePatternView();
+                            break;
+                        case 18:    //Rank 返回
+                            activity.backToChooseSplitView();
                             break;
                     }
                 }

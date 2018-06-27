@@ -8,37 +8,25 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
-import android.os.Environment;
-import android.os.Message;
-import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.os.Handler;
-import android.view.Window;
 
-import java.io.File;
-
-public class MainSurfaceView extends SurfaceView implements SurfaceHolder.Callback, Runnable {
+public class MainSurfaceView2 extends SurfaceView implements SurfaceHolder.Callback, Runnable {
     private Context context;
     private SurfaceHolder holder;
     private Paint paint;
     private Thread thread;
     private Canvas canvas;
 
-    public static boolean isOnline;
-    public static boolean isSingle;
-    public static int split;
-    public static int pattern;
-    public static boolean isRank;
-
     public static int screenW, screenH;
     private Resources resources = this.getResources();
     MenuButton buttonSingle;
-    MenuButton buttonLog;
+    MenuButton buttonMulti;
     MenuButton buttonRank;
+    MenuButton buttonLogout;
     boolean flag = true;
-    public MainSurfaceView(Context context) {
+    public MainSurfaceView2(Context context) {
         super(context);
         this.context = context;
         holder = this.getHolder();
@@ -55,15 +43,20 @@ public class MainSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         Bitmap bmpButtonMultiPressed = BitmapFactory.decodeResource(resources, R.drawable.button_start2_pressed);
         Bitmap bmpButtonRank = BitmapFactory.decodeResource(resources, R.drawable.button_start);
         Bitmap bmpButtonRankPressed = BitmapFactory.decodeResource(resources, R.drawable.button_start_pressed);
+        Bitmap bmpButtonLogout = BitmapFactory.decodeResource(resources, R.drawable.button_start);
+        Bitmap bmpButtonLogoutPressed = BitmapFactory.decodeResource(resources, R.drawable.button_start_pressed);
         int posX = MainSurfaceView.screenW / 2 - bmpButtonSingle.getWidth() / 2;
-        int posY = MainSurfaceView.screenH / 2 - bmpButtonSingle.getHeight() / 2;
+        int posY = MainSurfaceView.screenH / 5 - bmpButtonSingle.getHeight() / 2;
         buttonSingle = new MenuButton(context, bmpButtonSingle, bmpButtonSinglePressed, posX, posY);
         posX = MainSurfaceView.screenW / 2 - bmpButtonMulti.getWidth() / 2;
-        posY += bmpButtonMulti.getHeight() * 3 / 2;
-        buttonLog = new MenuButton(context, bmpButtonMulti, bmpButtonMultiPressed, posX, posY);
+        posY = MainSurfaceView.screenH * 2 / 5 - bmpButtonSingle.getHeight() / 2;
+        buttonMulti = new MenuButton(context, bmpButtonMulti, bmpButtonMultiPressed, posX, posY);
         posX = MainSurfaceView.screenW / 2 - bmpButtonMulti.getWidth() / 2;
-        posY += bmpButtonMulti.getHeight() * 3 / 2;
+        posY = MainSurfaceView.screenH * 3 / 5 - bmpButtonSingle.getHeight() / 2;
         buttonRank = new MenuButton(context, bmpButtonRank, bmpButtonRankPressed, posX, posY);
+        posX = MainSurfaceView.screenW / 2 - bmpButtonMulti.getWidth() / 2;
+        posY = MainSurfaceView.screenH * 4 / 5 - bmpButtonSingle.getHeight() / 2;
+        buttonLogout = new MenuButton(context, bmpButtonLogout, bmpButtonLogoutPressed, posX, posY);
     }
 
     public void draw() {
@@ -72,20 +65,10 @@ public class MainSurfaceView extends SurfaceView implements SurfaceHolder.Callba
             if (canvas != null) {
                 canvas.drawColor(Color.WHITE);
 
-                Bitmap  origin_bitmap = BitmapFactory.decodeResource(this.getContext().getResources(), R.drawable.logo);
-                int origin_width = origin_bitmap.getWidth();
-                int origin_height = origin_bitmap.getHeight();
-                float scaleWidth = ((float) MainSurfaceView.screenW * 3 / 4) / origin_width;
-                float scaleHeight = ((float) MainSurfaceView.screenH / 2) / origin_height;
-                Matrix matrix = new Matrix();
-                float scale = scaleWidth > scaleHeight ? scaleHeight : scaleWidth;
-                matrix.postScale(scale, scale);
-                Bitmap bitmap = Bitmap.createBitmap(origin_bitmap, 0, 0, origin_width, origin_height, matrix, true);
-                canvas.drawBitmap(bitmap, MainSurfaceView.screenW / 2 - bitmap.getWidth() / 2, MainSurfaceView.screenH / 4 - bitmap.getHeight() / 2, paint);
-
                 buttonSingle.draw(canvas, paint);
-                buttonLog.draw(canvas, paint);
+                buttonMulti.draw(canvas, paint);
                 buttonRank.draw(canvas, paint);
+                buttonLogout.draw(canvas, paint);
             }
         } catch (Exception e) {
 
@@ -97,8 +80,9 @@ public class MainSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         buttonSingle.onTouchEvent(event, 0);
-        buttonLog.onTouchEvent(event, 1);
+        buttonMulti.onTouchEvent(event, 5);
         buttonRank.onTouchEvent(event, 2);
+        buttonLogout.onTouchEvent(event, 6);
         return true;
     }
 

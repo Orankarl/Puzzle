@@ -12,22 +12,21 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
-public class ChoosePictureView extends SurfaceView implements SurfaceHolder.Callback, Runnable{
+public class RoomView extends SurfaceView implements SurfaceHolder.Callback, Runnable {
     private Context context;
     private SurfaceHolder holder;
     private Paint paint;
     private Thread thread;
     private Canvas canvas;
 
-    public Bitmap origin_bitmap = null;
-    public Bitmap bitmap = null;
-
     public static int screenW, screenH;
     private Resources resources = this.getResources();
-    MenuButton buttonStart;
-    MenuButton buttonStart2;
+    MenuButton buttonCreateRoom;
+    MenuButton buttonJoinRoom;
+    MenuButton buttonBack;
     boolean flag = true;
-    public ChoosePictureView(Context context) {
+
+    public RoomView(Context context) {
         super(context);
         this.context = context;
         holder = this.getHolder();
@@ -38,25 +37,21 @@ public class ChoosePictureView extends SurfaceView implements SurfaceHolder.Call
     }
 
     private void init() {
-        Bitmap bmpButton = BitmapFactory.decodeResource(resources, R.drawable.button_choose);
-        Bitmap bmpButtonPressed = BitmapFactory.decodeResource(resources, R.drawable.button_choose_pressed);
-        Bitmap bmpButton2 = BitmapFactory.decodeResource(resources, R.drawable.button_start2);
-        Bitmap bmpButton2Pressed = BitmapFactory.decodeResource(resources, R.drawable.button_start2_pressed);
-        int posX = MainSurfaceView.screenW / 2 - bmpButton.getWidth() / 2;
-        int posY = MainSurfaceView.screenH * 3 / 4 - bmpButton.getHeight()/2;
-        buttonStart = new MenuButton(context, bmpButton, bmpButtonPressed, posX, posY);
-        buttonStart2 = new MenuButton(context, bmpButton2, bmpButton2Pressed, posX, posY + bmpButton.getHeight() * 3 / 2);
-
-        if (origin_bitmap != null) {
-            int origin_width = origin_bitmap.getWidth();
-            int origin_height = origin_bitmap.getHeight();
-            float scaleWidth = ((float) MainSurfaceView.screenW * 3 / 4) / origin_width;
-            float scaleHeight = ((float) MainSurfaceView.screenH / 2) / origin_height;
-            Matrix matrix = new Matrix();
-            float scale = scaleWidth > scaleHeight ? scaleHeight : scaleWidth;
-            matrix.postScale(scale, scale);
-            bitmap = Bitmap.createBitmap(origin_bitmap, 0, 0, origin_width, origin_height, matrix, true);
-        }
+        Bitmap bmpButtonCreateRoom = BitmapFactory.decodeResource(resources, R.drawable.button_start);
+        Bitmap bmpButtonCreateRoomPressed = BitmapFactory.decodeResource(resources, R.drawable.button_start_pressed);
+        Bitmap bmpButtonJoinRoom = BitmapFactory.decodeResource(resources, R.drawable.button_start);
+        Bitmap bmpButtonJoinRoomPressed = BitmapFactory.decodeResource(resources, R.drawable.button_start_pressed);
+        Bitmap bmpButtonBack = BitmapFactory.decodeResource(resources, R.drawable.button_start);
+        Bitmap bmpButtonBackPressed = BitmapFactory.decodeResource(resources, R.drawable.button_start_pressed);
+        int posX = MainSurfaceView.screenW / 2 - bmpButtonCreateRoom.getWidth() / 2;
+        int posY = MainSurfaceView.screenH / 3 - bmpButtonCreateRoom.getHeight() / 2;
+        buttonCreateRoom = new MenuButton(context, bmpButtonCreateRoom, bmpButtonCreateRoomPressed, posX, posY);
+        posX = MainSurfaceView.screenW / 2 - bmpButtonJoinRoom.getWidth() / 2;
+        posY = MainSurfaceView.screenH * 2 / 3 - bmpButtonJoinRoom.getHeight() / 2;
+        buttonJoinRoom = new MenuButton(context, bmpButtonJoinRoom, bmpButtonJoinRoomPressed, posX, posY);
+        posX = bmpButtonBack.getWidth() / 4;
+        posY = MainSurfaceView.screenH - bmpButtonBack.getHeight() * 5 / 4;
+        buttonBack = new MenuButton(context, bmpButtonBack, bmpButtonBackPressed, posX, posY);
     }
 
     public void draw() {
@@ -64,11 +59,10 @@ public class ChoosePictureView extends SurfaceView implements SurfaceHolder.Call
             canvas = holder.lockCanvas();
             if (canvas != null) {
                 canvas.drawColor(Color.WHITE);
-                if (bitmap != null) {
-                    canvas.drawBitmap(bitmap, MainSurfaceView.screenW / 2 - bitmap.getWidth() / 2, MainSurfaceView.screenH / 3 - bitmap.getHeight() / 2, paint);
-                    buttonStart2.draw(canvas, paint);
-                }
-                buttonStart.draw(canvas, paint);
+
+                buttonCreateRoom.draw(canvas, paint);
+                buttonJoinRoom.draw(canvas, paint);
+                buttonBack.draw(canvas, paint);
             }
         } catch (Exception e) {
 
@@ -79,14 +73,15 @@ public class ChoosePictureView extends SurfaceView implements SurfaceHolder.Call
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        buttonStart.onTouchEvent(event, 7);
-        buttonStart2.onTouchEvent(event, 8);
+        buttonCreateRoom.onTouchEvent(event, 9);
+        buttonJoinRoom.onTouchEvent(event, 10);
+        buttonBack.onTouchEvent(event, 11);
         return true;
     }
 
     @Override
     public void run() {
-        while(flag) {
+        while (flag) {
             long start = System.currentTimeMillis();
             draw();
             long end = System.currentTimeMillis();
