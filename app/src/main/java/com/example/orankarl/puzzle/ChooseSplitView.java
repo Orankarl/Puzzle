@@ -61,8 +61,8 @@ public class ChooseSplitView extends SurfaceView implements SurfaceHolder.Callba
         Bitmap bmpButtonSplit2 = Scale(bmpButtonSplit2_origin);
         Bitmap bmpButtonSplit2Pressed = Scale(bmpButtonSplit2Pressed_origin);
 
-        Bitmap bmpButtonBack = BitmapFactory.decodeResource(resources, R.drawable.button_start);
-        Bitmap bmpButtonBackPressed = BitmapFactory.decodeResource(resources, R.drawable.button_start_pressed);
+        Bitmap bmpButtonBack = BitmapFactory.decodeResource(resources, R.drawable.button_back);
+        Bitmap bmpButtonBackPressed = BitmapFactory.decodeResource(resources, R.drawable.button_back_pressed);
         int posX = MainSurfaceView.screenW / 4 - bmpButtonSplit1.getWidth() / 2;
         int posY = MainSurfaceView.screenH / 3 - bmpButtonSplit1.getHeight() / 2;
         buttonSplit1 = new MenuButton(context, bmpButtonSplit1, bmpButtonSplit1Pressed, posX, posY);

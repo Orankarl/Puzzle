@@ -6,7 +6,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -37,14 +36,14 @@ public class MainSurfaceView2 extends SurfaceView implements SurfaceHolder.Callb
     }
 
     private void init() {
-        Bitmap bmpButtonSingle = BitmapFactory.decodeResource(resources, R.drawable.button_start);
-        Bitmap bmpButtonSinglePressed = BitmapFactory.decodeResource(resources, R.drawable.button_start_pressed);
-        Bitmap bmpButtonMulti = BitmapFactory.decodeResource(resources, R.drawable.button_start2);
-        Bitmap bmpButtonMultiPressed = BitmapFactory.decodeResource(resources, R.drawable.button_start2_pressed);
-        Bitmap bmpButtonRank = BitmapFactory.decodeResource(resources, R.drawable.button_start);
-        Bitmap bmpButtonRankPressed = BitmapFactory.decodeResource(resources, R.drawable.button_start_pressed);
-        Bitmap bmpButtonLogout = BitmapFactory.decodeResource(resources, R.drawable.button_start);
-        Bitmap bmpButtonLogoutPressed = BitmapFactory.decodeResource(resources, R.drawable.button_start_pressed);
+        Bitmap bmpButtonSingle = BitmapFactory.decodeResource(resources, R.drawable.button_singlestart);
+        Bitmap bmpButtonSinglePressed = BitmapFactory.decodeResource(resources, R.drawable.button_singlestart_pressed);
+        Bitmap bmpButtonMulti = BitmapFactory.decodeResource(resources, R.drawable.button_multistart);
+        Bitmap bmpButtonMultiPressed = BitmapFactory.decodeResource(resources, R.drawable.button_multistart_pressed);
+        Bitmap bmpButtonRank = BitmapFactory.decodeResource(resources, R.drawable.button_rank);
+        Bitmap bmpButtonRankPressed = BitmapFactory.decodeResource(resources, R.drawable.button_rank_pressed);
+        Bitmap bmpButtonLogout = BitmapFactory.decodeResource(resources, R.drawable.button_logout);
+        Bitmap bmpButtonLogoutPressed = BitmapFactory.decodeResource(resources, R.drawable.button_logout_pressed);
         int posX = MainSurfaceView.screenW / 2 - bmpButtonSingle.getWidth() / 2;
         int posY = MainSurfaceView.screenH / 5 - bmpButtonSingle.getHeight() / 2;
         buttonSingle = new MenuButton(context, bmpButtonSingle, bmpButtonSinglePressed, posX, posY);

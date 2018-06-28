@@ -6,7 +6,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -37,12 +36,12 @@ public class RoomView extends SurfaceView implements SurfaceHolder.Callback, Run
     }
 
     private void init() {
-        Bitmap bmpButtonCreateRoom = BitmapFactory.decodeResource(resources, R.drawable.button_start);
-        Bitmap bmpButtonCreateRoomPressed = BitmapFactory.decodeResource(resources, R.drawable.button_start_pressed);
-        Bitmap bmpButtonJoinRoom = BitmapFactory.decodeResource(resources, R.drawable.button_start);
-        Bitmap bmpButtonJoinRoomPressed = BitmapFactory.decodeResource(resources, R.drawable.button_start_pressed);
-        Bitmap bmpButtonBack = BitmapFactory.decodeResource(resources, R.drawable.button_start);
-        Bitmap bmpButtonBackPressed = BitmapFactory.decodeResource(resources, R.drawable.button_start_pressed);
+        Bitmap bmpButtonCreateRoom = BitmapFactory.decodeResource(resources, R.drawable.button_createroom);
+        Bitmap bmpButtonCreateRoomPressed = BitmapFactory.decodeResource(resources, R.drawable.button_createroom_pressed);
+        Bitmap bmpButtonJoinRoom = BitmapFactory.decodeResource(resources, R.drawable.button_joinroom);
+        Bitmap bmpButtonJoinRoomPressed = BitmapFactory.decodeResource(resources, R.drawable.button_joinroom_pressed);
+        Bitmap bmpButtonBack = BitmapFactory.decodeResource(resources, R.drawable.button_back);
+        Bitmap bmpButtonBackPressed = BitmapFactory.decodeResource(resources, R.drawable.button_back_pressed);
         int posX = MainSurfaceView.screenW / 2 - bmpButtonCreateRoom.getWidth() / 2;
         int posY = MainSurfaceView.screenH / 3 - bmpButtonCreateRoom.getHeight() / 2;
         buttonCreateRoom = new MenuButton(context, bmpButtonCreateRoom, bmpButtonCreateRoomPressed, posX, posY);

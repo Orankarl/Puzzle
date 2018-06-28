@@ -61,8 +61,8 @@ public class ChoosePatternView extends SurfaceView implements SurfaceHolder.Call
         Bitmap bmpButtonPattern2 = Scale(bmpButtonPattern2_origin);
         Bitmap bmpButtonPattern2Pressed = Scale(bmpButtonPattern2Pressed_origin);
 
-        Bitmap bmpButtonBack = BitmapFactory.decodeResource(resources, R.drawable.button_start);
-        Bitmap bmpButtonBackPressed = BitmapFactory.decodeResource(resources, R.drawable.button_start_pressed);
+        Bitmap bmpButtonBack = BitmapFactory.decodeResource(resources, R.drawable.button_back);
+        Bitmap bmpButtonBackPressed = BitmapFactory.decodeResource(resources, R.drawable.button_back_pressed);
         int posX = MainSurfaceView.screenW / 4 - bmpButtonPattern1.getWidth() / 2;
         int posY = MainSurfaceView.screenH / 3 - bmpButtonPattern1.getHeight() / 2;
         buttonPattern1 = new MenuButton(context, bmpButtonPattern1, bmpButtonPattern1Pressed, posX, posY);

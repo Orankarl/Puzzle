@@ -6,13 +6,10 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-
-import java.util.ArrayList;
 
 import static com.example.orankarl.puzzle.MainActivity.RATIO;
 import static com.example.orankarl.puzzle.MainActivity.getTextWidth;
@@ -40,8 +37,8 @@ public class RankView extends SurfaceView implements SurfaceHolder.Callback, Run
     }
 
     private void init() {
-        Bitmap bmpButtonBack = BitmapFactory.decodeResource(resources, R.drawable.button_start);
-        Bitmap bmpButtonBackPressed = BitmapFactory.decodeResource(resources, R.drawable.button_start_pressed);
+        Bitmap bmpButtonBack = BitmapFactory.decodeResource(resources, R.drawable.button_back);
+        Bitmap bmpButtonBackPressed = BitmapFactory.decodeResource(resources, R.drawable.button_back_pressed);
 
         int posX = bmpButtonBack.getWidth() / 4;
         int posY = MainSurfaceView.screenH - bmpButtonBack.getHeight() * 5 / 4;

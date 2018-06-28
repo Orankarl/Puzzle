@@ -1,6 +1,5 @@
 package com.example.orankarl.puzzle;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -8,7 +7,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -39,8 +37,8 @@ public class LoginView extends SurfaceView implements SurfaceHolder.Callback, Ru
     }
 
     private void init() {
-        Bitmap loginButton = BitmapFactory.decodeResource(resources, R.drawable.button_login);
-        Bitmap loginButtonPressed = BitmapFactory.decodeResource(resources, R.drawable.button_login_pressed);
+        Bitmap loginButton = BitmapFactory.decodeResource(resources, R.drawable.button_mainlogin);
+        Bitmap loginButtonPressed = BitmapFactory.decodeResource(resources, R.drawable.button_mainlogin_pressed);
         int posX = LoginView.screenW * 2 / 3 - loginButton.getWidth() / 2;
         int posY = LoginView.screenH * 3 / 4 - loginButton.getHeight() / 2;
         buttonLogin = new MenuButton(context, loginButton, loginButtonPressed, posX, posY);

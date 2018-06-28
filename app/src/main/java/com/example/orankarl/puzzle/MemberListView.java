@@ -41,12 +41,12 @@ public class MemberListView extends SurfaceView implements SurfaceHolder.Callbac
     }
 
     private void init() {
-        Bitmap bmpExitButton = BitmapFactory.decodeResource(resources, R.drawable.button_choose);
-        Bitmap bmpExitButtonPressed = BitmapFactory.decodeResource(resources, R.drawable.button_choose_pressed);
-        Bitmap bmpCloseButton = BitmapFactory.decodeResource(resources, R.drawable.button_choose);
-        Bitmap bmpCloseButtonPressed = BitmapFactory.decodeResource(resources, R.drawable.button_choose_pressed);
-        Bitmap bmpStartButton = BitmapFactory.decodeResource(resources, R.drawable.button_choose);
-        Bitmap bmpStartButtonPressed = BitmapFactory.decodeResource(resources, R.drawable.button_choose_pressed);
+        Bitmap bmpExitButton = BitmapFactory.decodeResource(resources, R.drawable.button_exit);
+        Bitmap bmpExitButtonPressed = BitmapFactory.decodeResource(resources, R.drawable.button_exit_pressed);
+        Bitmap bmpCloseButton = BitmapFactory.decodeResource(resources, R.drawable.button_deleteroom);
+        Bitmap bmpCloseButtonPressed = BitmapFactory.decodeResource(resources, R.drawable.button_deleteroom_pressed);
+        Bitmap bmpStartButton = BitmapFactory.decodeResource(resources, R.drawable.button_start);
+        Bitmap bmpStartButtonPressed = BitmapFactory.decodeResource(resources, R.drawable.button_start_pressed);
         int posX = bmpExitButton.getWidth() / 4;
         int posY = MainSurfaceView.screenH - bmpExitButton.getHeight() * 5 / 4;
         buttonExit = new MenuButton(context, bmpExitButton, bmpExitButtonPressed, posX, posY);

@@ -6,7 +6,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -40,8 +39,8 @@ public class RoomListView extends SurfaceView implements SurfaceHolder.Callback,
     }
 
     private void init() {
-        Bitmap bmpBackButton = BitmapFactory.decodeResource(resources, R.drawable.button_choose);
-        Bitmap bmpBackButtonPressed = BitmapFactory.decodeResource(resources, R.drawable.button_choose_pressed);
+        Bitmap bmpBackButton = BitmapFactory.decodeResource(resources, R.drawable.button_back);
+        Bitmap bmpBackButtonPressed = BitmapFactory.decodeResource(resources, R.drawable.button_back_pressed);
         int posX = bmpBackButton.getWidth() / 4;
         int posY = MainSurfaceView.screenH - bmpBackButton.getHeight() * 5 / 4;
         buttonBack = new MenuButton(context, bmpBackButton, bmpBackButtonPressed, posX, posY);

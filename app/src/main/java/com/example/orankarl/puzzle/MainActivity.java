@@ -105,6 +105,7 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case 7:
                 setContentView(new RoomView(this));
+                viewState = 3;
                 break;
             case 8:
                 if (!isHost) {
