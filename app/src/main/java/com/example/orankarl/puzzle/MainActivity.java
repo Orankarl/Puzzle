@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
 
     public static double RATIO;
     public static int viewState;    //MainSurfaceView: 0, LoginView: 1, MainSurfaceView2: 2, RoomView: 3, ChoosePictureView: 4, ChoosePatternView: 5, ChooseSplitView: 6,
-                                      //RoomListView: 7, MemberListView: 8, RankView: 9
+                                      //RoomListView: 7, MemberListView: 8, RankView: 9, RegisterView: 10
     public static boolean isOnline;
     public static boolean isSingle;
     public static int split;
@@ -48,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
 
     SurfaceViewEditText editText_username;
     SurfaceViewEditText editText_password;
+    SurfaceViewEditText editText_nickname;
 
     public static Bitmap puzzleBitmap;
 
@@ -115,6 +116,9 @@ public class MainActivity extends AppCompatActivity {
             case 9:
                 setContentView(new ChooseSplitView(this));
                 viewState = 6;
+                break;
+            case 10:
+                onLogButtonPressed();
                 break;
         }
     }
@@ -248,9 +252,46 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    public void onOpenRegisterViewButtonPressed() {
+        setContentView(new RegisterView(this));
+        viewState = 10;
+
+        Point size = new Point();
+        getWindowManager().getDefaultDisplay().getSize(size);
+
+        editText_username = new SurfaceViewEditText(this);
+        FrameLayout.LayoutParams username_params = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
+        editText_username.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+        editText_username.setHint("3-20位用户名");
+        editText_username.setPadding(editText_username.getPaddingLeft(),0,editText_username.getPaddingRight(),editText_username.getPaddingBottom());
+        username_params.leftMargin = size.x / 2;
+        username_params.topMargin = size.y * 2 / 7;
+        addContentView(editText_username, username_params);
+
+        editText_password = new SurfaceViewEditText(this);
+        FrameLayout.LayoutParams password_params = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
+        editText_password.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        editText_password.setHint("请输入密码");
+        editText_password.setTransformationMethod(PasswordTransformationMethod.getInstance());
+        editText_password.setPadding(editText_password.getPaddingLeft(),0,editText_password.getPaddingRight(),editText_password.getPaddingBottom());
+        password_params.topMargin = size.y * 3 / 7;
+        password_params.leftMargin = size.x / 2;;
+        addContentView(editText_password, password_params);
+
+        editText_nickname = new SurfaceViewEditText(this);
+        FrameLayout.LayoutParams nickname_params = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
+        editText_nickname.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+        editText_nickname.setHint("输入你的昵称");
+        editText_nickname.setPadding(editText_password.getPaddingLeft(),0,editText_password.getPaddingRight(),editText_password.getPaddingBottom());
+        nickname_params.topMargin = size.y * 4 / 7;
+        nickname_params.leftMargin = size.x / 2;
+        addContentView(editText_nickname, nickname_params);
+    }
+
     public void onRegisterButtonPressed() {
         String username = editText_username.getText().toString();
         String password = editText_password.getText().toString();
+        String nickname = editText_nickname.getText().toString();
 
         final Toast t = Toast.makeText(this, "", Toast.LENGTH_SHORT);
         api.register(username, password, loginRes -> {
@@ -261,6 +302,7 @@ public class MainActivity extends AppCompatActivity {
             }
             t.setText("Register Success!" + '\n' + "Username is " + username + '\n' + "Password is " + password);
             t.show();
+            onBackPressed();
         });
     }
 
@@ -303,8 +345,7 @@ public class MainActivity extends AppCompatActivity {
     public void onChooseSplitButton1Pressed() {
         split = 1;
         if (isRank) {
-            setContentView(new RankView(this));
-            viewState = 9;
+            getRank();
         }
         else if (isSingle) {
             gameStart();
@@ -317,8 +358,7 @@ public class MainActivity extends AppCompatActivity {
     public void onChooseSplitButton2Pressed() {
         split = 2;
         if (isRank) {
-            setContentView(new RankView(this));
-            viewState = 9;
+            getRank();
         }
         else if (isSingle) {
             gameStart();
@@ -326,6 +366,26 @@ public class MainActivity extends AppCompatActivity {
         else {
             comeInRoom();
         }
+    }
+
+    private void getRank() {
+        RankView rankView = new RankView(this);
+        final Toast t = Toast.makeText(this, "", Toast.LENGTH_SHORT);
+        api.rank(myToken, pattern, rankResponse -> {
+            if (rankResponse.status == -1) {
+                t.setText("Get Rank Board Failed!");
+                t.show();
+                return;
+            }
+            int count = 0;
+            for (Api.RankResponseEntry i : rankResponse.rank) {
+                rankView.rank_id[count] = i.nickname;
+                rankView.time[count] = i.time;
+                count++;
+            }
+            setContentView(rankView);
+            viewState = 9;
+        });
     }
 
     private void comeInRoom() {

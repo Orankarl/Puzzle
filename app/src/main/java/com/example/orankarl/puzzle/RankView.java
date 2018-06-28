@@ -26,6 +26,9 @@ public class RankView extends SurfaceView implements SurfaceHolder.Callback, Run
     MenuButton buttonBack;
     boolean flag = true;
 
+    public String[] rank_id;
+    public int[] time;
+
     public RankView(Context context) {
         super(context);
         this.context = context;
@@ -34,6 +37,12 @@ public class RankView extends SurfaceView implements SurfaceHolder.Callback, Run
         paint = new Paint();
         paint.setAntiAlias(true);
         setFocusable(true);
+        time = new int[10];
+        rank_id = new String[10];
+        for (int i = 0; i < 10; i++) {
+            time[i] = 0;
+            rank_id[i] = "";
+        }
     }
 
     private void init() {
@@ -62,14 +71,10 @@ public class RankView extends SurfaceView implements SurfaceHolder.Callback, Run
                 TEXT_SIZE = (int)Math.round(60 * RATIO);
                 textPaint.setTextSize(TEXT_SIZE);
 
-                String[] rank_id = new String[10];
-
-                int[] time = new int[10];
                 int[] minute = new int[10];
                 int[] second = new int[10];
 
                 for (int i = 0; i < 10; i++) {
-                    time[i] = 100;
                     minute[i] = time[i] / 60;
                     second[i] = time[i] % 60;
                 }
@@ -77,16 +82,18 @@ public class RankView extends SurfaceView implements SurfaceHolder.Callback, Run
                 String[] final_time = new String[10];
                 for (int i = 0; i < 10; i++) {
                     final_time[i] = "" + minute[i] + ":" + second[i];
+                    if (second[i] == 0)
+                        final_time[i] += 0;
                 }
 
-                for (int i = 0; i < 10; i++) {
-                    rank_id[i] = "诚神李冠诚";
-                }
                 for (int i = 0; i < 10; i++) {
                     String num = "" + (i + 1);
                     canvas.drawText(num, screenW / 6 - getTextWidth(textPaint, num) / 2, screenH * (i + 3) / 15 + textPaint.getTextSize() , textPaint);
                     canvas.drawText(rank_id[i], screenW / 3, screenH * (i + 3) / 15 + textPaint.getTextSize() , textPaint);
-                    canvas.drawText(final_time[i], screenW * 3 / 4, screenH * (i + 3) / 15 + textPaint.getTextSize() , textPaint);
+                    if (minute[i] == 0 && second[i] == 0)
+                        canvas.drawText("-:--", screenW * 3 / 4, screenH * (i + 3) / 15 + textPaint.getTextSize() , textPaint);
+                    else
+                        canvas.drawText(final_time[i], screenW * 3 / 4, screenH * (i + 3) / 15 + textPaint.getTextSize() , textPaint);
                 }
 
                 buttonBack.draw(canvas, paint);

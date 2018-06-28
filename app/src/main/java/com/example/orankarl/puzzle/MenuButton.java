@@ -90,7 +90,7 @@ public class MenuButton {
                             activity.onLoginButtonPressed();
                             break;
                         case 4:    //Login 注册
-                            activity.onRegisterButtonPressed();
+                            activity.onOpenRegisterViewButtonPressed();
                             break;
                         case 5:    //MainSurface2 开始（多人）
                             activity.onMultiButtonPressed();
@@ -145,6 +145,9 @@ public class MenuButton {
                             break;
                         case 22:    // MemberList 开始
                             activity.gameStart();
+                            break;
+                        case 23:    // Register 注册
+                            activity.onRegisterButtonPressed();
                             break;
                     }
                 }
