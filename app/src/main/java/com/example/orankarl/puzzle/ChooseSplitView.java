@@ -12,6 +12,9 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
+import static com.example.orankarl.puzzle.MainActivity.RATIO;
+import static com.example.orankarl.puzzle.MainActivity.getTextWidth;
+
 public class ChooseSplitView extends SurfaceView implements SurfaceHolder.Callback, Runnable {
     private Context context;
     private SurfaceHolder holder;
@@ -48,10 +51,10 @@ public class ChooseSplitView extends SurfaceView implements SurfaceHolder.Callba
     }
 
     private void init() {
-        Bitmap bmpButtonSplit1_origin = BitmapFactory.decodeResource(resources, R.drawable.pattern);
-        Bitmap bmpButtonSplit1Pressed_origin = BitmapFactory.decodeResource(resources, R.drawable.pattern);
-        Bitmap bmpButtonSplit2_origin = BitmapFactory.decodeResource(resources, R.drawable.pattern);
-        Bitmap bmpButtonSplit2Pressed_origin = BitmapFactory.decodeResource(resources, R.drawable.pattern);
+        Bitmap bmpButtonSplit1_origin = BitmapFactory.decodeResource(resources, R.drawable.pattern1);
+        Bitmap bmpButtonSplit1Pressed_origin = BitmapFactory.decodeResource(resources, R.drawable.pattern1);
+        Bitmap bmpButtonSplit2_origin = BitmapFactory.decodeResource(resources, R.drawable.pattern2);
+        Bitmap bmpButtonSplit2Pressed_origin = BitmapFactory.decodeResource(resources, R.drawable.pattern2);
 
         Bitmap bmpButtonSplit1 = Scale(bmpButtonSplit1_origin);
         Bitmap bmpButtonSplit1Pressed = Scale(bmpButtonSplit1Pressed_origin);
@@ -80,6 +83,14 @@ public class ChooseSplitView extends SurfaceView implements SurfaceHolder.Callba
                 buttonSplit1.draw(canvas, paint);
                 buttonSplit2.draw(canvas, paint);
                 buttonBack.draw(canvas, paint);
+
+                int TEXT_SIZE = (int)Math.round(100 * RATIO);
+                Paint textPaint = new Paint();
+                textPaint.setColor(Color.BLACK);
+                textPaint.setTextSize(TEXT_SIZE);
+
+                String title = "选择拼图分割模式";
+                canvas.drawText(title, screenW / 2 - getTextWidth(textPaint, title) / 2, screenH * 2 / 3 + textPaint.getTextSize() , textPaint);
             }
         } catch (Exception e) {
 

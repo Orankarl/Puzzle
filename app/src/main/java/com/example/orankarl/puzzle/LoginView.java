@@ -13,6 +13,9 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
+import static com.example.orankarl.puzzle.MainActivity.RATIO;
+import static com.example.orankarl.puzzle.MainActivity.getTextWidth;
+
 public class LoginView extends SurfaceView implements SurfaceHolder.Callback, Runnable{
     private Context context;
     private SurfaceHolder holder;
@@ -56,18 +59,6 @@ public class LoginView extends SurfaceView implements SurfaceHolder.Callback, Ru
                 buttonLogin.draw(canvas, paint);
                 buttonRegister.draw(canvas, paint);
 
-                float ratioWidth = (float)screenW / 1080;
-                float ratioHeight = (float)screenH / 1812;
-                double RATIO = Math.min(ratioWidth, ratioHeight);
-                if (ratioWidth != ratioHeight) {
-                    if (RATIO == ratioWidth) {
-                        double OFFSET_LEFT = 0;
-                        double OFFSET_TOP = Math.round((screenH - 1812 * RATIO) / 2);
-                    }else {
-                        double OFFSET_LEFT = Math.round((screenW - 1080 * RATIO) / 2);
-                        double OFFSET_TOP = 0;
-                    }
-                }
                 int TEXT_SIZE = (int)Math.round(80 * RATIO);
                 Paint textPaint = new Paint();
                 textPaint.setColor(Color.BLACK);
@@ -82,19 +73,6 @@ public class LoginView extends SurfaceView implements SurfaceHolder.Callback, Ru
         } finally {
             if (canvas != null) holder.unlockCanvasAndPost(canvas);
         }
-    }
-
-    public static int getTextWidth(Paint paint, String str) {
-        int iRet = 0;
-        if (str != null && str.length() > 0) {
-            int len = str.length();
-            float[] widths = new float[len];
-            paint.getTextWidths(str, widths);
-            for (int j = 0; j < len; j++) {
-                iRet += (int) Math.ceil(widths[j]);
-            }
-        }
-        return iRet;
     }
 
     @Override

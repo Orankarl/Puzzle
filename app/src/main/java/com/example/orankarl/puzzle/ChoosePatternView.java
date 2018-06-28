@@ -12,6 +12,9 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
+import static com.example.orankarl.puzzle.MainActivity.RATIO;
+import static com.example.orankarl.puzzle.MainActivity.getTextWidth;
+
 public class ChoosePatternView extends SurfaceView implements SurfaceHolder.Callback, Runnable {
     private Context context;
     private SurfaceHolder holder;
@@ -48,10 +51,10 @@ public class ChoosePatternView extends SurfaceView implements SurfaceHolder.Call
     }
 
     private void init() {
-        Bitmap bmpButtonPattern1_origin = BitmapFactory.decodeResource(resources, R.drawable.pattern);
-        Bitmap bmpButtonPattern1Pressed_origin = BitmapFactory.decodeResource(resources, R.drawable.pattern);
-        Bitmap bmpButtonPattern2_origin = BitmapFactory.decodeResource(resources, R.drawable.pattern);
-        Bitmap bmpButtonPattern2Pressed_origin = BitmapFactory.decodeResource(resources, R.drawable.pattern);
+        Bitmap bmpButtonPattern1_origin = BitmapFactory.decodeResource(resources, R.drawable.pattern1);
+        Bitmap bmpButtonPattern1Pressed_origin = BitmapFactory.decodeResource(resources, R.drawable.pattern1);
+        Bitmap bmpButtonPattern2_origin = BitmapFactory.decodeResource(resources, R.drawable.pattern2);
+        Bitmap bmpButtonPattern2Pressed_origin = BitmapFactory.decodeResource(resources, R.drawable.pattern2);
 
         Bitmap bmpButtonPattern1 = Scale(bmpButtonPattern1_origin);
         Bitmap bmpButtonPattern1Pressed = Scale(bmpButtonPattern1Pressed_origin);
@@ -80,6 +83,14 @@ public class ChoosePatternView extends SurfaceView implements SurfaceHolder.Call
                 buttonPattern1.draw(canvas, paint);
                 buttonPattern2.draw(canvas, paint);
                 buttonBack.draw(canvas, paint);
+
+                int TEXT_SIZE = (int)Math.round(100 * RATIO);
+                Paint textPaint = new Paint();
+                textPaint.setColor(Color.BLACK);
+                textPaint.setTextSize(TEXT_SIZE);
+
+                String title = "选择拼图样式";
+                canvas.drawText(title, screenW / 2 - getTextWidth(textPaint, title) / 2, screenH * 2 / 3 + textPaint.getTextSize() , textPaint);
             }
         } catch (Exception e) {
 

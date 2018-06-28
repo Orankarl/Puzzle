@@ -7,8 +7,6 @@ import android.graphics.Paint;
 import android.util.Log;
 import android.view.MotionEvent;
 
-import static com.example.orankarl.puzzle.MainSurfaceView.*;
-
 /*
     A menu button designed for being represented in Custom SurfaceView
     1. Change image when being pressed
@@ -80,14 +78,12 @@ public class MenuButton {
                     //activity.onButtonPressed();
                     switch (whichClick) {
                         case 0:    //MainSurface 开始（单人） & MainSurface2 开始（单人）
-                            isSingle = true;
-                            activity.onBeginButtonPressed();
+                            activity.onSingleBeginButtonPressed();
                             break;
                         case 1:    //MainSurface 登录
                             activity.onLogButtonPressed();
                             break;
                         case 2:    //MainSurface 排行榜 & MainSurface2 排行榜
-                            isRank = true;
                             activity.onRankButtonPressed();
                             break;
                         case 3:    //Login 登录
@@ -97,7 +93,6 @@ public class MenuButton {
                             activity.onRegisterButtonPressed();
                             break;
                         case 5:    //MainSurface2 开始（多人）
-                            isSingle = false;
                             activity.onMultiButtonPressed();
                             break;
                         case 6:    //MainSurface2 注销
@@ -107,72 +102,49 @@ public class MenuButton {
                             activity.onChoosePictureButtonPressed();
                             break;
                         case 8:    //ChoosePicture 确定，下一步
-                            isRank = false;
-                            activity.onChoosePatternPressed();
+                            activity.onChoosePictureConfirmButtonPressed();
                             break;
                         case 9:    //Room 创建房间
-                            activity.onCreateRoomPressed();
+                            activity.onCreateRoomButtonPressed();
                             break;
                         case 10:    //Room 加入房间
-                            //activity.onJoinRoomPressed();
+                            activity.onJoinRoomButtonPressed();
                             break;
                         case 11:    //Room 返回
-                            activity.backToMainSurfaceView2();
+                            activity.onBackPressed();
                             break;
                         case 12:    //ChoosePattern 样式1
-                            pattern = 1;
-                            activity.onChooseSplitPressed();
+                            activity.onChoosePatternButton1Pressed();
                             break;
                         case 13:    //ChoosePattern 样式2
-                            pattern = 2;
-                            activity.onChooseSplitPressed();
+                            activity.onChoosePatternButton2Pressed();
                             break;
                         case 14:    //ChoosePattern 返回
-                            if (!isOnline){
-                                activity.backToMainSurfaceView();
-                                break;
-                            }
-                            else if (isRank || isSingle) {
-                                activity.backToMainSurfaceView2();
-                                break;
-                            }
-                            else {
-                                activity.backToRoomView();
-                                break;
-                            }
+                            activity.onBackPressed();
+                            break;
                         case 15:    //ChooseSplit 分割1
-                            split = 1;
-                            if (isRank){
-                                activity.showRank();
-                                break;
-                            }
-                            else if (isSingle){
-                                activity.gameStart();
-                                break;
-                            }
-                            else {
-                                //activity.hostInRoom();
-                                break;
-                            }
+                            activity.onChooseSplitButton1Pressed();
+                            break;
                         case 16:    //ChooseSplit 分割2
-                            split = 2;
-                            if (isRank){
-                                activity.showRank();
-                                break;
-                            }
-                            else if (isSingle){
-                                activity.gameStart();
-                                break;
-                            }
-                            else {
-                                //activity.hostInRoom();
-                                break;
-                            }
+                            activity.onChooseSplitButton2Pressed();
+                            break;
                         case 17:    //ChooseSplit 返回
-                            activity.backToChoosePatternView();
+                            activity.onBackPressed();
                             break;
                         case 18:    //Rank 返回
-                            activity.backToChooseSplitView();
+                            activity.onBackPressed();
+                            break;
+                        case 19:    // RoomList 返回
+                            activity.onBackPressed();
+                            break;
+                        case 20:    // MemberList 退出
+                            activity.onBackPressed();
+                            break;
+                        case 21:    // MemberList 解散
+                            activity.onDeleteRoomButtonPressed();
+                            break;
+                        case 22:    // MemberList 开始
+                            activity.gameStart();
                             break;
                     }
                 }

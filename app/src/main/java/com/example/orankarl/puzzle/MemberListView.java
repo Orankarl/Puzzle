@@ -6,30 +6,31 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
-import java.util.ArrayList;
-
 import static com.example.orankarl.puzzle.MainActivity.RATIO;
 import static com.example.orankarl.puzzle.MainActivity.getTextWidth;
 
-public class RankView extends SurfaceView implements SurfaceHolder.Callback, Runnable {
+public class MemberListView extends SurfaceView implements SurfaceHolder.Callback, Runnable{
     private Context context;
     private SurfaceHolder holder;
     private Paint paint;
     private Thread thread;
     private Canvas canvas;
 
+    public Bitmap origin_bitmap = null;
+    public Bitmap bitmap = null;
+
     public static int screenW, screenH;
     private Resources resources = this.getResources();
-    MenuButton buttonBack;
+    MenuButton buttonExit;
+    MenuButton buttonClose;
+    MenuButton buttonStart;
     boolean flag = true;
-
-    public RankView(Context context) {
+    public MemberListView(Context context) {
         super(context);
         this.context = context;
         holder = this.getHolder();
@@ -40,12 +41,19 @@ public class RankView extends SurfaceView implements SurfaceHolder.Callback, Run
     }
 
     private void init() {
-        Bitmap bmpButtonBack = BitmapFactory.decodeResource(resources, R.drawable.button_start);
-        Bitmap bmpButtonBackPressed = BitmapFactory.decodeResource(resources, R.drawable.button_start_pressed);
-
-        int posX = bmpButtonBack.getWidth() / 4;
-        int posY = MainSurfaceView.screenH - bmpButtonBack.getHeight() * 5 / 4;
-        buttonBack = new MenuButton(context, bmpButtonBack, bmpButtonBackPressed, posX, posY);
+        Bitmap bmpExitButton = BitmapFactory.decodeResource(resources, R.drawable.button_choose);
+        Bitmap bmpExitButtonPressed = BitmapFactory.decodeResource(resources, R.drawable.button_choose_pressed);
+        Bitmap bmpCloseButton = BitmapFactory.decodeResource(resources, R.drawable.button_choose);
+        Bitmap bmpCloseButtonPressed = BitmapFactory.decodeResource(resources, R.drawable.button_choose_pressed);
+        Bitmap bmpStartButton = BitmapFactory.decodeResource(resources, R.drawable.button_choose);
+        Bitmap bmpStartButtonPressed = BitmapFactory.decodeResource(resources, R.drawable.button_choose_pressed);
+        int posX = bmpExitButton.getWidth() / 4;
+        int posY = MainSurfaceView.screenH - bmpExitButton.getHeight() * 5 / 4;
+        buttonExit = new MenuButton(context, bmpExitButton, bmpExitButtonPressed, posX, posY);
+        buttonClose = new MenuButton(context, bmpCloseButton, bmpCloseButtonPressed, posX, posY);
+        posX = MainSurfaceView.screenW / 2 - bmpStartButton.getWidth() / 2;
+        posY = MainSurfaceView.screenH * 3 / 4 - bmpCloseButton.getHeight() / 2;
+        buttonStart = new MenuButton(context, bmpStartButton, bmpStartButtonPressed, posX, posY);
     }
 
     public void draw() {
@@ -59,40 +67,16 @@ public class RankView extends SurfaceView implements SurfaceHolder.Callback, Run
                 textPaint.setColor(Color.BLACK);
                 textPaint.setTextSize(TEXT_SIZE);
 
-                String title = "排行榜";
+                String title = "成员列表";
                 canvas.drawText(title, screenW / 2 - getTextWidth(textPaint, title) / 2, screenH / 15 + textPaint.getTextSize() , textPaint);
 
-                TEXT_SIZE = (int)Math.round(60 * RATIO);
-                textPaint.setTextSize(TEXT_SIZE);
-
-                String[] rank_id = new String[10];
-
-                int[] time = new int[10];
-                int[] minute = new int[10];
-                int[] second = new int[10];
-
-                for (int i = 0; i < 10; i++) {
-                    time[i] = 100;
-                    minute[i] = time[i] / 60;
-                    second[i] = time[i] % 60;
+                if (MainActivity.isHost) {
+                    buttonClose.draw(canvas, paint);
+                    buttonStart.draw(canvas, paint);
                 }
-
-                String[] final_time = new String[10];
-                for (int i = 0; i < 10; i++) {
-                    final_time[i] = "" + minute[i] + ":" + second[i];
+                else {
+                    buttonExit.draw(canvas, paint);
                 }
-
-                for (int i = 0; i < 10; i++) {
-                    rank_id[i] = "诚神李冠诚";
-                }
-                for (int i = 0; i < 10; i++) {
-                    String num = "" + (i + 1);
-                    canvas.drawText(num, screenW / 6 - getTextWidth(textPaint, num) / 2, screenH * (i + 3) / 15 + textPaint.getTextSize() , textPaint);
-                    canvas.drawText(rank_id[i], screenW / 3, screenH * (i + 3) / 15 + textPaint.getTextSize() , textPaint);
-                    canvas.drawText(final_time[i], screenW * 3 / 4, screenH * (i + 3) / 15 + textPaint.getTextSize() , textPaint);
-                }
-
-                buttonBack.draw(canvas, paint);
             }
         } catch (Exception e) {
 
@@ -103,13 +87,19 @@ public class RankView extends SurfaceView implements SurfaceHolder.Callback, Run
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        buttonBack.onTouchEvent(event, 18);
+        if (MainActivity.isHost) {
+            buttonClose.onTouchEvent(event, 21);
+            buttonStart.onTouchEvent(event, 22);
+        }
+        else {
+            buttonExit.onTouchEvent(event, 20);
+        }
         return true;
     }
 
     @Override
     public void run() {
-        while (flag) {
+        while(flag) {
             long start = System.currentTimeMillis();
             draw();
             long end = System.currentTimeMillis();

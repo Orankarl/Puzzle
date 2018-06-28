@@ -12,24 +12,24 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
-import java.util.ArrayList;
-
 import static com.example.orankarl.puzzle.MainActivity.RATIO;
 import static com.example.orankarl.puzzle.MainActivity.getTextWidth;
 
-public class RankView extends SurfaceView implements SurfaceHolder.Callback, Runnable {
+public class RoomListView extends SurfaceView implements SurfaceHolder.Callback, Runnable{
     private Context context;
     private SurfaceHolder holder;
     private Paint paint;
     private Thread thread;
     private Canvas canvas;
 
+    public Bitmap origin_bitmap = null;
+    public Bitmap bitmap = null;
+
     public static int screenW, screenH;
     private Resources resources = this.getResources();
     MenuButton buttonBack;
     boolean flag = true;
-
-    public RankView(Context context) {
+    public RoomListView(Context context) {
         super(context);
         this.context = context;
         holder = this.getHolder();
@@ -40,12 +40,11 @@ public class RankView extends SurfaceView implements SurfaceHolder.Callback, Run
     }
 
     private void init() {
-        Bitmap bmpButtonBack = BitmapFactory.decodeResource(resources, R.drawable.button_start);
-        Bitmap bmpButtonBackPressed = BitmapFactory.decodeResource(resources, R.drawable.button_start_pressed);
-
-        int posX = bmpButtonBack.getWidth() / 4;
-        int posY = MainSurfaceView.screenH - bmpButtonBack.getHeight() * 5 / 4;
-        buttonBack = new MenuButton(context, bmpButtonBack, bmpButtonBackPressed, posX, posY);
+        Bitmap bmpBackButton = BitmapFactory.decodeResource(resources, R.drawable.button_choose);
+        Bitmap bmpBackButtonPressed = BitmapFactory.decodeResource(resources, R.drawable.button_choose_pressed);
+        int posX = bmpBackButton.getWidth() / 4;
+        int posY = MainSurfaceView.screenH - bmpBackButton.getHeight() * 5 / 4;
+        buttonBack = new MenuButton(context, bmpBackButton, bmpBackButtonPressed, posX, posY);
     }
 
     public void draw() {
@@ -59,38 +58,8 @@ public class RankView extends SurfaceView implements SurfaceHolder.Callback, Run
                 textPaint.setColor(Color.BLACK);
                 textPaint.setTextSize(TEXT_SIZE);
 
-                String title = "排行榜";
+                String title = "房间列表";
                 canvas.drawText(title, screenW / 2 - getTextWidth(textPaint, title) / 2, screenH / 15 + textPaint.getTextSize() , textPaint);
-
-                TEXT_SIZE = (int)Math.round(60 * RATIO);
-                textPaint.setTextSize(TEXT_SIZE);
-
-                String[] rank_id = new String[10];
-
-                int[] time = new int[10];
-                int[] minute = new int[10];
-                int[] second = new int[10];
-
-                for (int i = 0; i < 10; i++) {
-                    time[i] = 100;
-                    minute[i] = time[i] / 60;
-                    second[i] = time[i] % 60;
-                }
-
-                String[] final_time = new String[10];
-                for (int i = 0; i < 10; i++) {
-                    final_time[i] = "" + minute[i] + ":" + second[i];
-                }
-
-                for (int i = 0; i < 10; i++) {
-                    rank_id[i] = "诚神李冠诚";
-                }
-                for (int i = 0; i < 10; i++) {
-                    String num = "" + (i + 1);
-                    canvas.drawText(num, screenW / 6 - getTextWidth(textPaint, num) / 2, screenH * (i + 3) / 15 + textPaint.getTextSize() , textPaint);
-                    canvas.drawText(rank_id[i], screenW / 3, screenH * (i + 3) / 15 + textPaint.getTextSize() , textPaint);
-                    canvas.drawText(final_time[i], screenW * 3 / 4, screenH * (i + 3) / 15 + textPaint.getTextSize() , textPaint);
-                }
 
                 buttonBack.draw(canvas, paint);
             }
@@ -103,13 +72,13 @@ public class RankView extends SurfaceView implements SurfaceHolder.Callback, Run
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        buttonBack.onTouchEvent(event, 18);
+        buttonBack.onTouchEvent(event, 19);
         return true;
     }
 
     @Override
     public void run() {
-        while (flag) {
+        while(flag) {
             long start = System.currentTimeMillis();
             draw();
             long end = System.currentTimeMillis();

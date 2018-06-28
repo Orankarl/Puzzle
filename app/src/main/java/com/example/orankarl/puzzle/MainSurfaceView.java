@@ -26,12 +26,6 @@ public class MainSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     private Thread thread;
     private Canvas canvas;
 
-    public static boolean isOnline;
-    public static boolean isSingle;
-    public static int split;
-    public static int pattern;
-    public static boolean isRank;
-
     public static int screenW, screenH;
     private Resources resources = this.getResources();
     MenuButton buttonSingle;

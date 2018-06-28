@@ -38,6 +38,7 @@ public class ChoosePictureView extends SurfaceView implements SurfaceHolder.Call
     }
 
     private void init() {
+        origin_bitmap = MainActivity.puzzleBitmap;
         Bitmap bmpButton = BitmapFactory.decodeResource(resources, R.drawable.button_choose);
         Bitmap bmpButtonPressed = BitmapFactory.decodeResource(resources, R.drawable.button_choose_pressed);
         Bitmap bmpButton2 = BitmapFactory.decodeResource(resources, R.drawable.button_start2);
