@@ -176,11 +176,12 @@ public class Api {
     interface RegisterCallback {
         void onResponse(RegisterResponse response);
     }
-    public void register(String username, String password, final RegisterCallback cb)
+    public void register(String username, String nickname, String password, final RegisterCallback cb)
     {
         JSONObject data = new JSONObject();
         try {
             data.put("username", username);
+            data.put("nickname", nickname);
             data.put("password", sha256(password));
         } catch (JSONException e) {
             e.printStackTrace();
@@ -248,15 +249,12 @@ public class Api {
     interface RankCallback {
         void onResponse(RankResponse response);
     }
-    public void rank(String token, int pattern, RankCallback cb)
+    public void rank(int pattern, int split, RankCallback cb)
     {
         JSONObject data = new JSONObject();
-        try {
-            data.put("token", token);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        execute(new String[]{"rank", Integer.toString(pattern)}, "GET", data, response -> {
+        execute(
+                new String[]{"rank", Integer.toString(pattern), Integer.toString(split)},
+                "GET", data, response -> {
             cb.onResponse(new Gson().fromJson(response, RankResponse.class));
         });
     }
