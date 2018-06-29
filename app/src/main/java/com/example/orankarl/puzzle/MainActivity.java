@@ -152,22 +152,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onLogButtonPressed() {
-        Point size = new Point();
-        getWindowManager().getDefaultDisplay().getSize(size);
-
         editText_username = new SurfaceViewEditText(this);
 
         LoginView loginView = new LoginView(this);
-        loginView.TextSize = (int) editText_username.getTextSize();;
+        loginView.TextSize = (int) editText_username.getTextSize();
         setContentView(loginView);
         viewState = 1;
 
         FrameLayout.LayoutParams username_params = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
         editText_username.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
         editText_username.setHint("3-20位用户名");
+        editText_username.setMinWidth(screenW * 3 / 8);
         editText_username.setPadding(editText_username.getPaddingLeft(),0,editText_username.getPaddingRight(),editText_username.getPaddingBottom());
-        //username_params.leftMargin = size.x / 2;
-        //username_params.topMargin = size.y / 3;
         username_params.leftMargin = screenW / 2;
         username_params.topMargin = screenH / 3;
         addContentView(editText_username, username_params);
@@ -177,6 +173,7 @@ public class MainActivity extends AppCompatActivity {
         editText_password.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
         editText_password.setHint("请输入密码");
         editText_password.setTransformationMethod(PasswordTransformationMethod.getInstance());
+        editText_password.setMinWidth(screenW * 3 / 8);
         editText_password.setPadding(editText_password.getPaddingLeft(),0,editText_password.getPaddingRight(),editText_password.getPaddingBottom());
         password_params.topMargin = screenH / 2;
         password_params.leftMargin = screenW / 2;
@@ -269,6 +266,7 @@ public class MainActivity extends AppCompatActivity {
         FrameLayout.LayoutParams username_params = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
         editText_username.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
         editText_username.setHint("3-20位用户名");
+        editText_username.setMinWidth(screenW * 3 / 8);
         editText_username.setPadding(editText_username.getPaddingLeft(),0,editText_username.getPaddingRight(),editText_username.getPaddingBottom());
         username_params.leftMargin = screenW / 2;
         username_params.topMargin = screenH * 2 / 7;
@@ -279,6 +277,7 @@ public class MainActivity extends AppCompatActivity {
         editText_password.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
         editText_password.setHint("请输入密码");
         editText_password.setTransformationMethod(PasswordTransformationMethod.getInstance());
+        editText_password.setMinWidth(screenW * 3 / 8);
         editText_password.setPadding(editText_password.getPaddingLeft(),0,editText_password.getPaddingRight(),editText_password.getPaddingBottom());
         password_params.topMargin = screenH * 3 / 7;
         password_params.leftMargin = screenW / 2;
@@ -288,6 +287,7 @@ public class MainActivity extends AppCompatActivity {
         FrameLayout.LayoutParams nickname_params = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
         editText_nickname.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
         editText_nickname.setHint("输入你的昵称");
+        editText_nickname.setMinWidth(screenW * 3 / 8);
         editText_nickname.setPadding(editText_password.getPaddingLeft(),0,editText_password.getPaddingRight(),editText_password.getPaddingBottom());
         nickname_params.topMargin = screenH * 4 / 7;
         nickname_params.leftMargin = screenW / 2;
@@ -300,8 +300,7 @@ public class MainActivity extends AppCompatActivity {
         String nickname = editText_nickname.getText().toString();
 
         final Toast t = Toast.makeText(this, "", Toast.LENGTH_SHORT);
-        //api.register(username, password, nickname, regRes -> {
-        api.register(username, password, regRes -> {
+        api.register(username, password, nickname, regRes -> {
             if (regRes.status == -1) {
                 t.setText("Register Failed!");
                 t.show();
@@ -378,8 +377,7 @@ public class MainActivity extends AppCompatActivity {
     private void getRank() {
         RankView rankView = new RankView(this);
         final Toast t = Toast.makeText(this, "", Toast.LENGTH_SHORT);
-        //api.rank(pattern, split, rankResponse -> {
-        api.rank(myToken, pattern, rankResponse -> {
+        api.rank(pattern, split, rankResponse -> {
             if (rankResponse.status == -1) {
                 t.setText("Get Rank Board Failed!");
                 t.show();
