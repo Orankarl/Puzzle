@@ -75,7 +75,7 @@ public class LoginView extends SurfaceView implements SurfaceHolder.Callback, Ru
                 buttonRegister.draw(canvas, paint);
             }
         } catch (Exception e) {
-
+            e.printStackTrace();
         } finally {
             if (canvas != null) holder.unlockCanvasAndPost(canvas);
         }

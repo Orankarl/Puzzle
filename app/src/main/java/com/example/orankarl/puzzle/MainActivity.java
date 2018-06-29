@@ -17,10 +17,8 @@ import android.provider.BaseColumns;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
 import android.text.method.PasswordTransformationMethod;
-import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
 import android.widget.Toast;
@@ -145,7 +143,9 @@ public class MainActivity extends AppCompatActivity {
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
         try{
             db.execSQL("CREATE TABLE " + LocalDatabase.FeedEntry.TABLE_NAME + " (" + LocalDatabase.FeedEntry._ID + " INTEGER PRIMARY KEY," + LocalDatabase.FeedEntry.COLUMN_NAME_TITLE + " TEXT)");
-        }catch (Exception e){}
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     public void onLogButtonPressed() {
@@ -230,11 +230,6 @@ public class MainActivity extends AppCompatActivity {
                 return;
             }
 
-            api.rank(loginRes.token, 1,rank -> {
-                if (rank.status == 1)
-                    rank.status = 2;
-            });
-
             t.setText("Login Success!");
             t.show();
             setContentView(new MainSurfaceView2(this));
@@ -275,7 +270,7 @@ public class MainActivity extends AppCompatActivity {
         editText_password.setTransformationMethod(PasswordTransformationMethod.getInstance());
         editText_password.setPadding(editText_password.getPaddingLeft(),0,editText_password.getPaddingRight(),editText_password.getPaddingBottom());
         password_params.topMargin = size.y * 3 / 7;
-        password_params.leftMargin = size.x / 2;;
+        password_params.leftMargin = size.x / 2;
         addContentView(editText_password, password_params);
 
         editText_nickname = new SurfaceViewEditText(this);
@@ -294,8 +289,8 @@ public class MainActivity extends AppCompatActivity {
         String nickname = editText_nickname.getText().toString();
 
         final Toast t = Toast.makeText(this, "", Toast.LENGTH_SHORT);
-        api.register(username, password, loginRes -> {
-            if (loginRes.status == -1) {
+        api.register(username, password, nickname, regRes -> {
+            if (regRes.status == -1) {
                 t.setText("Register Failed!");
                 t.show();
                 return;
@@ -371,7 +366,7 @@ public class MainActivity extends AppCompatActivity {
     private void getRank() {
         RankView rankView = new RankView(this);
         final Toast t = Toast.makeText(this, "", Toast.LENGTH_SHORT);
-        api.rank(myToken, pattern, rankResponse -> {
+        api.rank(pattern, split, rankResponse -> {
             if (rankResponse.status == -1) {
                 t.setText("Get Rank Board Failed!");
                 t.show();
@@ -392,7 +387,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(new MemberListView(this));
         SurfaceViewListView memberList = new SurfaceViewListView(this);
         FrameLayout.LayoutParams memberList_params = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
-        memberList.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_expandable_list_item_1, getMemberData()));
+        memberList.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_expandable_list_item_1, getMemberData()));
         memberList.setClickable(false);
         Point size = new Point();
         getWindowManager().getDefaultDisplay().getSize(size);
@@ -411,14 +406,12 @@ public class MainActivity extends AppCompatActivity {
 
         SurfaceViewListView roomList = new SurfaceViewListView(this);
         FrameLayout.LayoutParams roomList_params = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
-        roomList.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_expandable_list_item_1, getRoomData()));
+        roomList.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_expandable_list_item_1, getRoomData()));
         Toast t = Toast.makeText(this, "", Toast.LENGTH_SHORT);
-        roomList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                t.setText("进入" + (position + 1) + "号房间");
-                t.show();
-                comeInRoom();
-            }
+        roomList.setOnItemClickListener((parent, view, position, id) -> {
+            t.setText("进入" + (position + 1) + "号房间");
+            t.show();
+            comeInRoom();
         });
         Point size = new Point();
         getWindowManager().getDefaultDisplay().getSize(size);
@@ -438,7 +431,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private List<String> getRoomData() {
-        List<String> data = new ArrayList<String>();
+        List<String> data = new ArrayList<>();
         data.add("测试数据1测试数据");
         data.add("测试数据2测试数据");
         data.add("测试数据3测试数据");
@@ -453,7 +446,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private List<String> getMemberData() {
-        List<String> data = new ArrayList<String>();
+        List<String> data = new ArrayList<>();
         data.add("房主id");
         data.add("");
         data.add("成员1");
@@ -488,8 +481,10 @@ public class MainActivity extends AppCompatActivity {
             Uri uri = data.getData();
             ContentResolver cr = this.getContentResolver();
             try {
-                puzzleBitmap = BitmapFactory.decodeStream(cr.openInputStream(uri));
+                if (uri != null)
+                    puzzleBitmap = BitmapFactory.decodeStream(cr.openInputStream(uri));
             } catch (FileNotFoundException e) {
+                e.printStackTrace();
             }
         }
         super.onActivityResult(requestCode, resultCode, data);
