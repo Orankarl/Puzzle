@@ -21,6 +21,8 @@ public class RegisterView extends SurfaceView implements SurfaceHolder.Callback,
     private Thread thread;
     private Canvas canvas;
 
+    public int TextSize;
+
     public static int screenW, screenH;
     private Resources resources = this.getResources();
     MenuButton buttonLogin;
@@ -59,8 +61,9 @@ public class RegisterView extends SurfaceView implements SurfaceHolder.Callback,
                 String title = "注册";
                 canvas.drawText(title, screenW / 2 - getTextWidth(textPaint, title) / 2, screenH / 10 + textPaint.getTextSize() , textPaint);
 
-                TEXT_SIZE = (int)Math.round(80 * RATIO);
-                textPaint.setTextSize(TEXT_SIZE);
+                //TEXT_SIZE = (int)Math.round(80 * RATIO);
+                //textPaint.setTextSize(TEXT_SIZE);
+                textPaint.setTextSize(TextSize);
 
                 String text1 = "Username: ";
                 String text2 = "Password: ";
