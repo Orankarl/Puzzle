@@ -442,6 +442,7 @@ public class Api {
     class MoveToResponse {
         int X;
         int Y;
+        String username;
     }
     interface MoveToCallback {
         void onResponse(MoveToResponse response);
