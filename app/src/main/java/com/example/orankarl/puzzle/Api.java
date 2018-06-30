@@ -10,10 +10,8 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
-import java.lang.Iterable;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -41,6 +39,7 @@ public class Api {
     private Socket _socket;
     private Handler _handler;
 
+    // Initialization part
     Api(String url, int port, Handler handler)
     {
         _client = new OkHttpClient();
@@ -60,6 +59,7 @@ public class Api {
         return _socket.connected();
     }
 
+    // Core part
     private HttpUrl.Builder JsonToQueryParams(
             HttpUrl.Builder builder,
             JSONObject json)
@@ -149,6 +149,7 @@ public class Api {
         });
     }
 
+    // User aware part
     class LoginResponse {
         int status;
         String token;
@@ -259,10 +260,12 @@ public class Api {
         });
     }
 
+    // Socket part
     public void socketAuth(String token) {
         _socket.emit("auth", token);
     }
 
+    // Room aware part
     public void newRoom(int split, int pattern) {
         JSONObject j = new JSONObject();
         try {
@@ -403,6 +406,65 @@ public class Api {
         _socket.on("cancelGame", response -> cb.onResponse());
     }
 
+    // Gaming aware part
+    public void pick(int pieceIndex) {
+        _socket.emit("pickPiece", pieceIndex);
+    }
+
+    public void moveTo(int X, int Y) {
+        JSONObject j = new JSONObject();
+        try {
+            j.put("X", X);
+            j.put("Y", Y);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        _socket.emit("movePieceTo", j);
+    }
+
+    public void release() {
+        _socket.emit("releasePiece");
+    }
+
+    class PickResponse {
+        int pieceIndex;
+        String username;
+    }
+    interface PickCallback {
+        void onResponse(PickResponse response);
+    }
+    public void onPick(PickCallback cb) {
+        _socket.on("pickPiece", response -> {
+            cb.onResponse(new Gson().fromJson(response[0].toString(), PickResponse.class));
+        });
+    }
+
+    class MoveToResponse {
+        int X;
+        int Y;
+    }
+    interface MoveToCallback {
+        void onResponse(MoveToResponse response);
+    }
+    public void onMoveTo(MoveToCallback cb) {
+        _socket.on("movePieceTo", response -> {
+            cb.onResponse(new Gson().fromJson(response[0].toString(), MoveToResponse.class));
+        });
+    }
+
+    class ReleaseResponse {
+        String username;
+    }
+    interface ReleaseCallback {
+        void onResponse(ReleaseResponse response);
+    }
+    public void onRelease(ReleaseCallback cb) {
+        _socket.on("releasePiece", response -> {
+            cb.onResponse(new Gson().fromJson(response[0].toString(), ReleaseResponse.class));
+        });
+    }
+
+    // Util
     private String sha256(String s)
     {
         try {
