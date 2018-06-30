@@ -28,14 +28,14 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
     private Thread thread;
     private Canvas canvas;
     private Bitmap bitmap, cutBitmap, bitmapCache;
-    private ArrayList<PuzzlePiece> pieces = new ArrayList<>();
-    PuzzlePiece piece;
-    private boolean isChosen = false;
+    private ArrayList<PuzzlePieceGroup> pieces = new ArrayList<>();
+    private boolean isChosen = false, needUpdate = false;
     private int chosenPieceIndex, updateOrderIndex = -1;
     float touchX = 0, touchY = 0;
     int biasX = 0, biasY = 0;
     LinkedList<Integer> drawOrder = new LinkedList<>();
-    int upmostPieceIndex = 0;
+    int pieceCount = 0;
+    int pieceWidth, pieceHeight;
 
     public static int screenW, screenH;
     private Resources resources = this.getResources();
@@ -68,56 +68,29 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
         Log.d("width:", String.valueOf(options.outWidth));
         Log.d("height", String.valueOf(options.outHeight));
 
-        piece = new PuzzlePiece(bitmap, screenW / 2 - bitmap.getWidth() / 2, screenH / 2 - bitmap.getHeight() / 2);
-
-        GraphicPath path = new GraphicPath();
-        path.addPath(0, 0);
-        path.addPath(bitmap.getWidth(), bitmap.getHeight()/2);
-        path.addPath(bitmap.getWidth() / 2, bitmap.getHeight());
-        path.addPath(0, 0);
-
-        Rect rect = new Rect(path.getLeft(), path.getTop(), path.getRight(), path.getBottom());
-        if (rect.left < 0) rect.left = 0;
-        if (rect.right < 0) rect.right = 0;
-        if (rect.top < 0) rect.top = 0;
-        if (rect.bottom < 0) rect.bottom = 0;
-        int cut_width = Math.abs(rect.left - rect.right);
-        int cut_height = Math.abs(rect.top - rect.bottom);
-
-        if (cut_width > 0 && cut_height > 0) {
-            Bitmap tempCutBitmap = Bitmap.createBitmap(bitmap, rect.left, rect.top, cut_width, cut_height);
-            Paint paint = new Paint();
-            paint.setAntiAlias(true);
-            paint.setStyle(Paint.Style.FILL_AND_STROKE);
-            paint.setColor(Color.BLACK);
-            Bitmap temp = Bitmap.createBitmap(cut_width, cut_height, Bitmap.Config.ARGB_8888);
-            Canvas canvas = new Canvas(temp);
-
-            Path path1 = new Path();
-            if (path.size() > 1) {
-                path1.moveTo((float) (path.pathX.get(0) - rect.left), (float)(path.pathY.get(0) - rect.top));
-                for (int i = 1; i < path.size(); i++) {
-                    path1.lineTo((float)(path.pathX.get(i)-rect.left), (float)(path.pathY.get(i) - rect.top));
-                }
-            }
-            canvas.drawPath(path1, paint);
-            paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
-
-            canvas.drawBitmap(tempCutBitmap, 0, 0, paint);
-            cutBitmap = temp;
-        }
-
         int spacing = screenW / 10;
 
         ArrayList<Bitmap> cutImages = CutUtil.cutImage(bitmap, CutUtil.type2, 4);
-        pieces.add(new PuzzlePiece(cutImages.get(0), (screenW - spacing) / 2 - cutImages.get(0).getWidth(),
-                (screenH - spacing) / 2 - cutImages.get(0).getHeight()));
-        pieces.add(new PuzzlePiece(cutImages.get(1), (screenW + spacing) / 2,
-                (screenH - spacing) / 2 - cutImages.get(1).getHeight()));
-        pieces.add(new PuzzlePiece(cutImages.get(2), (screenW - spacing) / 2 - cutImages.get(0).getWidth(),
-                (screenH + spacing) / 2));
-        pieces.add(new PuzzlePiece(cutImages.get(3), (screenW + spacing) / 2,
-                (screenH + spacing) / 2));
+        PuzzlePiece piece1 = new PuzzlePiece(cutImages.get(0), (screenW - spacing) / 2 - cutImages.get(0).getWidth(),
+                (screenH - spacing) / 2 - cutImages.get(0).getHeight());
+        PuzzlePiece piece2 = new PuzzlePiece(cutImages.get(1), (screenW + spacing) / 2,
+                (screenH - spacing) / 2 - cutImages.get(1).getHeight());
+        PuzzlePiece piece3 = new PuzzlePiece(cutImages.get(2), (screenW - spacing) / 2 - cutImages.get(0).getWidth(),
+                (screenH + spacing) / 2);
+        PuzzlePiece piece4 = new PuzzlePiece(cutImages.get(3), (screenW + spacing) / 2,
+                (screenH + spacing) / 2);
+
+        PuzzlePieceGroup pieceGroup1 = new PuzzlePieceGroup(piece1, 0, 2, bitmap.getWidth()/2, bitmap.getHeight()/2);
+        PuzzlePieceGroup pieceGroup2 = new PuzzlePieceGroup(piece2, 1, 2, bitmap.getWidth()/2, bitmap.getHeight()/2);
+        PuzzlePieceGroup pieceGroup3 = new PuzzlePieceGroup(piece3, 2, 2, bitmap.getWidth()/2, bitmap.getHeight()/2);
+        PuzzlePieceGroup pieceGroup4 = new PuzzlePieceGroup(piece4, 3, 2, bitmap.getWidth()/2, bitmap.getHeight()/2);
+//        pieceGroup1.addPieceGroup(pieceGroup2);
+//        pieceGroup1.addPieceGroup(pieceGroup3);
+//        pieceGroup1.addPieceGroup(pieceGroup4);
+        pieces.add(pieceGroup1);
+        pieces.add(pieceGroup2);
+        pieces.add(pieceGroup3);
+        pieces.add(pieceGroup4);
 
         for (int i = 0; i < 4; i++) {
             drawOrder.offer(i);
@@ -130,31 +103,26 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
             if (canvas != null) {
                 canvas.drawColor(Color.WHITE);
 
-//                    canvas.drawBitmap(bitmap, MainSurfaceView.screenW / 2 - bitmap.getWidth() / 2, MainSurfaceView.screenH * 2 / 3 - bitmap.getHeight() / 2, paint);
-//                    canvas.drawBitmap(cutBitmap, MainSurfaceView.screenW / 2 - cutBitmap.getWidth() / 2, MainSurfaceView.screenH / 3 - cutBitmap.getHeight() / 2, paint);
-//                    canvas.drawBitmap(piece.getBitmap(), piece.getPosX(), piece.getPosY(), paint);
-//                    for (PuzzlePiece piece:pieces) {
-//                        canvas.drawBitmap(piece.getBitmap(), piece.getPosX(), piece.getPosY(), paint);
-//                    }
+                //这里使用双缓冲，防止闪烁
                 bitmapCache = Bitmap.createBitmap(canvas.getWidth(), canvas.getHeight(), Bitmap.Config.ARGB_8888);
 
                 Canvas canvas1 = new Canvas(bitmapCache);
-                if (updateOrderIndex > -1) {
+                if (needUpdate) {
                     Iterator<Integer> iterator = drawOrder.iterator();
                     while(iterator.hasNext()) {
                         int temp = iterator.next();
-                        if (temp == updateOrderIndex) {
+                        if (temp == chosenPieceIndex) {
                             iterator.remove();
                         }
                     }
-                    drawOrder.offer(updateOrderIndex);
-                    updateOrderIndex = -1;
+                    drawOrder.offer(chosenPieceIndex);
+                    needUpdate = false;
                 }
                 for (int index : drawOrder) {
-                    canvas1.drawBitmap(pieces.get(index).getBitmap(), pieces.get(index).getPosX(), pieces.get(index).getPosY(), paint);
+                    canvas1 = pieces.get(index).draw(canvas1, paint);
                 }
                 if (isChosen) {
-                    canvas1.drawBitmap(pieces.get(chosenPieceIndex).getBitmap(), pieces.get(chosenPieceIndex).getPosX(), pieces.get(chosenPieceIndex).getPosY(), paint);
+                    canvas1 = pieces.get(chosenPieceIndex).draw(canvas1, paint);
                 }
                 canvas.drawBitmap(bitmapCache, 0, 0, paint);
 //                for (int index : drawOrder) {
@@ -172,6 +140,12 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
         }
     }
 
+    void drawPieceGroup(Canvas canvas, PuzzlePieceGroup pieceGroup) {
+        canvas.drawBitmap(pieceGroup.getMainPiece().getBitmap(), pieceGroup.getMainPiece().getPosX(), pieceGroup.getMainPiece().getPosY(), paint);
+        ArrayList<PuzzlePiece> pieces = pieceGroup.getAttachedPiece();
+//        ArrayList<Integer> biasX = pieceGroup.
+    }
+
 
 
     @Override
@@ -181,19 +155,10 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
 
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                if (piece.isInPiece(event.getX(), event.getY())) {
-                    isChosen = true;
-                    touchX = event.getX();
-                    touchY = event.getY();
-                    biasX = (int) touchX - piece.getPosX();
-                    biasY = (int) touchY - piece.getPosY();
-//                    Log.d("touchX", String.valueOf(piece.getPosX()));
-//                    Log.d("touchY", String.valueOf(piece.getPosY()));
-                }
                 ListIterator<Integer> listIterator = drawOrder.listIterator(drawOrder.size());
                 while (listIterator.hasPrevious()) {
                     int index = listIterator.previous();
-                    PuzzlePiece piece = pieces.get(index);
+                    PuzzlePieceGroup piece = pieces.get(index);
                     if (piece.isInPiece(event.getX(), event.getY())) {
                         isChosen = true;
                         chosenPieceIndex = index;
@@ -218,6 +183,7 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
             case MotionEvent.ACTION_UP:
                 if (isChosen) {
                     updateOrderIndex = chosenPieceIndex;
+                    needUpdate = true;
 //                    Iterator<Integer> iterator = drawOrder.iterator();
 //                    while(iterator.hasNext()) {
 //                        int temp = iterator.next();
