@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="horizontal_flat_x">
+        <item>0.0</item>
+        <item>1.0</item>
+    </string-array>
+    <string-array name="horizontal_flat_y">
+        <item>0.0</item>
+        <item>0.0</item>
+    </string-array>
+    <string-array name="vertical_flat_x">
+        <item>0.0</item>
+        <item>0.0</item>
+    </string-array>
+    <string-array name="vertical_flat_y">
+        <item>0.0</item>
+        <item>1.0</item>
+    </string-array>
+    <string-array name="horizontal_classic_x">
+        <item>0.0</item>
+        <item>0.16093636176774595</item>
+        <item>0.32187272353549146</item>
+        <item>0.4439337249030801</item>
+        <item>0.42765697960120047</item>
+        <item>0.41324991490103125</item>
+        <item>0.4010848764587118</item>
+        <item>0.391476265529115</item>
+        <item>0.38467241337302327</item>
+        <item>0.3808491632206891</item>
+        <item>0.3801053256637343</item>
+        <item>0.3824601249292286</item>
+        <item>0.3878527020361211</item>
+        <item>0.3961436876747755</item>
+        <item>0.4071188041590764</item>
+        <item>0.4204944033598873</item>
+        <item>0.4359247974938649</item>
+        <item>0.45301119330590334</item>
+        <item>0.47131199874431845</item>
+        <item>0.4903542357562829</item>
+        <item>0.509645764243717</item>
+        <item>0.5286880012556815</item>
+        <item>0.5469888066940967</item>
+        <item>0.564075202506135</item>
+        <item>0.5795055966401127</item>
+        <item>0.5928811958409236</item>
+        <item>0.6038563123252245</item>
+        <item>0.6121472979638789</item>
+        <item>0.6175398750707715</item>
+        <item>0.6198946743362657</item>
+        <item>0.6191508367793109</item>
+        <item>0.6153275866269767</item>
+        <item>0.608523734470885</item>
+        <item>0.5989151235412882</item>
+        <item>0.5867500850989688</item>
+        <item>0.5723430203987996</item>
+        <item>0.55606627509692</item>
+        <item>0.6781272764645081</item>
+        <item>0.839063638232254</item>
+        <item>1.0</item>
+    </string-array>
+    <string-array name="horizontal_classic_y">
+        <item>0.0</item>
+        <item>0.0</item>
+        <item>0.0</item>
+        <item>0.0015858357377506406</item>
+        <item>0.010215187850646979</item>
+        <item>0.02090655112598069</item>
+        <item>0.03338361093918207</item>
+        <item>0.04732390194984197</item>
+        <item>0.062367142108066057</item>
+        <item>0.07812454402074225</item>
+        <item>0.09418886302864733</item>
+        <item>0.11014492230527895</item>
+        <item>0.12558034295983603</item>
+        <item>0.1400962018285084</item>
+        <item>0.1533173415071083</item>
+        <item>0.1649020661657779</item>
+        <item>0.17455097256076174</item>
+        <item>0.18201468800876613</item>
+        <item>0.1871003153386072</item>
+        <item>0.18967641825257836</item>
+        <item>0.1896764182525784</item>
+        <item>0.1871003153386072</item>
+        <item>0.18201468800876613</item>
+        <item>0.1745509725607618</item>
+        <item>0.16490206616577793</item>
+        <item>0.1533173415071083</item>
+        <item>0.1400962018285085</item>
+        <item>0.12558034295983608</item>
+        <item>0.110144922305279</item>
+        <item>0.09418886302864736</item>
+        <item>0.07812454402074233</item>
+        <item>0.062367142108066126</item>
+        <item>0.04732390194984201</item>
+        <item>0.03338361093918207</item>
+        <item>0.02090655112598069</item>
+        <item>0.010215187850647034</item>
+        <item>0.0015858357377506627</item>
+        <item>0.0</item>
+        <item>0.0</item>
+        <item>0.0</item>
+    </string-array>
+</resources>
