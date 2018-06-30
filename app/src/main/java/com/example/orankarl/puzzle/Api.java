@@ -308,7 +308,9 @@ public class Api {
     }
     public void onNewRoom(NewRoomCallback cb) {
         _socket.on("newRoom", response -> {
-            cb.onResponse(new Gson().fromJson(response[0].toString(), NewRoomResponse.class));
+            _handler.post(() -> {
+                cb.onResponse(new Gson().fromJson(response[0].toString(), NewRoomResponse.class));
+            });
         });
     }
 
@@ -320,7 +322,9 @@ public class Api {
     }
     public void onEnterRoom(EnterRoomCallback cb) {
         _socket.on("enterRoom", response -> {
-            cb.onResponse(new Gson().fromJson(response[0].toString(), EnterRoomResponse.class));
+            _handler.post(() -> {
+                cb.onResponse(new Gson().fromJson(response[0].toString(), EnterRoomResponse.class));
+            });
         });
     }
 
@@ -332,7 +336,9 @@ public class Api {
     }
     public void onLeaveRoom(LeaveRoomCallback cb) {
         _socket.on("leaveRoom", response -> {
-            cb.onResponse(new Gson().fromJson(response[0].toString(), LeaveRoomResponse.class));
+            _handler.post(() -> {
+                cb.onResponse(new Gson().fromJson(response[0].toString(), LeaveRoomResponse.class));
+            });
         });
     }
 
@@ -350,7 +356,9 @@ public class Api {
     }
     public void onRoomList(RoomListCallback cb) {
         _socket.on("roomList", response -> {
-            cb.onResponse(new Gson().fromJson(response[0].toString(), RoomListResponse.class));
+            _handler.post(() -> {
+                cb.onResponse(new Gson().fromJson(response[0].toString(), RoomListResponse.class));
+            });
         });
     }
 
@@ -362,7 +370,9 @@ public class Api {
     }
     public void onRoomMember(RoomMemberCallback cb) {
         _socket.on("roomMember", response -> {
-            cb.onResponse(new Gson().fromJson(response[0].toString(), RoomMemberResponse.class));
+            _handler.post(() -> {
+                cb.onResponse(new Gson().fromJson(response[0].toString(), RoomMemberResponse.class));
+            });
         });
     }
 
@@ -375,7 +385,9 @@ public class Api {
     }
     public void onChangeRoom(ChangeRoomCallback cb) {
         _socket.on("changeRoom", response -> {
-            cb.onResponse(new Gson().fromJson(response[0].toString(), ChangeRoomResponse.class));
+            _handler.post(() -> {
+                cb.onResponse(new Gson().fromJson(response[0].toString(), ChangeRoomResponse.class));
+            });
         });
     }
 
@@ -388,7 +400,9 @@ public class Api {
     }
     public void onDeleteRoom(DeleteRoomCallback cb) {
         _socket.on("deleteRoom", response -> {
-            cb.onResponse(new Gson().fromJson(response[0].toString(), DeleteRoomResponse.class));
+            _handler.post(() -> {
+                cb.onResponse(new Gson().fromJson(response[0].toString(), DeleteRoomResponse.class));
+            });
         });
     }
 
@@ -435,7 +449,9 @@ public class Api {
     }
     public void onPick(PickCallback cb) {
         _socket.on("pickPiece", response -> {
-            cb.onResponse(new Gson().fromJson(response[0].toString(), PickResponse.class));
+            _handler.post(() -> {
+                cb.onResponse(new Gson().fromJson(response[0].toString(), PickResponse.class));
+            });
         });
     }
 
@@ -449,7 +465,9 @@ public class Api {
     }
     public void onMoveTo(MoveToCallback cb) {
         _socket.on("movePieceTo", response -> {
-            cb.onResponse(new Gson().fromJson(response[0].toString(), MoveToResponse.class));
+            _handler.post(() -> {
+                cb.onResponse(new Gson().fromJson(response[0].toString(), MoveToResponse.class));
+            });
         });
     }
 
@@ -461,7 +479,9 @@ public class Api {
     }
     public void onRelease(ReleaseCallback cb) {
         _socket.on("releasePiece", response -> {
-            cb.onResponse(new Gson().fromJson(response[0].toString(), ReleaseResponse.class));
+            _handler.post(() -> {
+                cb.onResponse(new Gson().fromJson(response[0].toString(), ReleaseResponse.class));
+            });
         });
     }
 
