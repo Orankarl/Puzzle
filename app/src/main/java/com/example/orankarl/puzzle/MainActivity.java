@@ -235,6 +235,8 @@ public class MainActivity extends AppCompatActivity {
                 return;
             }
 
+            api.socketAuth(loginRes.token);
+
             t.setText("Login Success!");
             t.show();
             setContentView(new MainSurfaceView2(this));

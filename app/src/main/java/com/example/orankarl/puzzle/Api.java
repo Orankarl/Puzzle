@@ -259,6 +259,150 @@ public class Api {
         });
     }
 
+    public void socketAuth(String token) {
+        _socket.emit("auth", token);
+    }
+
+    public void newRoom(int split, int pattern) {
+        JSONObject j = new JSONObject();
+        try {
+            j.put("split", split);
+            j.put("pattern", pattern);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        _socket.emit("newRoom", j);
+    }
+
+    public void enterRoom(String master) {
+        _socket.emit("enterRoom", master);
+    }
+
+    public void leaveRoom() {
+        _socket.emit("leaveRoom");
+    }
+
+    public void roomList() {
+        _socket.emit("roomList");
+    }
+
+    public void startGame() {
+        _socket.emit("startGame");
+    }
+
+    public void deleteGame() {
+        _socket.emit("deleteGame");
+    }
+
+    class NewRoomResponse {
+        String username;
+        int size;
+        int pattern;
+        int split;
+    }
+    interface NewRoomCallback {
+        void onResponse(NewRoomResponse response);
+    }
+    public void onNewRoom(NewRoomCallback cb) {
+        _socket.on("newRoom", response -> {
+            cb.onResponse(new Gson().fromJson(response[0].toString(), NewRoomResponse.class));
+        });
+    }
+
+    class EnterRoomResponse {
+        String username;
+    }
+    interface EnterRoomCallback {
+        void onResponse(EnterRoomResponse response);
+    }
+    public void onEnterRoom(EnterRoomCallback cb) {
+        _socket.on("enterRoom", response -> {
+            cb.onResponse(new Gson().fromJson(response[0].toString(), EnterRoomResponse.class));
+        });
+    }
+
+    class LeaveRoomResponse {
+        String username;
+    }
+    interface LeaveRoomCallback {
+        void onResponse(LeaveRoomResponse response);
+    }
+    public void onLeaveRoom(LeaveRoomCallback cb) {
+        _socket.on("leaveRoom", response -> {
+            cb.onResponse(new Gson().fromJson(response[0].toString(), LeaveRoomResponse.class));
+        });
+    }
+
+    class RoomListEntry {
+        String username;
+        int size;
+        int pattern;
+        int split;
+    }
+    class RoomListResponse {
+        RoomListEntry[] rooms;
+    }
+    interface RoomListCallback {
+        void onResponse(RoomListResponse response);
+    }
+    public void onRoomList(RoomListCallback cb) {
+        _socket.on("roomList", response -> {
+            cb.onResponse(new Gson().fromJson(response[0].toString(), RoomListResponse.class));
+        });
+    }
+
+    class RoomMemberResponse {
+        String[] member;
+    }
+    interface RoomMemberCallback {
+        void onResponse(RoomMemberResponse response);
+    }
+    public void onRoomMember(RoomMemberCallback cb) {
+        _socket.on("roomMember", response -> {
+            cb.onResponse(new Gson().fromJson(response[0].toString(), RoomMemberResponse.class));
+        });
+    }
+
+    class ChangeRoomResponse {
+        String room;
+        int size;
+    }
+    interface ChangeRoomCallback {
+        void onResponse(ChangeRoomResponse response);
+    }
+    public void onChangeRoom(ChangeRoomCallback cb) {
+        _socket.on("changeRoom", response -> {
+            cb.onResponse(new Gson().fromJson(response[0].toString(), ChangeRoomResponse.class));
+        });
+    }
+
+    class DeleteRoomResponse {
+        String room;
+        int size;
+    }
+    interface DeleteRoomCallback {
+        void onResponse(DeleteRoomResponse response);
+    }
+    public void onDeleteRoom(DeleteRoomCallback cb) {
+        _socket.on("deleteRoom", response -> {
+            cb.onResponse(new Gson().fromJson(response[0].toString(), DeleteRoomResponse.class));
+        });
+    }
+
+    interface StartGameCallBack {
+        void onResponse();
+    }
+    public void onStartGame(StartGameCallBack cb) {
+        _socket.on("startGame", response -> cb.onResponse());
+    }
+
+    interface CancelGameCallBack {
+        void onResponse();
+    }
+    public void onCancelGame(CancelGameCallBack cb) {
+        _socket.on("cancelGame", response -> cb.onResponse());
+    }
+
     private String sha256(String s)
     {
         try {
