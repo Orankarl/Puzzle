@@ -113,7 +113,6 @@ public class Api {
     }
 
     private void execute(
-            String action,
             byte[] data,
             RequestCallback cb)
     {
@@ -121,8 +120,8 @@ public class Api {
                 .scheme("http")
                 .host(_url)
                 .port(_port)
-                .addPathSegment("api");
-        urlBuilder.addPathSegment(action);
+                .addPathSegment("api")
+                .addPathSegment("image");
         RequestBody body = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
                 .addFormDataPart("image", "image.jpg",
@@ -196,6 +195,7 @@ public class Api {
                 .scheme("http")
                 .host(_url)
                 .port(_port)
+                .addPathSegment("api")
                 .addPathSegment("image");
         Request request = new Request.Builder()
                 .url(url).get().build();
@@ -241,7 +241,7 @@ public class Api {
         }
         ByteArrayOutputStream jpegSteam = new ByteArrayOutputStream();
         image.compress(Bitmap.CompressFormat.JPEG, 100, jpegSteam);
-        execute("image", jpegSteam.toByteArray(), response -> {
+        execute(jpegSteam.toByteArray(), response -> {
             cb.onResponse(new Gson().fromJson(response, ImageResponse.class));
         });
     }
