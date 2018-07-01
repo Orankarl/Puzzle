@@ -1,12 +1,17 @@
 package com.example.orankarl.puzzle;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URISyntaxException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -17,6 +22,7 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.HttpUrl;
 import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -28,8 +34,7 @@ import com.github.nkzawa.socketio.client.Socket;
 import com.google.gson.Gson;
 
 public class Api {
-    interface RequestCallback
-    {
+    private interface RequestCallback {
         void onFinish(String jsonResponse);
     }
 
@@ -40,8 +45,7 @@ public class Api {
     private Handler _handler;
 
     // Initialization part
-    Api(String url, int port, Handler handler)
-    {
+    Api(String url, int port, Handler handler) {
         _client = new OkHttpClient();
         _url = url;
         _port = port;
@@ -54,8 +58,7 @@ public class Api {
         _socket.connect();
     }
 
-    public boolean connected()
-    {
+    public boolean connected() {
         return _socket.connected();
     }
 
@@ -109,6 +112,44 @@ public class Api {
         _execute(urlBuilder, method, data, cb);
     }
 
+    private void execute(
+            String action,
+            byte[] data,
+            RequestCallback cb)
+    {
+        HttpUrl.Builder urlBuilder = new HttpUrl.Builder()
+                .scheme("http")
+                .host(_url)
+                .port(_port)
+                .addPathSegment("api");
+        urlBuilder.addPathSegment(action);
+        RequestBody body = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("image", "image.jpg",
+                        RequestBody.create(MediaType.parse("image/jpeg"), data))
+                .build();
+        Request request = new Request.Builder()
+                .post(body).url(urlBuilder.build()).build();
+        _client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                String data = " { \"status\": -1 } ";
+                if (response.isSuccessful()) {
+                    ResponseBody body = response.body();
+                    if (body != null)
+                        data = body.string();
+                }
+                final String _data = data;
+                _handler.post(() -> cb.onFinish(_data));
+            }
+        });
+    }
+
     private void _execute(
             HttpUrl.Builder urlBuilder,
             String method,
@@ -142,10 +183,66 @@ public class Api {
                         data = body.string();
                 }
                 final String _data = data;
-                _handler.post(() -> {
-                    cb.onFinish(_data);
-                });
+                _handler.post(() -> cb.onFinish(_data));
             }
+        });
+    }
+
+    private interface ImageResponseCallback {
+        void onFinish(Bitmap bitmap);
+    }
+    private void getImage(String url, final ImageResponseCallback cb) {
+        HttpUrl.Builder urlBuilder = new HttpUrl.Builder()
+                .scheme("http")
+                .host(_url)
+                .port(_port)
+                .addPathSegment("image");
+        Request request = new Request.Builder()
+                .url(url).get().build();
+        _client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    ResponseBody body = response.body();
+                    if (body != null) {
+                        InputStream stream = body.byteStream();
+                        final Bitmap bitmap = BitmapFactory.decodeStream(stream);
+                        _handler.post(() -> cb.onFinish(bitmap));
+                    }
+                }
+            }
+        });
+    }
+
+    // Image
+    class ImageResponse {
+        int status;
+    }
+    interface ImageCallback {
+        void onResponse(ImageResponse response);
+    }
+    public void image(Bitmap image, final ImageCallback cb)
+    {
+        if (image.getHeight() > 500 || image.getWidth() > 500) {
+            double ratio = image.getWidth();
+            ratio /= image.getHeight();
+            if (ratio > 1) {
+                image.setWidth(500);
+                image.setHeight((int)Math.round(500 / ratio));
+            } else {
+                image.setWidth((int)Math.round(500 * ratio));
+                image.setHeight(500);
+            }
+        }
+        ByteArrayOutputStream jpegSteam = new ByteArrayOutputStream();
+        image.compress(Bitmap.CompressFormat.JPEG, 100, jpegSteam);
+        execute("image", jpegSteam.toByteArray(), response -> {
+            cb.onResponse(new Gson().fromJson(response, ImageResponse.class));
         });
     }
 
@@ -411,7 +508,21 @@ public class Api {
     }
     public void onStartGame(StartGameCallBack cb) {
         _socket.on("startGame", response -> {
-            _handler.post(() -> cb.onResponse());
+            _handler.post(cb::onResponse);
+        });
+    }
+
+
+    interface GetImageCallback {
+        void onResponse(Bitmap bitmap);
+    }
+    public void onGetImage(GetImageCallback cb) {
+        _socket.on("getImage", response -> {
+            getImage(response[0].toString(), bitmap -> {
+                _handler.post(() -> {
+                    cb.onResponse(bitmap);
+                });
+            });
         });
     }
 
@@ -420,7 +531,7 @@ public class Api {
     }
     public void onCancelRoom(CancelRoomCallBack cb) {
         _socket.on("cancelRoom", response -> {
-            _handler.post(() -> cb.onResponse());
+            _handler.post(cb::onResponse);
         });
     }
 
