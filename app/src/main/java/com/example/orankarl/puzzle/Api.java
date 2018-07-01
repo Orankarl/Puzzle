@@ -293,8 +293,8 @@ public class Api {
         _socket.emit("startGame");
     }
 
-    public void deleteGame() {
-        _socket.emit("deleteGame");
+    public void deleteRoom() {
+        _socket.emit("deleteRoom");
     }
 
     class NewRoomResponse {
@@ -363,7 +363,7 @@ public class Api {
     }
 
     class RoomMemberResponse {
-        String[] member;
+        String[] members;
     }
     interface RoomMemberCallback {
         void onResponse(RoomMemberResponse response);
@@ -410,14 +410,18 @@ public class Api {
         void onResponse();
     }
     public void onStartGame(StartGameCallBack cb) {
-        _socket.on("startGame", response -> cb.onResponse());
+        _socket.on("startGame", response -> {
+            _handler.post(() -> cb.onResponse());
+        });
     }
 
-    interface CancelGameCallBack {
+    interface CancelRoomCallBack {
         void onResponse();
     }
-    public void onCancelGame(CancelGameCallBack cb) {
-        _socket.on("cancelGame", response -> cb.onResponse());
+    public void onCancelRoom(CancelRoomCallBack cb) {
+        _socket.on("cancelRoom", response -> {
+            _handler.post(() -> cb.onResponse());
+        });
     }
 
     // Gaming aware part
