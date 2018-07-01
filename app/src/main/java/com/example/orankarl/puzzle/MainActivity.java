@@ -17,6 +17,7 @@ import android.provider.BaseColumns;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
 import android.text.method.PasswordTransformationMethod;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ArrayAdapter;
@@ -46,6 +47,10 @@ public class MainActivity extends AppCompatActivity {
     public static int pattern;
     public static boolean isRank;
     public static boolean isHost;
+
+    SurfaceViewListView roomList;
+    SurfaceViewListView memberList;
+    List<String> memberData;
 
     SurfaceViewEditText editText_username;
     SurfaceViewEditText editText_password;
@@ -111,6 +116,7 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case 8:
                 if (!isHost) {
+                    api.leaveRoom();
                     onJoinRoomButtonPressed();
                 }
                 break;
@@ -139,6 +145,9 @@ public class MainActivity extends AppCompatActivity {
         Point size = new Point();
         getWindowManager().getDefaultDisplay().getSize(size);
 
+        roomList = new SurfaceViewListView(this);
+        memberList = new SurfaceViewListView(this);
+
         float ratioWidth = (float)size.x / 1080;
         float ratioHeight = (float)size.y / 1812;
         RATIO = Math.min(ratioWidth, ratioHeight);
@@ -149,6 +158,134 @@ public class MainActivity extends AppCompatActivity {
         }catch (Exception e){
             e.printStackTrace();
         }
+
+        List<String> data = new ArrayList<>();
+        api.onRoomList(roomListResponse -> {
+            if (viewState != 7)
+                return;
+            data.clear();
+            for (Api.RoomListEntry i : roomListResponse.rooms) {
+                data.add(i.username + " pattern:" + i.pattern + " split:" + i.split + " 当前人数:" + i.size);
+            }
+
+            FrameLayout.LayoutParams roomList_params = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
+            roomList_params.leftMargin = size.x / 10;
+            roomList_params.rightMargin = size.x / 10;
+            roomList_params.topMargin = size.y / 6;
+            roomList_params.height = size.y * 2 / 3;
+            roomList_params.width = size.x * 4 / 5;
+            roomList.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_expandable_list_item_1, data));
+            roomList.setOnItemClickListener((parent, view, position, id) -> {
+                api.enterRoom(roomListResponse.rooms[position].username);
+                comeInRoom();
+            });
+
+            ((ViewGroup)roomList.getParent()).removeView(roomList);
+            addContentView(roomList, roomList_params);
+        });
+
+        memberData = new ArrayList<>();
+        api.onRoomMember(roomMemberResponse -> {
+            if (viewState != 8)
+                return;
+            memberData.clear();
+            for (String i : roomMemberResponse.members) {
+                memberData.add(i);
+            }
+            FrameLayout.LayoutParams memberList_params = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
+            memberList.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_expandable_list_item_1, memberData));
+            memberList.setClickable(false);
+            memberList_params.leftMargin = size.x / 10;
+            memberList_params.rightMargin = size.x / 10;
+            memberList_params.topMargin = size.y / 6;
+            memberList_params.height = size.y / 2;
+            memberList_params.width = size.x * 4 / 5;
+
+            if(memberList.getParent()!=null)
+                ((ViewGroup)memberList.getParent()).removeView(memberList);
+            addContentView(memberList, memberList_params);
+        });
+
+        api.onEnterRoom(enterRoomResponse -> {
+            if (viewState != 8)
+                return;
+
+            memberData.add(enterRoomResponse.username);
+
+            FrameLayout.LayoutParams memberList_params = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
+            memberList.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_expandable_list_item_1, memberData));
+            memberList.setClickable(false);
+            memberList_params.leftMargin = size.x / 10;
+            memberList_params.rightMargin = size.x / 10;
+            memberList_params.topMargin = size.y / 6;
+            memberList_params.height = size.y / 2;
+            memberList_params.width = size.x * 4 / 5;
+
+            if(memberList.getParent()!=null)
+                ((ViewGroup)memberList.getParent()).removeView(memberList);
+            addContentView(memberList, memberList_params);
+        });
+
+        api.onLeaveRoom(leaveRoomResponse -> {
+            if (viewState != 8)
+                return;
+            memberData.remove(leaveRoomResponse.username);
+
+            FrameLayout.LayoutParams memberList_params = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
+            memberList.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_expandable_list_item_1, memberData));
+            memberList.setClickable(false);
+            memberList_params.leftMargin = size.x / 10;
+            memberList_params.rightMargin = size.x / 10;
+            memberList_params.topMargin = size.y / 6;
+            memberList_params.height = size.y / 2;
+            memberList_params.width = size.x * 4 / 5;
+
+            if(memberList.getParent()!=null)
+                ((ViewGroup)memberList.getParent()).removeView(memberList);
+            addContentView(memberList, memberList_params);
+        });
+
+        api.onCancelRoom(() -> {
+            if (viewState != 8)
+                return;
+            memberData.clear();
+            onJoinRoomButtonPressed();
+        });
+
+        api.onChangeRoom(changeRoomResponse -> {
+            if (viewState != 7)
+                return;
+            for (int i = 0; i < data.size(); i++) {
+                String tmp = data.get(i);
+                if (tmp.substring(0, tmp.indexOf(' ')).equals(changeRoomResponse.room)) {
+                    tmp = tmp.substring(0, tmp.lastIndexOf(':') + 1) + changeRoomResponse.size;
+                    data.set(i, tmp);
+                    break;
+                }
+            }
+
+            FrameLayout.LayoutParams roomList_params = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
+            roomList_params.leftMargin = size.x / 10;
+            roomList_params.rightMargin = size.x / 10;
+            roomList_params.topMargin = size.y / 6;
+            roomList_params.height = size.y * 2 / 3;
+            roomList_params.width = size.x * 4 / 5;
+            roomList.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_expandable_list_item_1, data));
+            roomList.setOnItemClickListener((parent, view, position, id) -> {
+                String tmp = data.get(position);
+                api.enterRoom(tmp.substring(0, tmp.indexOf(' ')));
+                comeInRoom();
+            });
+
+            ((ViewGroup)roomList.getParent()).removeView(roomList);
+            addContentView(roomList, roomList_params);
+        });
+
+        api.onStartGame(() -> {
+            if (viewState == 8) {
+                TurnToGameView();
+            }
+        });
     }
 
     public void onLogButtonPressed() {
@@ -190,6 +327,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (!myToken.equals("")) {
             isOnline = true;
+            api.socketAuth(myToken);
             Toast.makeText(this, "Welcome back!", Toast.LENGTH_LONG).show();
             setContentView(new MainSurfaceView2(this));
             viewState = 2;
@@ -302,7 +440,7 @@ public class MainActivity extends AppCompatActivity {
         String nickname = editText_nickname.getText().toString();
 
         final Toast t = Toast.makeText(this, "", Toast.LENGTH_SHORT);
-        api.register(username, password, nickname, regRes -> {
+        api.register(username, nickname, password, regRes -> {
             if (regRes.status == -1) {
                 t.setText("Register Failed!");
                 t.show();
@@ -397,35 +535,55 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void comeInRoom() {
-        setContentView(new MemberListView(this));
-        SurfaceViewListView memberList = new SurfaceViewListView(this);
-        FrameLayout.LayoutParams memberList_params = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
-        memberList.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_expandable_list_item_1, getMemberData()));
-        memberList.setClickable(false);
-        Point size = new Point();
-        getWindowManager().getDefaultDisplay().getSize(size);
-        memberList_params.leftMargin = size.x / 10;
-        memberList_params.rightMargin = size.x / 10;
-        memberList_params.topMargin = size.y / 6;
-        memberList_params.height = size.y / 2;
-        memberList_params.width = size.x * 4 / 5;
-        setContentView(new MemberListView(this));
-        viewState = 8;
-        addContentView(memberList, memberList_params);
+        if (isHost) {
+            api.newRoom(split, pattern);
+            memberData.clear();
+            api.userInfo(myToken, userInfoResponse -> {
+                memberData.add(userInfoResponse.username);
+                setContentView(new MemberListView(this));
+                SurfaceViewListView memberList = new SurfaceViewListView(this);
+                FrameLayout.LayoutParams memberList_params = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
+                memberList.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_expandable_list_item_1, memberData));
+                memberList.setClickable(false);
+                Point size = new Point();
+                getWindowManager().getDefaultDisplay().getSize(size);
+                memberList_params.leftMargin = size.x / 10;
+                memberList_params.rightMargin = size.x / 10;
+                memberList_params.topMargin = size.y / 6;
+                memberList_params.height = size.y / 2;
+                memberList_params.width = size.x * 4 / 5;
+                setContentView(new MemberListView(this));
+                viewState = 8;
+                addContentView(memberList, memberList_params);
+            });
+        }
+        else {
+            memberData.clear();
+            setContentView(new MemberListView(this));
+            SurfaceViewListView memberList = new SurfaceViewListView(this);
+            FrameLayout.LayoutParams memberList_params = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
+            memberList.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_expandable_list_item_1, memberData));
+            memberList.setClickable(false);
+            Point size = new Point();
+            getWindowManager().getDefaultDisplay().getSize(size);
+            memberList_params.leftMargin = size.x / 10;
+            memberList_params.rightMargin = size.x / 10;
+            memberList_params.topMargin = size.y / 6;
+            memberList_params.height = size.y / 2;
+            memberList_params.width = size.x * 4 / 5;
+            setContentView(new MemberListView(this));
+            viewState = 8;
+            addContentView(memberList, memberList_params);
+        }
     }
 
     public void onJoinRoomButtonPressed() {
-        isHost = false;
+        List<String> data = new ArrayList<>();
 
-        SurfaceViewListView roomList = new SurfaceViewListView(this);
+        isHost = false;
+        api.roomList();
+
         FrameLayout.LayoutParams roomList_params = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
-        roomList.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_expandable_list_item_1, getRoomData()));
-        Toast t = Toast.makeText(this, "", Toast.LENGTH_SHORT);
-        roomList.setOnItemClickListener((parent, view, position, id) -> {
-            t.setText("进入" + (position + 1) + "号房间");
-            t.show();
-            comeInRoom();
-        });
         Point size = new Point();
         getWindowManager().getDefaultDisplay().getSize(size);
         roomList_params.leftMargin = size.x / 10;
@@ -433,45 +591,30 @@ public class MainActivity extends AppCompatActivity {
         roomList_params.topMargin = size.y / 6;
         roomList_params.height = size.y * 2 / 3;
         roomList_params.width = size.x * 4 / 5;
+
+        roomList.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_expandable_list_item_1, data));
+        roomList.setOnItemClickListener((parent, view, position, id) -> {
+            comeInRoom();
+        });
+
         setContentView(new RoomListView(this));
         viewState = 7;
         addContentView(roomList, roomList_params);
     }
 
     public void onDeleteRoomButtonPressed() {
+        api.deleteRoom();
         setContentView(new RoomView(this));
         viewState = 3;
     }
 
-    private List<String> getRoomData() {
-        List<String> data = new ArrayList<>();
-        data.add("测试数据1测试数据");
-        data.add("测试数据2测试数据");
-        data.add("测试数据3测试数据");
-        data.add("测试数据4测试数据");
-        data.add("测试数据5测试数据");
-        data.add("测试数据6测试数据");
-        data.add("测试数据7测试数据");
-        data.add("测试数据8测试数据");
-        data.add("测试数据9测试数据");
-        data.add("测试数据10测试数据");
-        return data;
-    }
-
-    private List<String> getMemberData() {
-        List<String> data = new ArrayList<>();
-        data.add("房主id");
-        data.add("");
-        data.add("成员1");
-        data.add("成员1");
-        data.add("成员1");
-        data.add("成员1");
-        data.add("成员1");
-        data.add("成员1");
-        return data;
-    }
 
     public void gameStart() {
+        api.startGame();
+        TurnToGameView();
+    }
+
+    private void TurnToGameView() {
         Toast.makeText(this, "游戏开始!", Toast.LENGTH_LONG).show();
     }
 
