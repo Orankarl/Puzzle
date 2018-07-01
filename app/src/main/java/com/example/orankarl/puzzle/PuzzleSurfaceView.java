@@ -36,6 +36,7 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
     LinkedList<Integer> drawOrder = new LinkedList<>();
     int pieceCount = 0;
     int pieceWidth, pieceHeight;
+    boolean[] isPieceNeedPaint;
 
     public static int screenW, screenH;
     private Resources resources = this.getResources();
@@ -53,6 +54,10 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
     }
 
     private void init() {
+        pieceCount = 4;
+        isPieceNeedPaint = new boolean[pieceCount];
+        for (int i = 0; i < pieceCount; i++) isPieceNeedPaint[i] = true;
+
         int fixedWidth = DensityUtil.densityUtil.px2dip(600);
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
@@ -108,6 +113,7 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
 
                 Canvas canvas1 = new Canvas(bitmapCache);
                 if (needUpdate) {
+                    checkCombination();
                     Iterator<Integer> iterator = drawOrder.iterator();
                     while(iterator.hasNext()) {
                         int temp = iterator.next();
@@ -119,7 +125,9 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
                     needUpdate = false;
                 }
                 for (int index : drawOrder) {
-                    canvas1 = pieces.get(index).draw(canvas1, paint);
+                    if (isPieceNeedPaint[index]) {
+                        canvas1 = pieces.get(index).draw(canvas1, paint);
+                    }
                 }
                 if (isChosen) {
                     canvas1 = pieces.get(chosenPieceIndex).draw(canvas1, paint);
@@ -137,6 +145,16 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
 
         } finally {
             if (canvas != null) holder.unlockCanvasAndPost(canvas);
+        }
+    }
+
+    void checkCombination() {
+        for (int i = 0; i < pieces.size(); i++) {
+            if (i == chosenPieceIndex || !isPieceNeedPaint[i]) continue;
+            if (pieces.get(chosenPieceIndex).isNeighbor(pieces.get(i)) && pieces.get(chosenPieceIndex).isCloseEnough(pieces.get(i))) {
+                pieces.get(chosenPieceIndex).addPieceGroup(pieces.get(i));
+                isPieceNeedPaint[i] = false;
+            }
         }
     }
 
@@ -158,6 +176,7 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
                 ListIterator<Integer> listIterator = drawOrder.listIterator(drawOrder.size());
                 while (listIterator.hasPrevious()) {
                     int index = listIterator.previous();
+                    if (!isPieceNeedPaint[index]) continue;
                     PuzzlePieceGroup piece = pieces.get(index);
                     if (piece.isInPiece(event.getX(), event.getY())) {
                         isChosen = true;
