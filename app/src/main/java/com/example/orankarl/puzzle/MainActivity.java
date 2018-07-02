@@ -281,7 +281,13 @@ public class MainActivity extends AppCompatActivity {
             addContentView(roomList, roomList_params);
         });
 
+        api.onGetImage(image -> {
+            puzzleBitmap = image;
+        });
+
         api.onStartGame(() -> {
+            if (puzzleBitmap == null)
+                return;
             if (viewState == 8) {
                 TurnToGameView();
             }
@@ -372,8 +378,6 @@ public class MainActivity extends AppCompatActivity {
                 t.show();
                 return;
             }
-
-            api.socketAuth(loginRes.token);
 
             t.setText("Login Success!");
             t.show();
@@ -538,7 +542,7 @@ public class MainActivity extends AppCompatActivity {
         if (isHost) {
             api.newRoom(split, pattern);
             memberData.clear();
-            api.userInfo(myToken, userInfoResponse -> {
+            api.userInfo(userInfoResponse -> {
                 memberData.add(userInfoResponse.username);
                 setContentView(new MemberListView(this));
                 SurfaceViewListView memberList = new SurfaceViewListView(this);
@@ -611,7 +615,10 @@ public class MainActivity extends AppCompatActivity {
 
     public void gameStart() {
         api.startGame();
-        TurnToGameView();
+        Toast.makeText(this, "Transfering image...", Toast.LENGTH_LONG).show();
+        api.image(puzzleBitmap, response -> {
+            TurnToGameView();
+        });
     }
 
     private void TurnToGameView() {

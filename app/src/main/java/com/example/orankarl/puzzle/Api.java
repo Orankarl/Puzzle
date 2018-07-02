@@ -43,6 +43,7 @@ public class Api {
     private int _port;
     private Socket _socket;
     private Handler _handler;
+    private String _token;
 
     // Initialization part
     Api(String url, int port, Handler handler) {
@@ -60,6 +61,10 @@ public class Api {
 
     public boolean connected() {
         return _socket.connected();
+    }
+
+    public void setToken(String token) {
+        _token = token;
     }
 
     // Core part
@@ -121,7 +126,8 @@ public class Api {
                 .host(_url)
                 .port(_port)
                 .addPathSegment("api")
-                .addPathSegment("image");
+                .addPathSegment("image")
+                .addPathSegment(_token);
         RequestBody body = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
                 .addFormDataPart("image", "image.jpg",
@@ -196,7 +202,8 @@ public class Api {
                 .host(_url)
                 .port(_port)
                 .addPathSegment("api")
-                .addPathSegment("image");
+                .addPathSegment("image")
+                .addPathSegment(_token);
         Request request = new Request.Builder()
                 .url(url).get().build();
         _client.newCall(request).enqueue(new Callback() {
@@ -228,6 +235,7 @@ public class Api {
     }
     public void image(Bitmap image, final ImageCallback cb)
     {
+        /*
         if (image.getHeight() > 500 || image.getWidth() > 500) {
             double ratio = image.getWidth();
             ratio /= image.getHeight();
@@ -239,6 +247,7 @@ public class Api {
                 image.setHeight(500);
             }
         }
+        */
         ByteArrayOutputStream jpegSteam = new ByteArrayOutputStream();
         image.compress(Bitmap.CompressFormat.JPEG, 100, jpegSteam);
         execute(jpegSteam.toByteArray(), response -> {
@@ -264,7 +273,10 @@ public class Api {
             e.printStackTrace();
         }
         execute("login", "POST", data, response -> {
-            cb.onResponse(new Gson().fromJson(response, LoginResponse.class));
+            LoginResponse r = new Gson().fromJson(response, LoginResponse.class);
+            _token = r.token;
+            socketAuth(r.token);
+            cb.onResponse(r);
         });
     }
 
@@ -298,11 +310,13 @@ public class Api {
     interface UserInfoCallback {
         void onResponse(UserInfoResponse response);
     }
-    public void userInfo(String token, UserInfoCallback cb)
+    public void userInfo(UserInfoCallback cb)
     {
+        if (_token == null)
+            return;
         JSONObject data = new JSONObject();
         try {
-            data.put("token", token);
+            data.put("token", _token);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -317,12 +331,14 @@ public class Api {
     interface NewResultCallback {
         void onResponse(NewResultResponse response);
     }
-    public void newResult(String token, int pattern, int time, NewResultCallback cb)
+    public void newResult(int pattern, int time, NewResultCallback cb)
     {
+        if (_token == null)
+            return;
         Long timestamp = System.currentTimeMillis();
         JSONObject data = new JSONObject();
         try {
-            data.put("token", token);
+            data.put("token", _token);
             data.put("pattern", pattern);
             data.put("time", time);
             data.put("timestamp", timestamp);
@@ -359,6 +375,8 @@ public class Api {
 
     // Socket part
     public void socketAuth(String token) {
+        if (_token == null)
+            _token = token;
         _socket.emit("auth", token);
     }
 
@@ -540,7 +558,7 @@ public class Api {
         _socket.emit("pickPiece", pieceIndex);
     }
 
-    public void moveTo(int X, int Y) {
+    public void moveTo(double X, double Y) {
         JSONObject j = new JSONObject();
         try {
             j.put("X", X);
@@ -571,8 +589,7 @@ public class Api {
     }
 
     class MoveToResponse {
-        int X;
-        int Y;
+        double X, Y;
         String username;
     }
     interface MoveToCallback {
