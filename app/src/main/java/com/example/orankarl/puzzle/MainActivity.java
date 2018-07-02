@@ -283,13 +283,14 @@ public class MainActivity extends AppCompatActivity {
 
         api.onGetImage(image -> {
             puzzleBitmap = image;
+            TurnToGameView();
         });
 
         api.onStartGame(() -> {
             if (puzzleBitmap == null)
                 return;
             if (viewState == 8) {
-                TurnToGameView();
+
             }
         });
     }

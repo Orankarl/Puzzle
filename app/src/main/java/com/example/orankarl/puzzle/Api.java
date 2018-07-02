@@ -196,7 +196,7 @@ public class Api {
     private interface ImageResponseCallback {
         void onFinish(Bitmap bitmap);
     }
-    private void getImage(String url, final ImageResponseCallback cb) {
+    private void getImage(final ImageResponseCallback cb) {
         HttpUrl.Builder urlBuilder = new HttpUrl.Builder()
                 .scheme("http")
                 .host(_url)
@@ -205,7 +205,7 @@ public class Api {
                 .addPathSegment("image")
                 .addPathSegment(_token);
         Request request = new Request.Builder()
-                .url(url).get().build();
+                .url(urlBuilder.build()).get().build();
         _client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
@@ -535,8 +535,8 @@ public class Api {
         void onResponse(Bitmap bitmap);
     }
     public void onGetImage(GetImageCallback cb) {
-        _socket.on("getImage", response -> {
-            getImage(response[0].toString(), bitmap -> {
+        _socket.on("image", response -> {
+            getImage(bitmap -> {
                 _handler.post(() -> {
                     cb.onResponse(bitmap);
                 });
