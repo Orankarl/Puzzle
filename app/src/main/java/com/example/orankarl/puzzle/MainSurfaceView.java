@@ -24,6 +24,7 @@ public class MainSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     MenuButton buttonSingle;
     MenuButton buttonLog;
     MenuButton buttonRank;
+    private Bitmap background;
     boolean flag = true;
     public MainSurfaceView(Context context) {
         super(context);
@@ -36,6 +37,7 @@ public class MainSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     }
 
     private void init() {
+        background = BitmapFactory.decodeResource(resources, R.drawable.background);
         Bitmap bmpButtonSingle = BitmapFactory.decodeResource(resources, R.drawable.button_singlestart);
         Bitmap bmpButtonSinglePressed = BitmapFactory.decodeResource(resources, R.drawable.button_singlestart_pressed);
         Bitmap bmpButtonMulti = BitmapFactory.decodeResource(resources, R.drawable.button_multistart);
@@ -58,6 +60,8 @@ public class MainSurfaceView extends SurfaceView implements SurfaceHolder.Callba
             canvas = holder.lockCanvas();
             if (canvas != null) {
                 canvas.drawColor(Color.WHITE);
+
+                canvas.drawBitmap(background, 0, 0, paint);
 
                 Bitmap  origin_bitmap = BitmapFactory.decodeResource(this.getContext().getResources(), R.drawable.logo);
                 int origin_width = origin_bitmap.getWidth();

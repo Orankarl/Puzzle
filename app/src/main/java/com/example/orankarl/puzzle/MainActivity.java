@@ -7,6 +7,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.ColorFilter;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.net.Uri;
@@ -305,6 +306,7 @@ public class MainActivity extends AppCompatActivity {
 
         FrameLayout.LayoutParams username_params = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
         editText_username.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+        editText_username.setBackgroundColor(0);
         editText_username.setHint("3-20位用户名");
         editText_username.setMinWidth(screenW * 3 / 8);
         editText_username.setPadding(editText_username.getPaddingLeft(),0,editText_username.getPaddingRight(),editText_username.getPaddingBottom());
@@ -315,6 +317,7 @@ public class MainActivity extends AppCompatActivity {
         editText_password = new SurfaceViewEditText(this);
         FrameLayout.LayoutParams password_params = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
         editText_password.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        editText_password.setBackgroundColor(0);
         editText_password.setHint("请输入密码");
         editText_password.setTransformationMethod(PasswordTransformationMethod.getInstance());
         editText_password.setMinWidth(screenW * 3 / 8);
@@ -410,6 +413,7 @@ public class MainActivity extends AppCompatActivity {
 
         FrameLayout.LayoutParams username_params = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
         editText_username.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+        editText_username.setBackgroundColor(0);
         editText_username.setHint("3-20位用户名");
         editText_username.setMinWidth(screenW * 3 / 8);
         editText_username.setPadding(editText_username.getPaddingLeft(),0,editText_username.getPaddingRight(),editText_username.getPaddingBottom());
@@ -420,6 +424,7 @@ public class MainActivity extends AppCompatActivity {
         editText_password = new SurfaceViewEditText(this);
         FrameLayout.LayoutParams password_params = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
         editText_password.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        editText_password.setBackgroundColor(0);
         editText_password.setHint("请输入密码");
         editText_password.setTransformationMethod(PasswordTransformationMethod.getInstance());
         editText_password.setMinWidth(screenW * 3 / 8);
@@ -431,6 +436,7 @@ public class MainActivity extends AppCompatActivity {
         editText_nickname = new SurfaceViewEditText(this);
         FrameLayout.LayoutParams nickname_params = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
         editText_nickname.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+        editText_nickname.setBackgroundColor(0);
         editText_nickname.setHint("输入你的昵称");
         editText_nickname.setMinWidth(screenW * 3 / 8);
         editText_nickname.setPadding(editText_password.getPaddingLeft(),0,editText_password.getPaddingRight(),editText_password.getPaddingBottom());

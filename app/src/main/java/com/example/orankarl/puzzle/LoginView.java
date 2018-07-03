@@ -18,8 +18,8 @@ public class LoginView extends SurfaceView implements SurfaceHolder.Callback, Ru
     private Context context;
     private SurfaceHolder holder;
     private Paint paint;
-    private Thread thread;
     private Canvas canvas;
+    private Bitmap background;
 
     public int TextSize;
 
@@ -39,6 +39,8 @@ public class LoginView extends SurfaceView implements SurfaceHolder.Callback, Ru
     }
 
     private void init() {
+        background = BitmapFactory.decodeResource(resources, R.drawable.background);
+
         Bitmap loginButton = BitmapFactory.decodeResource(resources, R.drawable.button_mainlogin);
         Bitmap loginButtonPressed = BitmapFactory.decodeResource(resources, R.drawable.button_mainlogin_pressed);
         int posX = LoginView.screenW * 2 / 3 - loginButton.getWidth() / 2;
@@ -56,6 +58,8 @@ public class LoginView extends SurfaceView implements SurfaceHolder.Callback, Ru
             canvas = holder.lockCanvas();
             if (canvas != null) {
                 canvas.drawColor(Color.WHITE);
+
+                canvas.drawBitmap(background, 0, 0, paint);
 
                 int TEXT_SIZE = (int)Math.round(120 * RATIO);
                 Paint textPaint = new Paint();
@@ -111,8 +115,7 @@ public class LoginView extends SurfaceView implements SurfaceHolder.Callback, Ru
         screenH = this.getHeight();
         init();
         flag = true;
-        thread = new Thread(this);
-        thread.start();
+        new Thread(this).start();
     }
 
     @Override
