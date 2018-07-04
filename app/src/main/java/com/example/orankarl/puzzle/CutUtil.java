@@ -24,25 +24,27 @@ public class CutUtil {
         ArrayList<Float> horizontal_x, horizontal_y, vertical_x, vertical_y, border_horizontal_x, border_horizontal_y, border_vertical_x, border_vertical_y;
         int width = bitmap.getWidth();
         int height = bitmap.getHeight();
-        border_horizontal_x = scalePath(paths.get(StoredPath.flat_horizontal_x), 1.0f * width / 2);
-        border_horizontal_y = scalePath(paths.get(StoredPath.flat_horizontal_y), 1.0f * height / 2);
-        border_vertical_x = scalePath(paths.get(StoredPath.flat_horizontal_y), 1.0f * width / 2);
-        border_vertical_y = scalePath(paths.get(StoredPath.flat_horizontal_x), 1.0f * height / 2);
+        int rowCount = (int)Math.sqrt((double) count);
+        Log.d("rowCount from cutImage:", String.valueOf(rowCount));
+        border_horizontal_x = scalePath(paths.get(StoredPath.flat_horizontal_x), 1.0f * width / rowCount);
+        border_horizontal_y = scalePath(paths.get(StoredPath.flat_horizontal_y), 1.0f * height / rowCount);
+        border_vertical_x = scalePath(paths.get(StoredPath.flat_horizontal_y), 1.0f * width / rowCount);
+        border_vertical_y = scalePath(paths.get(StoredPath.flat_horizontal_x), 1.0f * height / rowCount);
         if (pathType.equals(type1)) {
-            horizontal_x = scalePath(paths.get(StoredPath.flat_horizontal_x), 1.0f * width / 2);
-            horizontal_y = scalePath(paths.get(StoredPath.flat_horizontal_y), 1.0f * height / 2);
-            vertical_x = scalePath(paths.get(StoredPath.flat_vertical_x), 1.0f * width / 2);
-            vertical_y = scalePath(paths.get(StoredPath.flat_vertical_y), 1.0f * height / 2);
+            horizontal_x = scalePath(paths.get(StoredPath.flat_horizontal_x), 1.0f * width / rowCount);
+            horizontal_y = scalePath(paths.get(StoredPath.flat_horizontal_y), 1.0f * height / rowCount);
+            vertical_x = scalePath(paths.get(StoredPath.flat_vertical_x), 1.0f * width / rowCount);
+            vertical_y = scalePath(paths.get(StoredPath.flat_vertical_y), 1.0f * height / rowCount);
         } else if (pathType.equals(type2)){
-            horizontal_x = scalePath(paths.get(StoredPath.classic_horizontal_x), 1.0f * width / 2);
-            horizontal_y = scalePath(paths.get(StoredPath.classic_horizontal_y), 1.0f * height / 2);
-            vertical_x = scalePath(paths.get(StoredPath.classic_horizontal_y), 1.0f * width / 2);
-            vertical_y = scalePath(paths.get(StoredPath.classic_horizontal_x), 1.0f * height / 2);
+            horizontal_x = scalePath(paths.get(StoredPath.classic_horizontal_x), 1.0f * width / rowCount);
+            horizontal_y = scalePath(paths.get(StoredPath.classic_horizontal_y), 1.0f * height / rowCount);
+            vertical_x = scalePath(paths.get(StoredPath.classic_horizontal_y), 1.0f * width / rowCount);
+            vertical_y = scalePath(paths.get(StoredPath.classic_horizontal_x), 1.0f * height / rowCount);
         } else {
-            horizontal_x = scalePath(paths.get(StoredPath.flat_horizontal_x), 1.0f * width / 2);
-            horizontal_y = scalePath(paths.get(StoredPath.flat_horizontal_y), 1.0f * height / 2);
-            vertical_x = scalePath(paths.get(StoredPath.flat_vertical_x), 1.0f * width / 2);
-            vertical_y = scalePath(paths.get(StoredPath.flat_vertical_y), 1.0f * height / 2);
+            horizontal_x = scalePath(paths.get(StoredPath.flat_horizontal_x), 1.0f * width / rowCount);
+            horizontal_y = scalePath(paths.get(StoredPath.flat_horizontal_y), 1.0f * height / rowCount);
+            vertical_x = scalePath(paths.get(StoredPath.flat_vertical_x), 1.0f * width / rowCount);
+            vertical_y = scalePath(paths.get(StoredPath.flat_vertical_y), 1.0f * height / rowCount);
         }
         if (count == 4) {
             //顺序为从左到右，从上到下
@@ -183,7 +185,7 @@ public class CutUtil {
             path.addPath(left_x.get(i).intValue() + biasX, left_y.get(i).intValue() + biasY);
         }
         Log.d("height:", String.valueOf(height));
-        path.print();
+//        path.print();
         return path;
     }
 
@@ -207,7 +209,7 @@ public class CutUtil {
         int cut_width = Math.abs(rect.left - rect.right);
         int cut_height = Math.abs(rect.top - rect.bottom);
 
-        Log.d("rect top&bottom:", String.valueOf(rect.top) + " " + String.valueOf(rect.bottom));
+        Log.d("rect left&right:", String.valueOf(rect.left) + " " + String.valueOf(rect.right));
         Log.d("bitmap w&h:", String.valueOf(bitmap.getWidth()) + " " + String.valueOf(bitmap.getHeight()));
         Log.d("parameter:", String.valueOf(rect.left) + " " + String.valueOf(rect.top) + " " + String.valueOf(cut_width) + " " + String.valueOf(cut_height));
 

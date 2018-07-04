@@ -17,6 +17,7 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.ListIterator;
@@ -34,9 +35,11 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
     float touchX = 0, touchY = 0;
     int biasX = 0, biasY = 0;
     LinkedList<Integer> drawOrder = new LinkedList<>();
-    int pieceCount = 0;
+    int pieceCount = 0, rowCount = 0;
     int pieceWidth, pieceHeight;
+    int spacing;
     boolean[] isPieceNeedPaint;
+    ArrayList<Tuple> posList = new ArrayList<>();
 
     public static int screenW, screenH;
     private Resources resources = this.getResources();
@@ -51,14 +54,16 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
         paint = new Paint();
         paint.setAntiAlias(true);
         setFocusable(true);
+        pieceCount = 9;
+        rowCount = 3;
     }
 
     private void init() {
-        pieceCount = 4;
+
         isPieceNeedPaint = new boolean[pieceCount];
         for (int i = 0; i < pieceCount; i++) isPieceNeedPaint[i] = true;
 
-        int fixedWidth = DensityUtil.densityUtil.px2dip(600);
+        int fixedWidth = DensityUtil.densityUtil.px2dip(500);
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
         bitmap = BitmapFactory.decodeResource(resources, R.drawable.sample, options);
@@ -73,33 +78,64 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
         Log.d("width:", String.valueOf(options.outWidth));
         Log.d("height", String.valueOf(options.outHeight));
 
-        int spacing = screenW / 10;
+        pieceWidth = bitmap.getWidth() / rowCount;
+        pieceHeight = bitmap.getHeight() / rowCount;
 
-        ArrayList<Bitmap> cutImages = CutUtil.cutImage(bitmap, CutUtil.type2, 4);
-        PuzzlePiece piece1 = new PuzzlePiece(cutImages.get(0), (screenW - spacing) / 2 - cutImages.get(0).getWidth(),
-                (screenH - spacing) / 2 - cutImages.get(0).getHeight());
-        PuzzlePiece piece2 = new PuzzlePiece(cutImages.get(1), (screenW + spacing) / 2,
-                (screenH - spacing) / 2 - cutImages.get(1).getHeight());
-        PuzzlePiece piece3 = new PuzzlePiece(cutImages.get(2), (screenW - spacing) / 2 - cutImages.get(0).getWidth(),
-                (screenH + spacing) / 2);
-        PuzzlePiece piece4 = new PuzzlePiece(cutImages.get(3), (screenW + spacing) / 2,
-                (screenH + spacing) / 2);
+        initPiecePos();
 
-        PuzzlePieceGroup pieceGroup1 = new PuzzlePieceGroup(piece1, 0, 2, bitmap.getWidth()/2, bitmap.getHeight()/2);
-        PuzzlePieceGroup pieceGroup2 = new PuzzlePieceGroup(piece2, 1, 2, bitmap.getWidth()/2, bitmap.getHeight()/2);
-        PuzzlePieceGroup pieceGroup3 = new PuzzlePieceGroup(piece3, 2, 2, bitmap.getWidth()/2, bitmap.getHeight()/2);
-        PuzzlePieceGroup pieceGroup4 = new PuzzlePieceGroup(piece4, 3, 2, bitmap.getWidth()/2, bitmap.getHeight()/2);
+        if (pieceCount == 4) {
+            spacing  = screenW / 10;
+
+            ArrayList<Bitmap> cutImages = CutUtil.cutImage(bitmap, CutUtil.type2, 4);
+            PuzzlePiece piece1 = new PuzzlePiece(cutImages.get(0), (screenW - spacing) / 2 - cutImages.get(0).getWidth(),
+                    (screenH - spacing) / 2 - cutImages.get(0).getHeight());
+            PuzzlePiece piece2 = new PuzzlePiece(cutImages.get(1), (screenW + spacing) / 2,
+                    (screenH - spacing) / 2 - cutImages.get(1).getHeight());
+            PuzzlePiece piece3 = new PuzzlePiece(cutImages.get(2), (screenW - spacing) / 2 - cutImages.get(0).getWidth(),
+                    (screenH + spacing) / 2);
+            PuzzlePiece piece4 = new PuzzlePiece(cutImages.get(3), (screenW + spacing) / 2,
+                    (screenH + spacing) / 2);
+
+            PuzzlePieceGroup pieceGroup1 = new PuzzlePieceGroup(piece1, 0, 2, bitmap.getWidth()/2, bitmap.getHeight()/2);
+            PuzzlePieceGroup pieceGroup2 = new PuzzlePieceGroup(piece2, 1, 2, bitmap.getWidth()/2, bitmap.getHeight()/2);
+            PuzzlePieceGroup pieceGroup3 = new PuzzlePieceGroup(piece3, 2, 2, bitmap.getWidth()/2, bitmap.getHeight()/2);
+            PuzzlePieceGroup pieceGroup4 = new PuzzlePieceGroup(piece4, 3, 2, bitmap.getWidth()/2, bitmap.getHeight()/2);
 //        pieceGroup1.addPieceGroup(pieceGroup2);
 //        pieceGroup1.addPieceGroup(pieceGroup3);
 //        pieceGroup1.addPieceGroup(pieceGroup4);
-        pieces.add(pieceGroup1);
-        pieces.add(pieceGroup2);
-        pieces.add(pieceGroup3);
-        pieces.add(pieceGroup4);
+            pieces.add(pieceGroup1);
+            pieces.add(pieceGroup2);
+            pieces.add(pieceGroup3);
+            pieces.add(pieceGroup4);
 
-        for (int i = 0; i < 4; i++) {
-            drawOrder.offer(i);
+            for (int i = 0; i < 4; i++) {
+                drawOrder.offer(i);
+            }
+        } else if (pieceCount == 9) {
+            spacing = screenW / 20;
+            ArrayList<Bitmap> cutImages = CutUtil.cutImage(bitmap, CutUtil.type2, 9);
+            PuzzlePiece piece1 = new PuzzlePiece(cutImages.get(0), posList.get(0).x, posList.get(0).y);
+            for (int i = 0; i < 9; i++) {
+//                PuzzlePieceGroup pieceGroup = ;
+                pieces.add(new PuzzlePieceGroup(new PuzzlePiece(cutImages.get(i), posList.get(i).x, posList.get(i).y), i, rowCount, pieceWidth, pieceHeight));
+            }
+
+            for (int i = 0; i < 9; i++) {
+                drawOrder.offer(i);
+            }
+        } else if (pieceCount == 16) {
+            ArrayList<Bitmap> cutImages = CutUtil.cutImage(bitmap, CutUtil.type2, 16);
+            for (int i = 0; i < 16; i++) {
+//                PuzzlePieceGroup pieceGroup = ;
+                pieces.add(new PuzzlePieceGroup(new PuzzlePiece(cutImages.get(i), posList.get(i).x, posList.get(i).y), i, rowCount, pieceWidth, pieceHeight));
+            }
+
+            for (int i = 0; i < 16; i++) {
+                drawOrder.offer(i);
+            }
         }
+
+
     }
 
     public void draw() {
@@ -240,6 +276,7 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
     public void surfaceCreated(SurfaceHolder surfaceHolder) {
         screenW = this.getWidth();
         screenH = this.getHeight();
+        spacing  = screenW / 10;
         Log.d("view width:", String.valueOf(screenW));
         Log.d("view height", String.valueOf(screenH));
         init();
@@ -256,5 +293,52 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
     @Override
     public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
 
+    }
+
+    private class Tuple {
+        public int x, y;
+        Tuple(int x, int y) {
+            this.x = x;
+            this.y = y;
+        }
+    }
+
+    public void initPiecePos() {
+        if (pieceCount == 9) {
+            posList.add(new Tuple((screenW - 2*spacing - 3*pieceWidth)/2, (screenH - 2*spacing - 3*pieceHeight) / 2));
+            posList.add(new Tuple((screenW - 2*spacing - 3*pieceWidth)/2 + pieceWidth + spacing, (screenH - 2*spacing - 3*pieceHeight) / 2));
+            posList.add(new Tuple((screenW - 2*spacing - 3*pieceWidth)/2 + pieceWidth*2 + spacing*2, (screenH - 2*spacing - 3*pieceHeight) / 2));
+
+            posList.add(new Tuple((screenW - 2*spacing - 3*pieceWidth)/2, (screenH - 2*spacing - 3*pieceHeight) / 2 + pieceHeight + spacing));
+            posList.add(new Tuple((screenW - 2*spacing - 3*pieceWidth)/2 + pieceWidth + spacing, (screenH - 2*spacing - 3*pieceHeight) / 2 + pieceHeight + spacing));
+            posList.add(new Tuple((screenW - 2*spacing - 3*pieceWidth)/2 + pieceWidth*2 + spacing*2, (screenH - 2*spacing - 3*pieceHeight) / 2 + pieceHeight + spacing));
+
+            posList.add(new Tuple((screenW - 2*spacing - 3*pieceWidth)/2, (screenH - 2*spacing - 3*pieceHeight) / 2 + pieceHeight*2 + spacing*2));
+            posList.add(new Tuple((screenW - 2*spacing - 3*pieceWidth)/2 + pieceWidth + spacing, (screenH - 2*spacing - 3*pieceHeight) / 2 + pieceHeight*2 + spacing*2));
+            posList.add(new Tuple((screenW - 2*spacing - 3*pieceWidth)/2 + pieceWidth*2 + spacing*2, (screenH - 2*spacing - 3*pieceHeight) / 2 + pieceHeight*2 + spacing*2));
+            Collections.shuffle(posList);
+        } else if (pieceCount == 16) {
+            posList.add(new Tuple((screenW - 3*spacing - 4*pieceWidth)/2, (screenH - 3*spacing - 4*pieceHeight) / 2));
+            posList.add(new Tuple((screenW - 3*spacing - 4*pieceWidth)/2 + pieceWidth + spacing, (screenH - 3*spacing - 4*pieceHeight) / 2));
+            posList.add(new Tuple((screenW - 3*spacing - 4*pieceWidth)/2 + pieceWidth*2 + spacing*2, (screenH - 3*spacing - 4*pieceHeight) / 2));
+            posList.add(new Tuple((screenW - 3*spacing - 4*pieceWidth)/2 + pieceWidth*3 + spacing*3, (screenH - 3*spacing - 4*pieceHeight) / 2));
+
+            posList.add(new Tuple((screenW - 3*spacing - 4*pieceWidth)/2, (screenH - 3*spacing - 4*pieceHeight) / 2  + pieceHeight + spacing));
+            posList.add(new Tuple((screenW - 3*spacing - 4*pieceWidth)/2 + pieceWidth + spacing, (screenH - 3*spacing - 4*pieceHeight) / 2 + pieceHeight + spacing));
+            posList.add(new Tuple((screenW - 3*spacing - 4*pieceWidth)/2 + pieceWidth*2 + spacing*2, (screenH - 3*spacing - 4*pieceHeight) / 2 + pieceHeight + spacing));
+            posList.add(new Tuple((screenW - 3*spacing - 4*pieceWidth)/2 + pieceWidth*3 + spacing*3, (screenH - 3*spacing - 4*pieceHeight) / 2 + pieceHeight + spacing));
+
+            posList.add(new Tuple((screenW - 3*spacing - 4*pieceWidth)/2, (screenH - 3*spacing - 4*pieceHeight) / 2  + pieceHeight*2 + spacing*2));
+            posList.add(new Tuple((screenW - 3*spacing - 4*pieceWidth)/2 + pieceWidth + spacing, (screenH - 3*spacing - 4*pieceHeight) / 2 + pieceHeight*2 + spacing*2));
+            posList.add(new Tuple((screenW - 3*spacing - 4*pieceWidth)/2 + pieceWidth*2 + spacing*2, (screenH - 3*spacing - 4*pieceHeight) / 2 + pieceHeight*2 + spacing*2));
+            posList.add(new Tuple((screenW - 3*spacing - 4*pieceWidth)/2 + pieceWidth*3 + spacing*3, (screenH - 3*spacing - 4*pieceHeight) / 2 + pieceHeight*2 + spacing*2));
+
+            posList.add(new Tuple((screenW - 3*spacing - 4*pieceWidth)/2, (screenH - 3*spacing - 4*pieceHeight) / 2  + pieceHeight*3 + spacing*3));
+            posList.add(new Tuple((screenW - 3*spacing - 4*pieceWidth)/2 + pieceWidth + spacing, (screenH - 3*spacing - 4*pieceHeight) / 2 + pieceHeight*3 + spacing*3));
+            posList.add(new Tuple((screenW - 3*spacing - 4*pieceWidth)/2 + pieceWidth*2 + spacing*2, (screenH - 3*spacing - 4*pieceHeight) / 2 + pieceHeight*3 + spacing*3));
+            posList.add(new Tuple((screenW - 3*spacing - 4*pieceWidth)/2 + pieceWidth*3 + spacing*3, (screenH - 3*spacing - 4*pieceHeight) / 2 + pieceHeight*3 + spacing*3));
+
+            Collections.shuffle(posList);
+        }
     }
 }

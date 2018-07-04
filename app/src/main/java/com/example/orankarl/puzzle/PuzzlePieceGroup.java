@@ -86,11 +86,20 @@ public class PuzzlePieceGroup {
     }
 
     boolean isNeighbor(PuzzlePieceGroup pieceGroup) {
-        ArrayList<Integer> selfAttachedID = new ArrayList<>();
-                getAttachedID();
+        ArrayList<Integer> selfAttachedID = getAttachedID();
         selfAttachedID.add(mainID);
         ArrayList<Integer> anotherAttachedID = pieceGroup.getAttachedID();
         anotherAttachedID.add(pieceGroup.mainID);
+        String str1 = "";
+        for (int i:selfAttachedID) {
+            str1 += String.valueOf(i) + " ";
+        }
+        String str2 = "";
+        for (int i:anotherAttachedID) {
+            str2 += String.valueOf(i) + " ";
+        }
+        Log.d("selfAttachedID:", str1);
+        Log.d("anotherAttachedID:", str2);
         for (int i:selfAttachedID) {
             for (int j:anotherAttachedID) {
                 if (i > j) {
@@ -98,6 +107,7 @@ public class PuzzlePieceGroup {
                     i = j;
                     j = temp;
                 }
+//                Log.d("j i:", String.valueOf(j) + " " +String.valueOf(i));
                 if (j-i == rowCount) return true;
                 if (j-i == 1) {
                     if (j % rowCount != 0) return true;
@@ -108,17 +118,20 @@ public class PuzzlePieceGroup {
     }
 
     boolean isCloseEnough(PuzzlePieceGroup pieceGroup) {
-        double closeRatio = 0.05;
+        double closeRatio = 0.1;
         int selfBiasX = (mainID % rowCount) * pieceWidth;
         int selfBiasY = (mainID / rowCount) * pieceHeight;
         int biasX = (pieceGroup.getMainID() % rowCount) * pieceWidth;
         int biasY = (pieceGroup.getMainID() / rowCount) * pieceHeight;
         if (Math.abs((getPosX() - mainBiasX) - (pieceGroup.getPosX() - pieceGroup.mainBiasX)) < closeRatio * pieceWidth
-                || Math.abs((getPosY() - mainBiasY) - (pieceGroup.getPosY() - pieceGroup.mainBiasY)) < closeRatio * pieceHeight) {
+                && Math.abs((getPosY() - mainBiasY) - (pieceGroup.getPosY() - pieceGroup.mainBiasY)) < closeRatio * pieceHeight) {
             Log.d("id of 2 pieces:", String.valueOf(mainID) + " " + String.valueOf(pieceGroup.mainID));
             Log.d("posX,posY,biasX,biasY:", String.valueOf(getPosX()) + " " + String.valueOf(getPosY()) + " " + String.valueOf(mainBiasX) + " " + String.valueOf(mainBiasY));
             Log.d("posX,posY,biasX,biasY:", String.valueOf(pieceGroup.getPosX()) + " " + String.valueOf(pieceGroup.getPosY())
                     + " " + String.valueOf(pieceGroup.mainBiasX) + " " + String.valueOf(pieceGroup.mainBiasY));
+            Log.d("pieceWidth Height:", String.valueOf(pieceWidth) + " " + String.valueOf(pieceHeight));
+            Log.d("value1:", String.valueOf(Math.abs((getPosX() - mainBiasX) - (pieceGroup.getPosX() - pieceGroup.mainBiasX))));
+            Log.d("value2:", String.valueOf(Math.abs((getPosY() - mainBiasY) - (pieceGroup.getPosY() - pieceGroup.mainBiasY))));
             return true;
         }
         return false;
