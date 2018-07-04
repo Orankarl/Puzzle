@@ -24,28 +24,27 @@ public class CutUtil {
         ArrayList<Float> horizontal_x, horizontal_y, vertical_x, vertical_y, border_horizontal_x, border_horizontal_y, border_vertical_x, border_vertical_y;
         int width = bitmap.getWidth();
         int height = bitmap.getHeight();
+        border_horizontal_x = scalePath(paths.get(StoredPath.flat_horizontal_x), 1.0f * width / 2);
+        border_horizontal_y = scalePath(paths.get(StoredPath.flat_horizontal_y), 1.0f * height / 2);
+        border_vertical_x = scalePath(paths.get(StoredPath.flat_horizontal_y), 1.0f * width / 2);
+        border_vertical_y = scalePath(paths.get(StoredPath.flat_horizontal_x), 1.0f * height / 2);
+        if (pathType.equals(type1)) {
+            horizontal_x = scalePath(paths.get(StoredPath.flat_horizontal_x), 1.0f * width / 2);
+            horizontal_y = scalePath(paths.get(StoredPath.flat_horizontal_y), 1.0f * height / 2);
+            vertical_x = scalePath(paths.get(StoredPath.flat_vertical_x), 1.0f * width / 2);
+            vertical_y = scalePath(paths.get(StoredPath.flat_vertical_y), 1.0f * height / 2);
+        } else if (pathType.equals(type2)){
+            horizontal_x = scalePath(paths.get(StoredPath.classic_horizontal_x), 1.0f * width / 2);
+            horizontal_y = scalePath(paths.get(StoredPath.classic_horizontal_y), 1.0f * height / 2);
+            vertical_x = scalePath(paths.get(StoredPath.classic_horizontal_y), 1.0f * width / 2);
+            vertical_y = scalePath(paths.get(StoredPath.classic_horizontal_x), 1.0f * height / 2);
+        } else {
+            horizontal_x = scalePath(paths.get(StoredPath.flat_horizontal_x), 1.0f * width / 2);
+            horizontal_y = scalePath(paths.get(StoredPath.flat_horizontal_y), 1.0f * height / 2);
+            vertical_x = scalePath(paths.get(StoredPath.flat_vertical_x), 1.0f * width / 2);
+            vertical_y = scalePath(paths.get(StoredPath.flat_vertical_y), 1.0f * height / 2);
+        }
         if (count == 4) {
-            border_horizontal_x = scalePath(paths.get(StoredPath.flat_horizontal_x), 1.0f * width / 2);
-            border_horizontal_y = scalePath(paths.get(StoredPath.flat_horizontal_y), 1.0f * height / 2);
-            border_vertical_x = scalePath(paths.get(StoredPath.flat_horizontal_y), 1.0f * width / 2);
-            border_vertical_y = scalePath(paths.get(StoredPath.flat_horizontal_x), 1.0f * height / 2);
-            if (pathType.equals(type1)) {
-                horizontal_x = scalePath(paths.get(StoredPath.flat_horizontal_x), 1.0f * width / 2);
-                horizontal_y = scalePath(paths.get(StoredPath.flat_horizontal_y), 1.0f * height / 2);
-                vertical_x = scalePath(paths.get(StoredPath.flat_vertical_x), 1.0f * width / 2);
-                vertical_y = scalePath(paths.get(StoredPath.flat_vertical_y), 1.0f * height / 2);
-            } else if (pathType.equals(type2)){
-                horizontal_x = scalePath(paths.get(StoredPath.classic_horizontal_x), 1.0f * width / 2);
-                horizontal_y = scalePath(paths.get(StoredPath.classic_horizontal_y), 1.0f * height / 2);
-                vertical_x = scalePath(paths.get(StoredPath.classic_horizontal_y), 1.0f * width / 2);
-                vertical_y = scalePath(paths.get(StoredPath.classic_horizontal_x), 1.0f * height / 2);
-            } else {
-                horizontal_x = scalePath(paths.get(StoredPath.flat_horizontal_x), 1.0f * width / 2);
-                horizontal_y = scalePath(paths.get(StoredPath.flat_horizontal_y), 1.0f * height / 2);
-                vertical_x = scalePath(paths.get(StoredPath.flat_vertical_x), 1.0f * width / 2);
-                vertical_y = scalePath(paths.get(StoredPath.flat_vertical_y), 1.0f * height / 2);
-            }
-
             //顺序为从左到右，从上到下
             ArrayList<GraphicPath> pathForImages = new ArrayList<>();
 //            Log.d("cutImage w & h:", String.valueOf(width) + " " + String.valueOf(height));
@@ -61,6 +60,97 @@ public class CutUtil {
             pathForImages.add(pathForImage2);
             pathForImages.add(pathForImage3);
             pathForImages.add(pathForImage4);
+
+            for (GraphicPath path:pathForImages) {
+                pieces.add(cutSinglePiece(bitmap, path));
+            }
+        }
+
+        if (count  == 9) {
+            ArrayList<GraphicPath> pathForImages = new ArrayList<>();
+//            Log.d("cutImage w & h:", String.valueOf(width) + " " + String.valueOf(height));
+            GraphicPath pathForImage1 = graphicPathGenerate(border_horizontal_x, border_horizontal_y, vertical_x, vertical_y,
+                    horizontal_x, horizontal_y, border_vertical_x, border_vertical_y, 0, 0, width/3, height/3);
+            GraphicPath pathForImage2 = graphicPathGenerate(border_horizontal_x, border_horizontal_y, vertical_x, vertical_y,
+                    horizontal_x, horizontal_y, vertical_x, vertical_y, width/3, 0, width/3, height/3);
+            GraphicPath pathForImage3 = graphicPathGenerate(border_horizontal_x, border_horizontal_y, border_vertical_x, border_vertical_y,
+                    horizontal_x, horizontal_y, vertical_x, vertical_y, width/3*2, 0, width/3, height/3);
+            GraphicPath pathForImage4 = graphicPathGenerate(horizontal_x, horizontal_y, vertical_x, vertical_y,
+                    horizontal_x, horizontal_y, border_vertical_x, border_vertical_y, 0, height/3, width/3, height/3);
+            GraphicPath pathForImage5 = graphicPathGenerate(horizontal_x, horizontal_y, vertical_x, vertical_y,
+                    horizontal_x, horizontal_y, vertical_x, vertical_y, width/3, height/3, width/3, height/3);
+            GraphicPath pathForImage6 = graphicPathGenerate(horizontal_x, horizontal_y, border_vertical_x, border_vertical_y,
+                    horizontal_x, horizontal_y, vertical_x, vertical_y, width/3*2, height/3, width/3, height/3);
+            GraphicPath pathForImage7 = graphicPathGenerate(horizontal_x, horizontal_y, vertical_x, vertical_y,
+                    border_horizontal_x, border_horizontal_y, border_vertical_x, border_vertical_y, 0, height/3*2, width/3, height/3);
+            GraphicPath pathForImage8 = graphicPathGenerate(horizontal_x, horizontal_y, vertical_x, vertical_y,
+                    border_horizontal_x, border_horizontal_y, vertical_x, vertical_y, width/3, height/3*2, width/3, height/3);
+            GraphicPath pathForImage9 = graphicPathGenerate(horizontal_x, horizontal_y, border_vertical_x, border_vertical_y,
+                    border_horizontal_x, border_horizontal_y, vertical_x, vertical_y, width/3*2, height/3*2, width/3, height/3);
+            pathForImages.add(pathForImage1);
+            pathForImages.add(pathForImage2);
+            pathForImages.add(pathForImage3);
+            pathForImages.add(pathForImage4);
+            pathForImages.add(pathForImage5);
+            pathForImages.add(pathForImage6);
+            pathForImages.add(pathForImage7);
+            pathForImages.add(pathForImage8);
+            pathForImages.add(pathForImage9);
+
+            for (GraphicPath path:pathForImages) {
+                pieces.add(cutSinglePiece(bitmap, path));
+            }
+        }
+        if (count  == 16) {
+            ArrayList<GraphicPath> pathForImages = new ArrayList<>();
+            GraphicPath pathForImage1 = graphicPathGenerate(border_horizontal_x, border_horizontal_y, vertical_x, vertical_y,
+                    horizontal_x, horizontal_y, border_vertical_x, border_vertical_y, 0, 0, width/4, height/4);
+            GraphicPath pathForImage2 = graphicPathGenerate(border_horizontal_x, border_horizontal_y, vertical_x, vertical_y,
+                    horizontal_x, horizontal_y, vertical_x, vertical_y, width/4, 0, width/4, height/4);
+            GraphicPath pathForImage3 = graphicPathGenerate(border_horizontal_x, border_horizontal_y, vertical_x, vertical_y,
+                    horizontal_x, horizontal_y, vertical_x, vertical_y, width/4*2, 0, width/4, height/4);
+            GraphicPath pathForImage4 = graphicPathGenerate(border_horizontal_x, border_horizontal_y, border_vertical_x, border_vertical_y,
+                    horizontal_x, horizontal_y, vertical_x, vertical_y, width/4*3, 0, width/4, height/4);
+            GraphicPath pathForImage5 = graphicPathGenerate(horizontal_x, horizontal_y, vertical_x, vertical_y,
+                    horizontal_x, horizontal_y, border_vertical_x, border_vertical_y, 0, height/4, width/4, height/4);
+            GraphicPath pathForImage6 = graphicPathGenerate(horizontal_x, horizontal_y, vertical_x, vertical_y,
+                    horizontal_x, horizontal_y, vertical_x, vertical_y, width/4, height/4, width/4, height/4);
+            GraphicPath pathForImage7 = graphicPathGenerate(horizontal_x, horizontal_y, vertical_x, vertical_y,
+                    horizontal_x, horizontal_y, vertical_x, vertical_y, width/4*2, height/4, width/4, height/4);
+            GraphicPath pathForImage8 = graphicPathGenerate(horizontal_x, horizontal_y, border_vertical_x, border_vertical_y,
+                    horizontal_x, horizontal_y, vertical_x, vertical_y, width/4*3, height/4, width/4, height/4);
+            GraphicPath pathForImage9 = graphicPathGenerate(horizontal_x, horizontal_y, vertical_x, vertical_y,
+                    horizontal_x, horizontal_y, border_vertical_x, border_vertical_y, 0, height/4*2, width/4, height/4);
+            GraphicPath pathForImage10 = graphicPathGenerate(horizontal_x, horizontal_y, vertical_x, vertical_y,
+                    horizontal_x, horizontal_y, vertical_x, vertical_y, width/4, height/4*2, width/4, height/4);
+            GraphicPath pathForImage11 = graphicPathGenerate(horizontal_x, horizontal_y, vertical_x, vertical_y,
+                    horizontal_x, horizontal_y, vertical_x, vertical_y, width/4*2, height/4*2, width/4, height/4);
+            GraphicPath pathForImage12 = graphicPathGenerate(horizontal_x, horizontal_y, border_vertical_x, border_vertical_y,
+                    horizontal_x, horizontal_y, vertical_x, vertical_y, width/4*3, height/4*2, width/4, height/4);
+            GraphicPath pathForImage13 = graphicPathGenerate(horizontal_x, horizontal_y, vertical_x, vertical_y,
+                    border_horizontal_x, border_horizontal_y, border_vertical_x, border_vertical_y, 0, height/4*3, width/4, height/4);
+            GraphicPath pathForImage14 = graphicPathGenerate(horizontal_x, horizontal_y, vertical_x, vertical_y,
+                    border_horizontal_x, border_horizontal_y, vertical_x, vertical_y, width/4, height/4*3, width/4, height/4);
+            GraphicPath pathForImage15 = graphicPathGenerate(horizontal_x, horizontal_y, vertical_x, vertical_y,
+                    border_horizontal_x, border_horizontal_y, vertical_x, vertical_y, width/4*2, height/4*3, width/4, height/4);
+            GraphicPath pathForImage16 = graphicPathGenerate(horizontal_x, horizontal_y, border_vertical_x, border_vertical_y,
+                    border_horizontal_x, border_horizontal_y, vertical_x, vertical_y, width/4*3, height/4*3, width/4, height/4);
+            pathForImages.add(pathForImage1);
+            pathForImages.add(pathForImage2);
+            pathForImages.add(pathForImage3);
+            pathForImages.add(pathForImage4);
+            pathForImages.add(pathForImage5);
+            pathForImages.add(pathForImage6);
+            pathForImages.add(pathForImage7);
+            pathForImages.add(pathForImage8);
+            pathForImages.add(pathForImage9);
+            pathForImages.add(pathForImage10);
+            pathForImages.add(pathForImage11);
+            pathForImages.add(pathForImage12);
+            pathForImages.add(pathForImage13);
+            pathForImages.add(pathForImage14);
+            pathForImages.add(pathForImage15);
+            pathForImages.add(pathForImage16);
 
             for (GraphicPath path:pathForImages) {
                 pieces.add(cutSinglePiece(bitmap, path));
