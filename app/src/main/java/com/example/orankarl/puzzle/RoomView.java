@@ -18,6 +18,8 @@ public class RoomView extends SurfaceView implements SurfaceHolder.Callback, Run
     private Thread thread;
     private Canvas canvas;
 
+    MainActivity activity = (MainActivity)getContext();
+
     public static int screenW, screenH;
     private Resources resources = this.getResources();
     MenuButton buttonCreateRoom;
@@ -57,14 +59,14 @@ public class RoomView extends SurfaceView implements SurfaceHolder.Callback, Run
         try {
             canvas = holder.lockCanvas();
             if (canvas != null) {
-                canvas.drawColor(Color.WHITE);
+                canvas.drawBitmap(activity.background, 0, 0, paint);
 
                 buttonCreateRoom.draw(canvas, paint);
                 buttonJoinRoom.draw(canvas, paint);
                 buttonBack.draw(canvas, paint);
             }
         } catch (Exception e) {
-
+            e.printStackTrace();
         } finally {
             if (canvas != null) holder.unlockCanvasAndPost(canvas);
         }

@@ -19,6 +19,8 @@ public class ChoosePictureView extends SurfaceView implements SurfaceHolder.Call
     private Thread thread;
     private Canvas canvas;
 
+    MainActivity activity = (MainActivity)getContext();
+
     public Bitmap origin_bitmap = null;
     public Bitmap bitmap = null;
 
@@ -38,7 +40,7 @@ public class ChoosePictureView extends SurfaceView implements SurfaceHolder.Call
     }
 
     private void init() {
-        origin_bitmap = MainActivity.puzzleBitmap;
+        origin_bitmap = activity.puzzleBitmap;
         Bitmap bmpButton = BitmapFactory.decodeResource(resources, R.drawable.button_choose);
         Bitmap bmpButtonPressed = BitmapFactory.decodeResource(resources, R.drawable.button_choose_pressed);
         Bitmap bmpButton2 = BitmapFactory.decodeResource(resources, R.drawable.button_confirm);
@@ -64,7 +66,7 @@ public class ChoosePictureView extends SurfaceView implements SurfaceHolder.Call
         try {
             canvas = holder.lockCanvas();
             if (canvas != null) {
-                canvas.drawColor(Color.WHITE);
+                canvas.drawBitmap(activity.background, 0, 0, paint);
                 if (bitmap != null) {
                     canvas.drawBitmap(bitmap, MainSurfaceView.screenW / 2 - bitmap.getWidth() / 2, MainSurfaceView.screenH / 3 - bitmap.getHeight() / 2, paint);
                     buttonStart2.draw(canvas, paint);

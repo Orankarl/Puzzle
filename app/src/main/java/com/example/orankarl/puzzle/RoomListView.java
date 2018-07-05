@@ -11,15 +11,14 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
-import static com.example.orankarl.puzzle.MainActivity.RATIO;
-import static com.example.orankarl.puzzle.MainActivity.getTextWidth;
-
 public class RoomListView extends SurfaceView implements SurfaceHolder.Callback, Runnable{
     private Context context;
     private SurfaceHolder holder;
     private Paint paint;
     private Thread thread;
     private Canvas canvas;
+
+    MainActivity activity = (MainActivity)getContext();
 
     public Bitmap origin_bitmap = null;
     public Bitmap bitmap = null;
@@ -50,15 +49,15 @@ public class RoomListView extends SurfaceView implements SurfaceHolder.Callback,
         try {
             canvas = holder.lockCanvas();
             if (canvas != null) {
-                canvas.drawColor(Color.WHITE);
+                canvas.drawBitmap(activity.background, 0, 0, paint);
 
-                int TEXT_SIZE = (int)Math.round(100 * RATIO);
+                int TEXT_SIZE = (int)Math.round(100 * activity.RATIO);
                 Paint textPaint = new Paint();
                 textPaint.setColor(Color.BLACK);
                 textPaint.setTextSize(TEXT_SIZE);
 
                 String title = "房间列表";
-                canvas.drawText(title, screenW / 2 - getTextWidth(textPaint, title) / 2, screenH / 15 + textPaint.getTextSize() , textPaint);
+                canvas.drawText(title, screenW / 2 - activity.getTextWidth(textPaint, title) / 2, screenH / 15 + textPaint.getTextSize() , textPaint);
 
                 buttonBack.draw(canvas, paint);
             }
