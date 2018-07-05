@@ -11,15 +11,14 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
-import static com.example.orankarl.puzzle.MainActivity.RATIO;
-import static com.example.orankarl.puzzle.MainActivity.getTextWidth;
-
 public class RegisterView extends SurfaceView implements SurfaceHolder.Callback, Runnable {
     private Context context;
     private SurfaceHolder holder;
     private Paint paint;
     private Thread thread;
     private Canvas canvas;
+
+    MainActivity activity = (MainActivity)getContext();
 
     public int TextSize;
 
@@ -51,15 +50,15 @@ public class RegisterView extends SurfaceView implements SurfaceHolder.Callback,
         try {
             canvas = holder.lockCanvas();
             if (canvas != null) {
-                canvas.drawColor(Color.WHITE);
+                canvas.drawBitmap(activity.background, 0, 0, paint);
 
-                int TEXT_SIZE = (int)Math.round(120 * RATIO);
+                int TEXT_SIZE = (int)Math.round(120 * activity.RATIO);
                 Paint textPaint = new Paint();
                 textPaint.setColor(Color.BLACK);
                 textPaint.setTextSize(TEXT_SIZE);
 
                 String title = "注册";
-                canvas.drawText(title, screenW / 2 - getTextWidth(textPaint, title) / 2, screenH / 10 + textPaint.getTextSize() , textPaint);
+                canvas.drawText(title, screenW / 2 - activity.getTextWidth(textPaint, title) / 2, screenH / 10 + textPaint.getTextSize() , textPaint);
 
                 //TEXT_SIZE = (int)Math.round(80 * RATIO);
                 //textPaint.setTextSize(TEXT_SIZE);
@@ -68,9 +67,9 @@ public class RegisterView extends SurfaceView implements SurfaceHolder.Callback,
                 String text1 = "Username: ";
                 String text2 = "Password: ";
                 String text3 = "Nickname: ";
-                canvas.drawText(text1, screenW / 2 - getTextWidth(textPaint, text1), screenH  * 2 / 7 + textPaint.getTextSize() , textPaint);
-                canvas.drawText(text2, screenW / 2 - getTextWidth(textPaint, text2), screenH * 3 / 7 + textPaint.getTextSize() , textPaint);
-                canvas.drawText(text3, screenW / 2 - getTextWidth(textPaint, text3), screenH * 4 / 7 + textPaint.getTextSize() , textPaint);
+                canvas.drawText(text1, screenW / 2 - activity.getTextWidth(textPaint, text1), screenH  * 2 / 7 + textPaint.getTextSize() , textPaint);
+                canvas.drawText(text2, screenW / 2 - activity.getTextWidth(textPaint, text2), screenH * 3 / 7 + textPaint.getTextSize() , textPaint);
+                canvas.drawText(text3, screenW / 2 - activity.getTextWidth(textPaint, text3), screenH * 4 / 7 + textPaint.getTextSize() , textPaint);
 
                 buttonRegister.draw(canvas, paint);
             }

@@ -18,6 +18,7 @@ public class MainSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     private Paint paint;
     private Thread thread;
     private Canvas canvas;
+    MainActivity activity = (MainActivity)getContext();
 
     public static int screenW, screenH;
     private Resources resources = this.getResources();
@@ -59,7 +60,7 @@ public class MainSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         try {
             canvas = holder.lockCanvas();
             if (canvas != null) {
-                canvas.drawColor(Color.WHITE);
+                canvas.drawBitmap(background, 0, 0, paint);
 
                 canvas.drawBitmap(background, 0, 0, paint);
 
