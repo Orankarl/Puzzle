@@ -30,23 +30,24 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
     private Canvas canvas;
     private Bitmap bitmap, cutBitmap, bitmapCache;
     private ArrayList<PuzzlePieceGroup> pieces = new ArrayList<>();
-    private boolean isChosen = false, needUpdate = false;
+    private boolean isChosen = false, needUpdate = false, isSingle, isOnline;
     private int chosenPieceIndex, updateOrderIndex = -1;
     float touchX = 0, touchY = 0;
     int biasX = 0, biasY = 0;
     LinkedList<Integer> drawOrder = new LinkedList<>();
-    int pieceCount = 0, rowCount = 0;
+    int pieceCount = 9, rowCount = 3;
     int pieceWidth, pieceHeight;
     int spacing;
     boolean[] isPieceNeedPaint;
     ArrayList<Tuple> posList = new ArrayList<>();
+    String pattern = CutUtil.type1;
 
     public static int screenW, screenH;
     private Resources resources = this.getResources();
     MenuButton buttonStart;
     MenuButton buttonChangeAccount;
     boolean flag = true;
-    public PuzzleSurfaceView(Context context) {
+    public PuzzleSurfaceView(Context context, Bitmap bitmap, int pattern, int split, boolean isSingle, boolean isOnline) {
         super(context);
         this.context = context;
         holder = this.getHolder();
@@ -54,29 +55,40 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
         paint = new Paint();
         paint.setAntiAlias(true);
         setFocusable(true);
-        pieceCount = 9;
-        rowCount = 3;
+
+//        this.bitmap = BitmapFactory.decodeByteArray(bitmap, 0, bitmap.length);
+//        this.bitmap = BitmapUtil.getBitmapFromFile(bitmap);
+        this.bitmap = MainActivity.puzzleBitmap;
+//        Log.d("puzzleBitmap w&h:", String.valueOf(MainActivity.puzzleBitmap.getWidth()) + " " + String.valueOf(MainActivity.puzzleBitmap.getHeight()));
+        if (pattern == 1) this.pattern = CutUtil.type1;
+        else this.pattern = CutUtil.type2;
+        pieceCount = split;
+        rowCount = (int) Math.sqrt(pieceCount);
+        this.isSingle = isSingle;
+        this.isOnline = isOnline;
     }
 
     private void init() {
 
+        this.bitmap = BitmapUtil.setImgSize(MainActivity.puzzleBitmap, (int) (0.8*screenW), 0);
+
         isPieceNeedPaint = new boolean[pieceCount];
         for (int i = 0; i < pieceCount; i++) isPieceNeedPaint[i] = true;
 
-        int fixedWidth = DensityUtil.densityUtil.px2dip(500);
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inJustDecodeBounds = true;
-        bitmap = BitmapFactory.decodeResource(resources, R.drawable.sample, options);
-        Log.d("width:", String.valueOf(options.outWidth));
-        Log.d("height", String.valueOf(options.outHeight));
-        options.inJustDecodeBounds = false;
-        options.inSampleSize = options.outWidth / fixedWidth;
-        int height = options.outHeight * fixedWidth / options.outWidth;
-        options.outWidth = fixedWidth;
-        options.outHeight = height;
-        bitmap = BitmapFactory.decodeResource(resources, R.drawable.sample, options);
-        Log.d("width:", String.valueOf(options.outWidth));
-        Log.d("height", String.valueOf(options.outHeight));
+//        int fixedWidth = DensityUtil.densityUtil.px2dip(500);
+//        BitmapFactory.Options options = new BitmapFactory.Options();
+//        options.inJustDecodeBounds = true;
+//        bitmap = BitmapFactory.decodeResource(resources, R.drawable.sample, options);
+//        Log.d("width:", String.valueOf(options.outWidth));
+//        Log.d("height", String.valueOf(options.outHeight));
+//        options.inJustDecodeBounds = false;
+//        options.inSampleSize = options.outWidth / fixedWidth;
+//        int height = options.outHeight * fixedWidth / options.outWidth;
+//        options.outWidth = fixedWidth;
+//        options.outHeight = height;
+//        bitmap = BitmapFactory.decodeResource(resources, R.drawable.sample, options);
+//        Log.d("width:", String.valueOf(options.outWidth));
+//        Log.d("height", String.valueOf(options.outHeight));
 
         pieceWidth = bitmap.getWidth() / rowCount;
         pieceHeight = bitmap.getHeight() / rowCount;
@@ -135,7 +147,7 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
             }
         }
 
-
+        Log.d("pieces size:", String.valueOf(pieces.size()));
     }
 
     public void draw() {

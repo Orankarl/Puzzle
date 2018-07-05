@@ -28,6 +28,7 @@ import android.widget.Toast;
 import static com.example.orankarl.puzzle.MainSurfaceView.screenH;
 import static com.example.orankarl.puzzle.MainSurfaceView.screenW;
 
+import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
@@ -623,13 +624,36 @@ public class MainActivity extends AppCompatActivity {
     public void gameStart() {
         api.startGame();
         Toast.makeText(this, "Transfering image...", Toast.LENGTH_LONG).show();
-        api.image(puzzleBitmap, response -> {
+        if (isOnline) {
+            api.image(puzzleBitmap, response -> {
+                TurnToGameView();
+            });
+        } else {
             TurnToGameView();
-        });
+        }
+
     }
 
     private void TurnToGameView() {
         Toast.makeText(this, "游戏开始!", Toast.LENGTH_LONG).show();
+        Intent intent = new Intent(this, PuzzleActivity.class);
+//        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+//        puzzleBitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+//        byte[] bitmapByte = stream.toByteArray();
+//        intent.putExtra("picture", bitmapByte);
+        String filename = "picture";
+//        BitmapUtil.saveBitmap2file(puzzleBitmap, filename);
+//        intent.putExtra("picture", filename);
+        intent.putExtra("isOnline", isOnline);
+        intent.putExtra("isSingle", isSingle);
+        intent.putExtra("pattern", pattern);
+        if (split == 1) {
+            intent.putExtra("split", 9);
+        } else {
+            intent.putExtra("split", 16);
+        }
+
+        startActivity(intent);
     }
 
     public static int getTextWidth(Paint paint, String str) {
