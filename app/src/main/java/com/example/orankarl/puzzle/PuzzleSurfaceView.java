@@ -42,6 +42,8 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
     ArrayList<Tuple> posList = new ArrayList<>();
     String pattern = CutUtil.type1;
 
+    MainActivity activity = (MainActivity)getContext();
+
     public static int screenW, screenH;
     private Resources resources = this.getResources();
     MenuButton buttonStart;
@@ -154,7 +156,7 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
         try {
             canvas = holder.lockCanvas();
             if (canvas != null) {
-                canvas.drawColor(Color.WHITE);
+                canvas.drawBitmap(activity.background, 0, 0, paint);
 
                 //这里使用双缓冲，防止闪烁
                 bitmapCache = Bitmap.createBitmap(canvas.getWidth(), canvas.getHeight(), Bitmap.Config.ARGB_8888);

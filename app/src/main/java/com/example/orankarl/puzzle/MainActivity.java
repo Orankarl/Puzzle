@@ -10,6 +10,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.ColorFilter;
 import android.graphics.Paint;
 import android.graphics.Point;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -18,6 +19,7 @@ import android.provider.BaseColumns;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
 import android.text.method.PasswordTransformationMethod;
+import android.util.TypedValue;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
@@ -40,15 +42,18 @@ public class MainActivity extends AppCompatActivity {
     String token_tmp = "";
     String myToken = "";
 
-    public static double RATIO;
-    public static int viewState;    //MainSurfaceView: 0, LoginView: 1, MainSurfaceView2: 2, RoomView: 3, ChoosePictureView: 4, ChoosePatternView: 5, ChooseSplitView: 6,
+    public double RATIO;
+    public int viewState;    //MainSurfaceView: 0, LoginView: 1, MainSurfaceView2: 2, RoomView: 3, ChoosePictureView: 4, ChoosePatternView: 5, ChooseSplitView: 6,
                                       //RoomListView: 7, MemberListView: 8, RankView: 9, RegisterView: 10
-    public static boolean isOnline;
-    public static boolean isSingle;
-    public static int split;
-    public static int pattern;
-    public static boolean isRank;
-    public static boolean isHost;
+    public boolean isOnline;
+    public boolean isSingle;
+    public int split;
+    public int pattern;
+    public boolean isRank;
+    public boolean isHost;
+    public Bitmap background;
+
+    public Typeface font;
 
     SurfaceViewListView roomList;
     SurfaceViewListView memberList;
@@ -58,7 +63,8 @@ public class MainActivity extends AppCompatActivity {
     SurfaceViewEditText editText_password;
     SurfaceViewEditText editText_nickname;
 
-    public static Bitmap puzzleBitmap;
+
+    public Bitmap puzzleBitmap;
 
     @Override
     public void onBackPressed() {
@@ -143,6 +149,9 @@ public class MainActivity extends AppCompatActivity {
         isOnline = false;
 
         puzzleBitmap = null;
+
+        background = BitmapFactory.decodeResource(getResources(), R.drawable.background);
+        font = Typeface.createFromAsset(getAssets(), "font/hipchick.ttf");
 
         Point size = new Point();
         getWindowManager().getDefaultDisplay().getSize(size);
@@ -299,6 +308,8 @@ public class MainActivity extends AppCompatActivity {
 
     public void onLogButtonPressed() {
         editText_username = new SurfaceViewEditText(this);
+        editText_username.setTypeface(font);
+        editText_username.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 30);
 
         LoginView loginView = new LoginView(this);
         loginView.TextSize = (int) editText_username.getTextSize();
@@ -308,7 +319,9 @@ public class MainActivity extends AppCompatActivity {
         FrameLayout.LayoutParams username_params = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
         editText_username.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
         editText_username.setBackgroundColor(0);
-        editText_username.setHint("3-20位用户名");
+        editText_username.setTypeface(font);
+        editText_username.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 30);
+        editText_username.setHint("username");
         editText_username.setMinWidth(screenW * 3 / 8);
         editText_username.setPadding(editText_username.getPaddingLeft(),0,editText_username.getPaddingRight(),editText_username.getPaddingBottom());
         username_params.leftMargin = screenW / 2;
@@ -319,7 +332,9 @@ public class MainActivity extends AppCompatActivity {
         FrameLayout.LayoutParams password_params = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
         editText_password.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
         editText_password.setBackgroundColor(0);
-        editText_password.setHint("请输入密码");
+        editText_password.setTypeface(font);
+        editText_password.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 30);
+        editText_password.setHint("your password");
         editText_password.setTransformationMethod(PasswordTransformationMethod.getInstance());
         editText_password.setMinWidth(screenW * 3 / 8);
         editText_password.setPadding(editText_password.getPaddingLeft(),0,editText_password.getPaddingRight(),editText_password.getPaddingBottom());
@@ -415,7 +430,9 @@ public class MainActivity extends AppCompatActivity {
         FrameLayout.LayoutParams username_params = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
         editText_username.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
         editText_username.setBackgroundColor(0);
-        editText_username.setHint("3-20位用户名");
+        editText_username.setTypeface(font);
+        editText_username.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 30);
+        editText_username.setHint("length: 3 to 20");
         editText_username.setMinWidth(screenW * 3 / 8);
         editText_username.setPadding(editText_username.getPaddingLeft(),0,editText_username.getPaddingRight(),editText_username.getPaddingBottom());
         username_params.leftMargin = screenW / 2;
@@ -426,7 +443,9 @@ public class MainActivity extends AppCompatActivity {
         FrameLayout.LayoutParams password_params = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
         editText_password.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
         editText_password.setBackgroundColor(0);
-        editText_password.setHint("请输入密码");
+        editText_password.setTypeface(font);
+        editText_password.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 30);
+        editText_password.setHint("a strong password");
         editText_password.setTransformationMethod(PasswordTransformationMethod.getInstance());
         editText_password.setMinWidth(screenW * 3 / 8);
         editText_password.setPadding(editText_password.getPaddingLeft(),0,editText_password.getPaddingRight(),editText_password.getPaddingBottom());
@@ -438,7 +457,9 @@ public class MainActivity extends AppCompatActivity {
         FrameLayout.LayoutParams nickname_params = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
         editText_nickname.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
         editText_nickname.setBackgroundColor(0);
-        editText_nickname.setHint("输入你的昵称");
+        editText_nickname.setTypeface(font);
+        editText_nickname.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 30);
+        editText_nickname.setHint("displayed nickname");
         editText_nickname.setMinWidth(screenW * 3 / 8);
         editText_nickname.setPadding(editText_password.getPaddingLeft(),0,editText_password.getPaddingRight(),editText_password.getPaddingBottom());
         nickname_params.topMargin = screenH * 4 / 7;
@@ -656,7 +677,7 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    public static int getTextWidth(Paint paint, String str) {
+    public int getTextWidth(Paint paint, String str) {
         int iRet = 0;
         if (str != null && str.length() > 0) {
             int len = str.length();
