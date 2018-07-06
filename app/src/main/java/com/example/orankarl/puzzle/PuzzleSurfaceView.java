@@ -16,11 +16,14 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.ListIterator;
+import java.util.Locale;
 
 public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Callback, Runnable {
     private Context context;
@@ -30,7 +33,7 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
     private Canvas canvas;
     private Bitmap bitmap, cutBitmap, bitmapCache;
     private ArrayList<PuzzlePieceGroup> pieces = new ArrayList<>();
-    private boolean isChosen = false, needUpdate = false, isSingle, isOnline;
+    private boolean isChosen = false, needUpdate = false, isSingle, isOnline, isFinished = false;
     private int chosenPieceIndex, pickedPieceIndex;
     float touchX = 0, touchY = 0;
     int biasX = 0, biasY = 0;
@@ -40,7 +43,9 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
     int spacing;
     boolean[] isPieceNeedPaint, isPicked;
     ArrayList<Tuple> posList = new ArrayList<>();
-    String pattern = CutUtil.type1;
+    String pattern = CutUtil.type1, timeStr;
+    long startTime, minute, second;
+    MenuButton buttonBack;
 
     PuzzleActivity activity = (PuzzleActivity) getContext();
 
@@ -72,7 +77,6 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
     }
 
     private void init() {
-
         this.bitmap = BitmapUtil.setImgSize(this.bitmap, (int) (0.8*screenW), 0);
 
         isPieceNeedPaint = new boolean[pieceCount];
@@ -81,18 +85,21 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
         isPicked = new boolean[pieceCount];
         for (int i = 0; i < pieceCount; i++) isPicked[i] = false;
 
-        MainActivity.api.onPick(pickResponse -> {
-            isPicked[pickResponse.pieceIndex] = true;
-        });
+        if (!isSingle && isOnline) {
+            MainActivity.api.onPick(pickResponse -> {
+                isPicked[pickResponse.pieceIndex] = true;
+            });
 
-        MainActivity.api.onMoveTo(response -> {
-            pieces.get(pickedPieceIndex).setPosX((int)(screenW * response.X));
-            pieces.get(pickedPieceIndex).setPosY((int)(screenH * response.Y));
-        });
+            MainActivity.api.onMoveTo(response -> {
+                pieces.get(pickedPieceIndex).setPosX((int)(screenW * response.X));
+                pieces.get(pickedPieceIndex).setPosY((int)(screenH * response.Y));
+            });
 
-        MainActivity.api.onRelease(response -> {
-            isPicked[pickedPieceIndex] = false;
-        });
+            MainActivity.api.onRelease(response -> {
+                isPicked[pickedPieceIndex] = false;
+            });
+        }
+
 
 //        int fixedWidth = DensityUtil.densityUtil.px2dip(500);
 //        BitmapFactory.Options options = new BitmapFactory.Options();
@@ -166,6 +173,13 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
             }
         }
 
+        Bitmap bmpButtonBack = BitmapFactory.decodeResource(resources, R.drawable.button_back);
+        Bitmap bmpButtonBackPressed = BitmapFactory.decodeResource(resources, R.drawable.button_back_pressed);
+        buttonBack = new MenuButton(context, bmpButtonBack, bmpButtonBackPressed, screenW/2-bmpButtonBack.getWidth()/2, screenH - bmpButtonBack.getHeight()*5/4);
+
+        startTime = System.currentTimeMillis();
+        isFinished = false;
+
         Log.d("pieces size:", String.valueOf(pieces.size()));
     }
 
@@ -192,13 +206,56 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
                     needUpdate = false;
                 }
                 for (int index : drawOrder) {
-                    if (isPieceNeedPaint[index]) {
+                    if (isPieceNeedPaint[index] && !isFinished) {
                         canvas1 = pieces.get(index).draw(canvas1, paint);
                     }
                 }
-                if (isChosen) {
+                if (isChosen && !isFinished) {
                     canvas1 = pieces.get(chosenPieceIndex).draw(canvas1, paint);
                 }
+                //draw time
+                if (!isFinished) {
+                    timeStr = "所用时间：";
+                    long deltaMillis = System.currentTimeMillis() - startTime;
+                    second = deltaMillis / 1000 % 60;
+                    minute = deltaMillis / (60000) % 60;
+                    if (minute < 10) timeStr += "0";
+                    timeStr += String.valueOf(minute) + ":";
+                    if (second < 10) timeStr += "0";
+                    timeStr += String.valueOf(second);
+                }
+
+                Paint mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+                mPaint.setColor(Color.BLACK);
+                mPaint.setTextSize(60);
+                mPaint.setTextAlign(Paint.Align.RIGHT);
+
+                Rect rect = new Rect();
+                mPaint.getTextBounds(timeStr, 0, 5, rect);
+//                canvas.drawText("00:00", 0,rect.height() - rect.bottom ,mPaint);
+                canvas1.drawText(timeStr, screenW - 0.03f*screenW, rect.height() - rect.bottom + 0.03f*screenH, mPaint);
+
+                //draw finish view
+                if (isFinished) {
+                    //finish text
+                    String finishStr = "完成！";
+                    Paint newPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+                    newPaint.setColor(Color.BLACK);
+                    newPaint.setTextSize(60);
+                    newPaint.setTextAlign(Paint.Align.CENTER);
+
+                    Rect rect1 = new Rect();
+                    newPaint.getTextBounds(finishStr, 0, finishStr.length(), rect1);
+                    canvas1.drawText(finishStr, screenW / 2, screenH / 5, newPaint);
+
+                    //finish bitmap
+                    canvas1.drawBitmap(bitmap, MainSurfaceView.screenW / 2 - bitmap.getWidth() / 2, MainSurfaceView.screenH / 2 - bitmap.getHeight() / 2, paint);
+
+                    //finish button
+                    buttonBack.draw(canvas1, paint);
+                }
+
+                //draw bitmapCache on real canvas
                 canvas.drawBitmap(bitmapCache, 0, 0, paint);
 //                for (int index : drawOrder) {
 //                    canvas.drawBitmap(pieces.get(index).getBitmap(), pieces.get(index).getPosX(), pieces.get(index).getPosY(), paint);
@@ -221,6 +278,7 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
             if (pieces.get(chosenPieceIndex).isNeighbor(pieces.get(i)) && pieces.get(chosenPieceIndex).isCloseEnough(pieces.get(i))) {
                 pieces.get(chosenPieceIndex).addPieceGroup(pieces.get(i));
                 isPieceNeedPaint[i] = false;
+                if (pieces.get(chosenPieceIndex).getAttachedPiece().size() == pieceCount - 1) isFinished = true;
             }
         }
     }
@@ -237,6 +295,7 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
     public boolean onTouchEvent(MotionEvent event) {
 //        buttonStart.onTouchEvent(event, 0);
 //        buttonChangeAccount.onTouchEvent(event, 5);
+        if (isFinished) buttonBack.onTouchEventPuzzle(event, activity);
 
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
@@ -253,10 +312,11 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
                         touchY = event.getY();
                         biasX = (int) touchX - piece.getPosX();
                         biasY = (int) touchY - piece.getPosY();
-
-                        MainActivity.api.pick(index);
-                        isPicked[index] = true;
-                        pickedPieceIndex = index;
+                        if (!isSingle && isOnline) {
+                            MainActivity.api.pick(index);
+                            isPicked[index] = true;
+                            pickedPieceIndex = index;
+                        }
                         break;
                     }
                 }
@@ -267,8 +327,8 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
 //                    piece.addDiff(event.getX() - touchX, event.getY() - touchY);
                     pieces.get(chosenPieceIndex).setPosX((int)event.getX() - biasX);
                     pieces.get(chosenPieceIndex).setPosY((int)event.getY() - biasY);
-
-                    MainActivity.api.moveTo((event.getX() - biasX) / screenW, (event.getY() - biasY) / screenH);
+                    if (!isSingle && isOnline)
+                        MainActivity.api.moveTo((event.getX() - biasX) / screenW, (event.getY() - biasY) / screenH);
 //                    Log.d("dx:", String.valueOf(event.getX() - touchX));
 //                    Log.d("dy:", String.valueOf(event.getY() - touchY));
                 }
@@ -277,7 +337,8 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
                 if (isChosen) {
 //                    updateOrderIndex = chosenPieceIndex;
                     needUpdate = true;
-                    MainActivity.api.release();
+                    if (!isSingle && isOnline)
+                        MainActivity.api.release();
                     isPicked[pickedPieceIndex] = false;
 //                    Iterator<Integer> iterator = drawOrder.iterator();
 //                    while(iterator.hasNext()) {

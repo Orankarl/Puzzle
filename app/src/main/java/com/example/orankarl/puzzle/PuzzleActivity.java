@@ -38,9 +38,13 @@ public class PuzzleActivity extends AppCompatActivity {
         }
 
 
-
-
         setContentView(new PuzzleSurfaceView(this, bitmap, pattern, split, isSingle, isOnline));
 
+    }
+
+    public void returnToMainActivity() {
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
     }
 }

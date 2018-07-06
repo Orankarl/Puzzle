@@ -55,7 +55,7 @@ public class PuzzlePieceGroup {
         int id = pieceGroup.getMainID();
         int biasX = (id % rowCount) * pieceWidth - mainBiasX;
         int biasY = (id / rowCount) * pieceHeight - mainBiasY;
-//        Log.d("biasX biasY:", String.valueOf(biasX) + " " + String.valueOf(biasY));
+        Log.d("mainID anotherMainID:", String.valueOf(mainID) + " " + String.valueOf(pieceGroup.mainID));
         PuzzlePiece mainPiece = pieceGroup.getMainPiece();
 //        mainPiece.setPosX(mainPiece.getPosX() + biasX);
 //        mainPiece.setPosY(mainPiece.getPosY() + biasY);
@@ -90,27 +90,47 @@ public class PuzzlePieceGroup {
         selfAttachedID.add(mainID);
         ArrayList<Integer> anotherAttachedID = pieceGroup.getAttachedID();
         anotherAttachedID.add(pieceGroup.mainID);
-        String str1 = "";
-        for (int i:selfAttachedID) {
-            str1 += String.valueOf(i) + " ";
-        }
-        String str2 = "";
-        for (int i:anotherAttachedID) {
-            str2 += String.valueOf(i) + " ";
-        }
-//        Log.d("selfAttachedID:", str1);
-//        Log.d("anotherAttachedID:", str2);
-        for (int i:selfAttachedID) {
-            for (int j:anotherAttachedID) {
+
+        for (int a:selfAttachedID) {
+            for (int b:anotherAttachedID) {
+                int i = a, j = b;
                 if (i > j) {
                     int temp = i;
                     i = j;
                     j = temp;
                 }
-//                Log.d("j i:", String.valueOf(j) + " " +String.valueOf(i));
-                if (j-i == rowCount) return true;
+
+                if (j-i == rowCount) {
+//                    Log.d("j i:", String.valueOf(j) + " " +String.valueOf(i));
+//                    String str1 = "";
+//                    for (int k:selfAttachedID) {
+//                        str1 += String.valueOf(k) + " ";
+//                    }
+//                    String str2 = "";
+//                    for (int k:anotherAttachedID) {
+//                        str2 += String.valueOf(k) + " ";
+//                    }
+//                    Log.d("selfAttachedID:", str1);
+//                    Log.d("anotherAttachedID:", str2);
+//                    Log.d("mainID pG.mainID:", String.valueOf(mainID) + " " + String.valueOf(pieceGroup.mainID));
+                    return true;
+                }
                 if (j-i == 1) {
-                    if (j % rowCount != 0) return true;
+                    if (j % rowCount != 0) {
+//                        Log.d("j i:", String.valueOf(j) + " " +String.valueOf(i));
+//                        Log.d("j i:", String.valueOf(j) + " " +String.valueOf(i));
+//                        String str1 = "";
+//                        for (int k:selfAttachedID) {
+//                            str1 += String.valueOf(k) + " ";
+//                        }
+//                        String str2 = "";
+//                        for (int k:anotherAttachedID) {
+//                            str2 += String.valueOf(k) + " ";
+//                        }
+//                        Log.d("selfAttachedID:", str1);
+//                        Log.d("anotherAttachedID:", str2);
+                        return true;
+                    }
                 }
             }
         }

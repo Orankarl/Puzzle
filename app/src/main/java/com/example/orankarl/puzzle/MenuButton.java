@@ -155,4 +155,40 @@ public class MenuButton {
         }
 
     }
+
+    public void onTouchEventPuzzle(MotionEvent event, Context context) {
+        // 获取当前触控位置
+        int pointX = (int) event.getX();
+        int pointyY = (int) event.getY();
+
+        // 当用户是按下和移动时
+        if (event.getAction() == MotionEvent.ACTION_DOWN
+                || event.getAction() == MotionEvent.ACTION_MOVE) {
+
+            // 判定用户是否点击按钮
+            if (pointX > posX && pointX < posX + bmpButton.getWidth()) {
+                if (pointyY > posY && pointyY < posY + bmpButton.getHeight()) {
+                    isPressed = true;
+                    Log.d("StartButton", "DOWN");
+                } else {
+                    isPressed = false;
+                }
+            } else {
+                isPressed = false;
+            }
+
+            // 当用于是抬起动作时
+        } else if (event.getAction() == MotionEvent.ACTION_UP) {
+            // 判断抬起时是否点击按钮,防止用户移动到别处
+            if (pointX > posX && pointX < posX + bmpButton.getWidth()) {
+                if (pointyY > posY && pointyY < posY + bmpButton.getHeight()) {
+                    isPressed = false;//抬起后重置 还原Button状态为未按下状态
+                    Log.d("StartButton", "UP");
+                    PuzzleActivity activity = (PuzzleActivity) context;
+                    //activity.onButtonPressed();
+                    activity.returnToMainActivity();
+                }
+            }
+        }
+    }
 }
