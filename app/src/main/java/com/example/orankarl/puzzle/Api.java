@@ -331,7 +331,7 @@ public class Api {
     interface NewResultCallback {
         void onResponse(NewResultResponse response);
     }
-    public void newResult(int pattern, int time, NewResultCallback cb)
+    public void newResult(int pattern, int split, int time, NewResultCallback cb)
     {
         if (_token == null)
             return;
@@ -341,6 +341,7 @@ public class Api {
             data.put("token", _token);
             data.put("pattern", pattern);
             data.put("time", time);
+            data.put("split", split);
             data.put("timestamp", timestamp);
         } catch (JSONException e) {
             e.printStackTrace();
