@@ -15,7 +15,6 @@ public class MemberListView extends SurfaceView implements SurfaceHolder.Callbac
     private Context context;
     private SurfaceHolder holder;
     private Paint paint;
-    private Thread thread;
     private Canvas canvas;
 
     MainActivity activity = (MainActivity)getContext();
@@ -63,10 +62,11 @@ public class MemberListView extends SurfaceView implements SurfaceHolder.Callbac
 
                 int TEXT_SIZE = (int)Math.round(100 * activity.RATIO);
                 Paint textPaint = new Paint();
+                textPaint.setTypeface(activity.font);
                 textPaint.setColor(Color.BLACK);
                 textPaint.setTextSize(TEXT_SIZE);
 
-                String title = "成员列表";
+                String title = activity.host + "'s Room";
                 canvas.drawText(title, screenW / 2 - activity.getTextWidth(textPaint, title) / 2, screenH / 15 + textPaint.getTextSize() , textPaint);
 
                 if (activity.isHost) {
@@ -78,7 +78,7 @@ public class MemberListView extends SurfaceView implements SurfaceHolder.Callbac
                 }
             }
         } catch (Exception e) {
-
+            e.printStackTrace();
         } finally {
             if (canvas != null) holder.unlockCanvasAndPost(canvas);
         }
@@ -118,7 +118,7 @@ public class MemberListView extends SurfaceView implements SurfaceHolder.Callbac
         screenH = this.getHeight();
         init();
         flag = true;
-        thread = new Thread(this);
+        Thread thread = new Thread(this);
         thread.start();
     }
 

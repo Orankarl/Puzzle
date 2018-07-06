@@ -5,12 +5,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Path;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
-import android.graphics.Rect;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -23,16 +18,13 @@ import java.util.LinkedList;
 import java.util.ListIterator;
 
 public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Callback, Runnable {
-    private Context context;
     private SurfaceHolder holder;
     private Paint paint;
-    private Thread thread;
     private Canvas canvas;
-    private Bitmap bitmap, cutBitmap, bitmapCache;
     private ArrayList<PuzzlePieceGroup> pieces = new ArrayList<>();
     private boolean isChosen = false, needUpdate = false;
-    private int chosenPieceIndex, updateOrderIndex = -1;
-    float touchX = 0, touchY = 0;
+    private int chosenPieceIndex;
+    float touchX, touchY;
     int biasX = 0, biasY = 0;
     LinkedList<Integer> drawOrder = new LinkedList<>();
     int pieceCount = 0, rowCount = 0;
@@ -45,12 +37,9 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
 
     public static int screenW, screenH;
     private Resources resources = this.getResources();
-    MenuButton buttonStart;
-    MenuButton buttonChangeAccount;
     boolean flag = true;
     public PuzzleSurfaceView(Context context) {
         super(context);
-        this.context = context;
         holder = this.getHolder();
         holder.addCallback(this);
         paint = new Paint();
@@ -68,7 +57,7 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
         int fixedWidth = DensityUtil.densityUtil.px2dip(500);
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
-        bitmap = BitmapFactory.decodeResource(resources, R.drawable.sample, options);
+        Bitmap bitmap = BitmapFactory.decodeResource(resources, R.drawable.sample, options);
         Log.d("width:", String.valueOf(options.outWidth));
         Log.d("height", String.valueOf(options.outHeight));
         options.inJustDecodeBounds = false;
@@ -147,7 +136,7 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
                 canvas.drawBitmap(activity.background, 0, 0, paint);
 
                 //这里使用双缓冲，防止闪烁
-                bitmapCache = Bitmap.createBitmap(canvas.getWidth(), canvas.getHeight(), Bitmap.Config.ARGB_8888);
+                Bitmap bitmapCache = Bitmap.createBitmap(canvas.getWidth(), canvas.getHeight(), Bitmap.Config.ARGB_8888);
 
                 Canvas canvas1 = new Canvas(bitmapCache);
                 if (needUpdate) {
@@ -239,7 +228,7 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
                 break;
             case MotionEvent.ACTION_UP:
                 if (isChosen) {
-                    updateOrderIndex = chosenPieceIndex;
+                    int updateOrderIndex = chosenPieceIndex;
                     needUpdate = true;
 //                    Iterator<Integer> iterator = drawOrder.iterator();
 //                    while(iterator.hasNext()) {
@@ -283,7 +272,7 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
         Log.d("view height", String.valueOf(screenH));
         init();
         flag = true;
-        thread = new Thread(this);
+        Thread thread = new Thread(this);
         thread.start();
     }
 

@@ -16,7 +16,6 @@ public class ChoosePictureView extends SurfaceView implements SurfaceHolder.Call
     private Context context;
     private SurfaceHolder holder;
     private Paint paint;
-    private Thread thread;
     private Canvas canvas;
 
     MainActivity activity = (MainActivity)getContext();
@@ -74,7 +73,7 @@ public class ChoosePictureView extends SurfaceView implements SurfaceHolder.Call
                 buttonStart.draw(canvas, paint);
             }
         } catch (Exception e) {
-
+            e.printStackTrace();
         } finally {
             if (canvas != null) holder.unlockCanvasAndPost(canvas);
         }
@@ -109,7 +108,7 @@ public class ChoosePictureView extends SurfaceView implements SurfaceHolder.Call
         screenH = this.getHeight();
         init();
         flag = true;
-        thread = new Thread(this);
+        Thread thread = new Thread(this);
         thread.start();
     }
 

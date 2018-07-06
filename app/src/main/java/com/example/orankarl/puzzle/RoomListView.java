@@ -53,10 +53,11 @@ public class RoomListView extends SurfaceView implements SurfaceHolder.Callback,
 
                 int TEXT_SIZE = (int)Math.round(100 * activity.RATIO);
                 Paint textPaint = new Paint();
+                textPaint.setTypeface(activity.font);
                 textPaint.setColor(Color.BLACK);
                 textPaint.setTextSize(TEXT_SIZE);
 
-                String title = "房间列表";
+                String title = "Room list";
                 canvas.drawText(title, screenW / 2 - activity.getTextWidth(textPaint, title) / 2, screenH / 15 + textPaint.getTextSize() , textPaint);
 
                 buttonBack.draw(canvas, paint);
