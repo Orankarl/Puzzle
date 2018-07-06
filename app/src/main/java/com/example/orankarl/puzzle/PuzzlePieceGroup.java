@@ -55,7 +55,7 @@ public class PuzzlePieceGroup {
         int id = pieceGroup.getMainID();
         int biasX = (id % rowCount) * pieceWidth - mainBiasX;
         int biasY = (id / rowCount) * pieceHeight - mainBiasY;
-        Log.d("mainID anotherMainID:", String.valueOf(mainID) + " " + String.valueOf(pieceGroup.mainID));
+//        Log.d("mainID anotherMainID:", String.valueOf(mainID) + " " + String.valueOf(pieceGroup.mainID));
         PuzzlePiece mainPiece = pieceGroup.getMainPiece();
 //        mainPiece.setPosX(mainPiece.getPosX() + biasX);
 //        mainPiece.setPosY(mainPiece.getPosY() + biasY);
