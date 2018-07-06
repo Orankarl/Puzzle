@@ -31,18 +31,18 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
     private Bitmap bitmap, cutBitmap, bitmapCache;
     private ArrayList<PuzzlePieceGroup> pieces = new ArrayList<>();
     private boolean isChosen = false, needUpdate = false, isSingle, isOnline;
-    private int chosenPieceIndex, updateOrderIndex = -1;
+    private int chosenPieceIndex, pickedPieceIndex;
     float touchX = 0, touchY = 0;
     int biasX = 0, biasY = 0;
     LinkedList<Integer> drawOrder = new LinkedList<>();
     int pieceCount = 9, rowCount = 3;
     int pieceWidth, pieceHeight;
     int spacing;
-    boolean[] isPieceNeedPaint;
+    boolean[] isPieceNeedPaint, isPicked;
     ArrayList<Tuple> posList = new ArrayList<>();
     String pattern = CutUtil.type1;
 
-    MainActivity activity = (MainActivity)getContext();
+    PuzzleActivity activity = (PuzzleActivity) getContext();
 
     public static int screenW, screenH;
     private Resources resources = this.getResources();
@@ -60,7 +60,8 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
 
 //        this.bitmap = BitmapFactory.decodeByteArray(bitmap, 0, bitmap.length);
 //        this.bitmap = BitmapUtil.getBitmapFromFile(bitmap);
-        this.bitmap = MainActivity.puzzleBitmap;
+//        this.bitmap = MainActivity.puzzleBitmap;
+        this.bitmap = bitmap;
 //        Log.d("puzzleBitmap w&h:", String.valueOf(MainActivity.puzzleBitmap.getWidth()) + " " + String.valueOf(MainActivity.puzzleBitmap.getHeight()));
         if (pattern == 1) this.pattern = CutUtil.type1;
         else this.pattern = CutUtil.type2;
@@ -72,10 +73,26 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
 
     private void init() {
 
-        this.bitmap = BitmapUtil.setImgSize(MainActivity.puzzleBitmap, (int) (0.8*screenW), 0);
+        this.bitmap = BitmapUtil.setImgSize(this.bitmap, (int) (0.8*screenW), 0);
 
         isPieceNeedPaint = new boolean[pieceCount];
         for (int i = 0; i < pieceCount; i++) isPieceNeedPaint[i] = true;
+
+        isPicked = new boolean[pieceCount];
+        for (int i = 0; i < pieceCount; i++) isPicked[i] = false;
+
+        MainActivity.api.onPick(pickResponse -> {
+            isPicked[pickResponse.pieceIndex] = true;
+        });
+
+        MainActivity.api.onMoveTo(response -> {
+            pieces.get(pickedPieceIndex).setPosX((int)(screenW * response.X));
+            pieces.get(pickedPieceIndex).setPosY((int)(screenH * response.Y));
+        });
+
+        MainActivity.api.onRelease(response -> {
+            isPicked[pickedPieceIndex] = false;
+        });
 
 //        int fixedWidth = DensityUtil.densityUtil.px2dip(500);
 //        BitmapFactory.Options options = new BitmapFactory.Options();
@@ -156,7 +173,7 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
         try {
             canvas = holder.lockCanvas();
             if (canvas != null) {
-                canvas.drawBitmap(activity.background, 0, 0, paint);
+                canvas.drawBitmap(MainActivity.background, 0, 0, paint);
 
                 //这里使用双缓冲，防止闪烁
                 bitmapCache = Bitmap.createBitmap(canvas.getWidth(), canvas.getHeight(), Bitmap.Config.ARGB_8888);
@@ -227,6 +244,7 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
                 while (listIterator.hasPrevious()) {
                     int index = listIterator.previous();
                     if (!isPieceNeedPaint[index]) continue;
+                    if (isPicked[index]) continue;
                     PuzzlePieceGroup piece = pieces.get(index);
                     if (piece.isInPiece(event.getX(), event.getY())) {
                         isChosen = true;
@@ -235,6 +253,10 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
                         touchY = event.getY();
                         biasX = (int) touchX - piece.getPosX();
                         biasY = (int) touchY - piece.getPosY();
+
+                        MainActivity.api.pick(index);
+                        isPicked[index] = true;
+                        pickedPieceIndex = index;
                         break;
                     }
                 }
@@ -245,14 +267,18 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
 //                    piece.addDiff(event.getX() - touchX, event.getY() - touchY);
                     pieces.get(chosenPieceIndex).setPosX((int)event.getX() - biasX);
                     pieces.get(chosenPieceIndex).setPosY((int)event.getY() - biasY);
+
+                    MainActivity.api.moveTo((event.getX() - biasX) / screenW, (event.getY() - biasY) / screenH);
 //                    Log.d("dx:", String.valueOf(event.getX() - touchX));
 //                    Log.d("dy:", String.valueOf(event.getY() - touchY));
                 }
                 break;
             case MotionEvent.ACTION_UP:
                 if (isChosen) {
-                    updateOrderIndex = chosenPieceIndex;
+//                    updateOrderIndex = chosenPieceIndex;
                     needUpdate = true;
+                    MainActivity.api.release();
+                    isPicked[pickedPieceIndex] = false;
 //                    Iterator<Integer> iterator = drawOrder.iterator();
 //                    while(iterator.hasNext()) {
 //                        int temp = iterator.next();
@@ -309,7 +335,7 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
 
     }
 
-    private class Tuple {
+    public class Tuple {
         public int x, y;
         Tuple(int x, int y) {
             this.x = x;

@@ -13,6 +13,7 @@ public class PuzzleActivity extends AppCompatActivity {
 
     int pattern, split;
     boolean isOnline, isSingle;
+    Bitmap bitmap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,15 +32,15 @@ public class PuzzleActivity extends AppCompatActivity {
             split = intent.getIntExtra("split", 9);
             isOnline = intent.getBooleanExtra("isOnline", false);
             isSingle = intent.getBooleanExtra("isSingle", true);
-//        byte[] bytes = intent.getByteArrayExtra("picture");
-//        Log.d("bytes", String.valueOf(bytes));
-//        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+            byte[] bytes = intent.getByteArrayExtra("picture");
+            Log.d("bytes", String.valueOf(bytes));
+            bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
         }
 
 
 
 
-        setContentView(new PuzzleSurfaceView(this, MainActivity.puzzleBitmap, pattern, split, isSingle, isOnline));
+        setContentView(new PuzzleSurfaceView(this, bitmap, pattern, split, isSingle, isOnline));
 
     }
 }

@@ -36,7 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-    final Api api = new Api("45.77.183.226", 5000, new Handler(Looper.getMainLooper()));
+    public static final Api api = new Api("45.77.183.226", 5000, new Handler(Looper.getMainLooper()));
 
     LocalDatabase mDbHelper;
     String token_tmp = "";
@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
     public int pattern;
     public boolean isRank;
     public boolean isHost;
-    public Bitmap background;
+    public static Bitmap background;
 
     public Typeface font;
 
@@ -644,7 +644,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void gameStart() {
         api.startGame();
-        Toast.makeText(this, "Transfering image...", Toast.LENGTH_LONG).show();
+        Toast.makeText(this, "Transferring image...", Toast.LENGTH_LONG).show();
         if (isOnline) {
             api.image(puzzleBitmap, response -> {
                 TurnToGameView();
@@ -658,10 +658,13 @@ public class MainActivity extends AppCompatActivity {
     private void TurnToGameView() {
         Toast.makeText(this, "游戏开始!", Toast.LENGTH_LONG).show();
         Intent intent = new Intent(this, PuzzleActivity.class);
-//        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-//        puzzleBitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-//        byte[] bitmapByte = stream.toByteArray();
-//        intent.putExtra("picture", bitmapByte);
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        if (puzzleBitmap != null) {
+            puzzleBitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+            byte[] bitmapByte = stream.toByteArray();
+            intent.putExtra("picture", bitmapByte);
+        }
+
         String filename = "picture";
 //        BitmapUtil.saveBitmap2file(puzzleBitmap, filename);
 //        intent.putExtra("picture", filename);
