@@ -22,7 +22,8 @@ public class PuzzlePieceGroup {
     private ArrayList<Integer> attachedID;
     private int rowCount;
     private int rotate = 0;
-    private int horizontalLength, verticalLength;
+    private int horizontalLength, verticalLength, horizontalDelta, verticalDelta;
+    private int deltaWidth, deltaHeight;
     PuzzlePieceGroup(PuzzlePiece piece, int mainID, int rowCount, int pieceWidth, int pieceHeight) {
         mainPiece = piece;
         this.mainID = mainID;
@@ -40,6 +41,11 @@ public class PuzzlePieceGroup {
 
         setPosX(getPosX() - getHorizontalBias(mainID) * horizontalLength);
         setPosY(getPosY() - getVerticalBias(mainID) * verticalLength);
+
+        deltaWidth = piece.getBitmap().getWidth() - pieceWidth;
+        deltaHeight = piece.getBitmap().getHeight() - pieceHeight;
+        horizontalDelta = deltaWidth;
+        verticalDelta = deltaHeight;
     }
     boolean isInPiece(float x, float y) {
         if (mainPiece.isInPiece(x - getHorizontalBias(mainID) * horizontalLength, y - getVerticalBias(mainID) * verticalLength, rotate)) return true;
@@ -96,11 +102,19 @@ public class PuzzlePieceGroup {
 //        } else {
             Matrix matrix = new Matrix();
             matrix.setRotate(90*rotate);
+            int biasX = getHorizontalBias(mainID) * horizontalLength;
+            int biasY = getVerticalBias(mainID) * verticalLength;
+            if (biasX == 0) biasX += horizontalDelta;
+            if (biasY == 0) biasY += verticalDelta;
             Bitmap bitmap = Bitmap.createBitmap(mainPiece.getBitmap(), 0, 0, mainPiece.getBitmap().getWidth(), mainPiece.getBitmap().getHeight(), matrix, true);
-            canvas.drawBitmap(bitmap, mainPiece.getPosX() + getHorizontalBias(mainID) * horizontalLength, mainPiece.getPosY() + getVerticalBias(mainID) * verticalLength, paint);
+            canvas.drawBitmap(bitmap, mainPiece.getPosX() + biasX, mainPiece.getPosY() + biasY, paint);
             for (int i = 0; i < attachedPiece.size(); i++) {
+                biasX = getHorizontalBias(attachedID.get(i)) * horizontalLength;
+                biasY = getVerticalBias(attachedID.get(i)) * verticalLength;
+                if (biasX == 0) biasX += horizontalDelta;
+                if (biasY == 0) biasY += verticalDelta;
                 bitmap = Bitmap.createBitmap(attachedPiece.get(i).getBitmap(), 0, 0, attachedPiece.get(i).getBitmap().getWidth(), attachedPiece.get(i).getBitmap().getHeight(), matrix, true);
-                canvas.drawBitmap(bitmap, mainPiece.getPosX() + getHorizontalBias(attachedID.get(i)) * horizontalLength, mainPiece.getPosY() + getVerticalBias(attachedID.get(i)) * verticalLength, paint);
+                canvas.drawBitmap(bitmap, mainPiece.getPosX() + biasX, mainPiece.getPosY() + biasY, paint);
             }
 //        }
 
@@ -120,10 +134,15 @@ public class PuzzlePieceGroup {
         if (rotate % 2 == 0) {
             horizontalLength = pieceWidth;
             verticalLength = pieceHeight;
+            horizontalDelta = deltaWidth;
+            verticalDelta = deltaHeight;
         } else {
             horizontalLength = pieceHeight;
             verticalLength = pieceWidth;
+            horizontalDelta = deltaHeight;
+            verticalDelta = deltaWidth;
         }
+        Log.d("h&v length", String.valueOf(horizontalLength) + " " + String.valueOf(verticalLength));
     }
 
     boolean isNeighbor(PuzzlePieceGroup pieceGroup) {

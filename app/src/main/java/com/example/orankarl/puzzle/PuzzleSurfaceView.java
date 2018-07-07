@@ -116,6 +116,10 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
                 needOnMoveUpdate = true;
 //                pickedPieceIndex = -1;
             });
+
+            MainActivity.api.onRotate(response ->{
+                pieces.get(response.pieceIndex).rotate90();
+            });
         }
 
         //1.获取当前设备的屏幕大小
@@ -419,6 +423,7 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
                     if (piece.isInPiece(event.getX(), event.getY())) {
                         if (lastIndex == index && currentDownTime - lastDownTime < 300) {
                             pieces.get(index).rotate90();
+
                             lastDownTime = currentDownTime;
                             break;
                         }
