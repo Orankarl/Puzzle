@@ -5,7 +5,6 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PorterDuff;
@@ -27,12 +26,9 @@ import java.util.ListIterator;
 import java.util.Locale;
 
 public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Callback, Runnable {
-    private Context context;
     private SurfaceHolder holder;
     private Paint paint;
-    private Thread thread;
     private Canvas canvas;
-    private Bitmap bitmap, cutBitmap, bitmapCache;
     private ArrayList<PuzzlePieceGroup> pieces = new ArrayList<>();
     private boolean isChosen = false, needUpdate = false, isSingle, isOnline, isFinished = false, needOnMoveUpdate = false;
     private int chosenPieceIndex, pickedPieceIndex;
@@ -54,12 +50,9 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
 
     public static int screenW, screenH;
     private Resources resources = this.getResources();
-    MenuButton buttonStart;
-    MenuButton buttonChangeAccount;
     boolean flag = true;
     public PuzzleSurfaceView(Context context, Bitmap bitmap, int pattern, int split, boolean isSingle, boolean isOnline) {
         super(context);
-        this.context = context;
         holder = this.getHolder();
         holder.addCallback(this);
         paint = new Paint();
@@ -141,7 +134,7 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
 //        options.outHeight = height;
 //        bitmap = BitmapFactory.decodeResource(resources, R.drawable.sample, options);
 //        Log.d("width:", String.valueOf(options.outWidth));
-//        Log.d("height", String.valueOf(options.outHeight));
+//        Log.d("height", String.valueOf(options.outHeight))
 
         pieceWidth = bitmap.getWidth() / rowCount;
         pieceHeight = bitmap.getHeight() / rowCount;
@@ -226,7 +219,7 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
                 canvas.drawBitmap(MainActivity.background, 0, 0, paint);
 
                 //这里使用双缓冲，防止闪烁
-                bitmapCache = Bitmap.createBitmap(canvas.getWidth(), canvas.getHeight(), Bitmap.Config.ARGB_8888);
+                Bitmap bitmapCache = Bitmap.createBitmap(canvas.getWidth(), canvas.getHeight(), Bitmap.Config.ARGB_8888);
 
                 Canvas canvas1 = new Canvas(bitmapCache);
                 if (needUpdate) {
@@ -464,7 +457,7 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
         Log.d("view height", String.valueOf(screenH));
         init();
         flag = true;
-        thread = new Thread(this);
+        Thread thread = new Thread(this);
         thread.start();
     }
 

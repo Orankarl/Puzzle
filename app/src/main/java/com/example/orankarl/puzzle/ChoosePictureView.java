@@ -24,7 +24,6 @@ public class ChoosePictureView extends SurfaceView implements SurfaceHolder.Call
     private Context context;
     private SurfaceHolder holder;
     private Paint paint;
-    private Thread thread;
     private Canvas canvas;
 
     final public static int PRESET_IMAGES = 5;
@@ -203,7 +202,7 @@ public class ChoosePictureView extends SurfaceView implements SurfaceHolder.Call
         screenH = this.getHeight();
         init();
         flag = true;
-        thread = new Thread(this);
+        Thread thread = new Thread(this);
         thread.start();
     }
 

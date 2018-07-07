@@ -10,6 +10,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.ColorFilter;
 import android.graphics.Paint;
+import android.graphics.PixelFormat;
 import android.graphics.Point;
 import android.graphics.Typeface;
 import android.net.Uri;
@@ -21,6 +22,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
 import android.text.method.PasswordTransformationMethod;
 import android.util.TypedValue;
+import android.view.SurfaceView;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
@@ -54,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
     public int pattern;
     public boolean isRank;
     public boolean isHost;
+    public String host;
     public boolean isSelected;
     public static Bitmap background;
 
@@ -298,8 +301,9 @@ public class MainActivity extends AppCompatActivity {
             addContentView(roomList, roomList_params);
         });
 
-        api.onGetImage(image -> {
-            puzzleBitmap = image;
+        api.onGetGameParam(param -> {
+            // TODO
+            // set received params
             TurnToGameView();
         });
 
@@ -307,26 +311,22 @@ public class MainActivity extends AppCompatActivity {
             if (puzzleBitmap == null)
                 return;
             if (viewState == 8) {
-
+                TurnToGameView();
             }
         });
     }
 
     public void onLogButtonPressed() {
-        editText_username = new SurfaceViewEditText(this);
-        editText_username.setTypeface(font);
-        editText_username.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 30);
-
         LoginView loginView = new LoginView(this);
-        loginView.TextSize = (int) editText_username.getTextSize();
         setContentView(loginView);
         viewState = 1;
 
+        editText_username = new SurfaceViewEditText(this);
         FrameLayout.LayoutParams username_params = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
         editText_username.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
         editText_username.setBackgroundColor(0);
         editText_username.setTypeface(font);
-        editText_username.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 30);
+        editText_username.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 26);
         editText_username.setHint("username");
         editText_username.setMinWidth(screenW * 3 / 8);
         editText_username.setPadding(editText_username.getPaddingLeft(),0,editText_username.getPaddingRight(),editText_username.getPaddingBottom());
@@ -339,7 +339,7 @@ public class MainActivity extends AppCompatActivity {
         editText_password.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
         editText_password.setBackgroundColor(0);
         editText_password.setTypeface(font);
-        editText_password.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 30);
+        editText_password.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 26);
         editText_password.setHint("your password");
         editText_password.setTransformationMethod(PasswordTransformationMethod.getInstance());
         editText_password.setMinWidth(screenW * 3 / 8);
@@ -347,6 +347,8 @@ public class MainActivity extends AppCompatActivity {
         password_params.topMargin = screenH / 2;
         password_params.leftMargin = screenW / 2;
         addContentView(editText_password, password_params);
+
+        loginView.TextSize = (int) editText_username.getTextSize();
 
         mDbHelper = new LocalDatabase(this);
         SQLiteDatabase db = mDbHelper.getReadableDatabase();
@@ -442,19 +444,17 @@ public class MainActivity extends AppCompatActivity {
         Point size = new Point();
         getWindowManager().getDefaultDisplay().getSize(size);
 
-        editText_username = new SurfaceViewEditText(this);
-
         RegisterView registerView = new RegisterView(this);
-        registerView.TextSize = (int)editText_username.getTextSize();
         setContentView(registerView);
         viewState = 10;
 
+        editText_username = new SurfaceViewEditText(this);
         FrameLayout.LayoutParams username_params = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
         editText_username.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
         editText_username.setBackgroundColor(0);
         editText_username.setTypeface(font);
-        editText_username.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 30);
-        editText_username.setHint("length: 3 to 20");
+        editText_username.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 26);
+        editText_username.setHint("len 3 to 20");
         editText_username.setMinWidth(screenW * 3 / 8);
         editText_username.setPadding(editText_username.getPaddingLeft(),0,editText_username.getPaddingRight(),editText_username.getPaddingBottom());
         username_params.leftMargin = screenW / 2;
@@ -466,8 +466,8 @@ public class MainActivity extends AppCompatActivity {
         editText_password.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
         editText_password.setBackgroundColor(0);
         editText_password.setTypeface(font);
-        editText_password.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 30);
-        editText_password.setHint("a strong password");
+        editText_password.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 26);
+        editText_password.setHint("password");
         editText_password.setTransformationMethod(PasswordTransformationMethod.getInstance());
         editText_password.setMinWidth(screenW * 3 / 8);
         editText_password.setPadding(editText_password.getPaddingLeft(),0,editText_password.getPaddingRight(),editText_password.getPaddingBottom());
@@ -480,13 +480,15 @@ public class MainActivity extends AppCompatActivity {
         editText_nickname.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
         editText_nickname.setBackgroundColor(0);
         editText_nickname.setTypeface(font);
-        editText_nickname.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 30);
-        editText_nickname.setHint("displayed nickname");
+        editText_nickname.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 26);
+        editText_nickname.setHint("your nickname");
         editText_nickname.setMinWidth(screenW * 3 / 8);
         editText_nickname.setPadding(editText_password.getPaddingLeft(),0,editText_password.getPaddingRight(),editText_password.getPaddingBottom());
         nickname_params.topMargin = screenH * 4 / 7;
         nickname_params.leftMargin = screenW / 2;
         addContentView(editText_nickname, nickname_params);
+
+        registerView.TextSize = (int)editText_username.getTextSize();
     }
 
     public void onRegisterButtonPressed() {
@@ -594,6 +596,7 @@ public class MainActivity extends AppCompatActivity {
             api.newRoom(split, pattern);
             memberData.clear();
             api.userInfo(userInfoResponse -> {
+                host = userInfoResponse.username;
                 memberData.add(userInfoResponse.username);
                 setContentView(new MemberListView(this));
                 SurfaceViewListView memberList = new SurfaceViewListView(this);
@@ -649,6 +652,7 @@ public class MainActivity extends AppCompatActivity {
 
         roomList.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_expandable_list_item_1, data));
         roomList.setOnItemClickListener((parent, view, position, id) -> {
+            host = data.get(position);
             comeInRoom();
         });
 
@@ -668,7 +672,9 @@ public class MainActivity extends AppCompatActivity {
         api.startGame();
         Toast.makeText(this, "Transferring image...", Toast.LENGTH_LONG).show();
         if (isOnline) {
-            api.image(puzzleBitmap, response -> {
+            api.gameParam(split, pattern, puzzleBitmap, new int[]{1}, response -> {
+                // TODO
+                // change new int[]{1} to random sequence
                 TurnToGameView();
             });
         } else {
@@ -678,7 +684,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void TurnToGameView() {
-        Toast.makeText(this, "游戏开始!", Toast.LENGTH_LONG).show();
+        Toast.makeText(this, "Go!", Toast.LENGTH_LONG).show();
         Intent intent = new Intent(this, PuzzleActivity.class);
         Bitmap bitmap = BitmapUtil.setImgSize(this.puzzleBitmap, (int) (0.8*screenW), 0);
         ByteArrayOutputStream stream = new ByteArrayOutputStream();

@@ -85,10 +85,11 @@ public class ChooseSplitView extends SurfaceView implements SurfaceHolder.Callba
 
                 int TEXT_SIZE = (int)Math.round(100 * activity.RATIO);
                 Paint textPaint = new Paint();
+                textPaint.setTypeface(activity.font);
                 textPaint.setColor(Color.BLACK);
                 textPaint.setTextSize(TEXT_SIZE);
 
-                String title = "选择拼图分割模式";
+                String title = "Choose split size";
                 canvas.drawText(title, screenW / 2 - activity.getTextWidth(textPaint, title) / 2, screenH * 2 / 3 + textPaint.getTextSize() , textPaint);
             }
         } catch (Exception e) {

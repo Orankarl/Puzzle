@@ -58,6 +58,7 @@ public class LoginView extends SurfaceView implements SurfaceHolder.Callback, Ru
 
                 int TEXT_SIZE = (int)Math.round(120 * activity.RATIO);
                 Paint textPaint = new Paint();
+                textPaint.setTypeface(activity.font);
                 textPaint.setColor(Color.BLACK);
                 textPaint.setTextSize(TEXT_SIZE);
                 textPaint.setTypeface(activity.font);
