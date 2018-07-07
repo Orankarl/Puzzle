@@ -29,7 +29,7 @@ import java.util.Locale;
 public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Callback, Runnable {
     private Context context;
     private SurfaceHolder holder;
-    private Paint paint;
+    private Paint paint, alphaPaint;
     private Canvas canvas;
     private Bitmap bitmap;
     private ArrayList<PuzzlePieceGroup> pieces = new ArrayList<>();
@@ -61,6 +61,9 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
         holder.addCallback(this);
         paint = new Paint();
         paint.setAntiAlias(true);
+        alphaPaint = new Paint();
+        alphaPaint.setAntiAlias(true);
+        alphaPaint.setAlpha(60);
         setFocusable(true);
 
 //        this.bitmap = BitmapFactory.decodeByteArray(bitmap, 0, bitmap.length);
@@ -198,12 +201,12 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
 //            }
 //        }
         ArrayList<Bitmap> cutImages = CutUtil.cutImage(bitmap, pattern, pieceCount);
+        if (isSingle) Collections.shuffle(posList);
         for (int i = 0; i < pieceCount; i++) {
 //                PuzzlePieceGroup pieceGroup = ;
             if (!isSingle && isOnline) {
                 pieces.add(new PuzzlePieceGroup(new PuzzlePiece(cutImages.get(i), posList.get(posIndexList.get(i)).x, posList.get(posIndexList.get(i)).y), i, rowCount, pieceWidth, pieceHeight));
             } else {
-                Collections.shuffle(posList);
                 pieces.add(new PuzzlePieceGroup(new PuzzlePiece(cutImages.get(i), posList.get(i).x, posList.get(i).y), i, rowCount, pieceWidth, pieceHeight));
             }
 
@@ -259,14 +262,18 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
                 }
                 for (int index : drawOrder) {
                     if (isPieceNeedPaint[index] && !isFinished) {
-                        canvas1 = pieces.get(index).draw(canvas1, paint);
+                        if (isPicked[index]) {
+                            canvas1 = pieces.get(index).draw(canvas1, alphaPaint);
+                        } else {
+                            canvas1 = pieces.get(index).draw(canvas1, paint);
+                        }
                     }
                 }
                 if (isChosen && !isFinished) {
                     canvas1 = pieces.get(chosenPieceIndex).draw(canvas1, paint);
                 }
                 if (!isSingle && isOnline && isPicked[pickedPieceIndex] && !isFinished) {
-                    canvas1 = pieces.get(pickedPieceIndex).draw(canvas1, paint);
+                    canvas1 = pieces.get(pickedPieceIndex).draw(canvas1, alphaPaint);
                 }
                 //draw time
                 if (!isFinished) {
@@ -292,6 +299,12 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
 
                 //draw finish view
                 if (isFinished) {
+                    //finish bitmap
+                    canvas1.drawBitmap(bitmap, MainSurfaceView.screenW / 2 - bitmap.getWidth() / 2, MainSurfaceView.screenH / 2 - bitmap.getHeight() / 2, paint);
+
+                    //finish button
+                    buttonBack.draw(canvas1, paint);
+
                     //finish text
                     String finishStr = "完成";
                     Paint newPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -302,12 +315,6 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
                     Rect rect1 = new Rect();
                     newPaint.getTextBounds(finishStr, 0, finishStr.length(), rect1);
                     canvas1.drawText(finishStr, screenW / 2, screenH / 5, newPaint);
-
-                    //finish bitmap
-                    canvas1.drawBitmap(bitmap, MainSurfaceView.screenW / 2 - bitmap.getWidth() / 2, MainSurfaceView.screenH / 2 - bitmap.getHeight() / 2, paint);
-
-                    //finish button
-                    buttonBack.draw(canvas1, paint);
                 }
 
                 //draw bitmapCache on real canvas
@@ -410,7 +417,8 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
                         biasX = (int) touchX - piece.getPosX();
                         biasY = (int) touchY - piece.getPosY();
                         if (!isSingle && isOnline) {
-                            MainActivity.api.pick(index);
+                            if (!isPicked[index])
+                                MainActivity.api.pick(index);
                             isPicked[index] = true;
                             pickedPieceIndex = index;
                         }
@@ -435,7 +443,8 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
 //                    updateOrderIndex = chosenPieceIndex;
                     needUpdate = true;
                     if (!isSingle && isOnline) {
-                        MainActivity.api.release();
+                        if (isPicked[pickedPieceIndex])
+                            MainActivity.api.release();
                         isPicked[pickedPieceIndex] = false;
 //                        pickedPieceIndex = -1;
                     }

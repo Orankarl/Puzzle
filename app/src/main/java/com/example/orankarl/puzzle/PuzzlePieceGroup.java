@@ -19,6 +19,7 @@ public class PuzzlePieceGroup {
     private int mainID;
     private ArrayList<Integer> attachedID;
     private int rowCount;
+    private int rotate = 0;
     PuzzlePieceGroup(PuzzlePiece piece, int mainID, int rowCount, int pieceWidth, int pieceHeight) {
         mainPiece = piece;
         this.mainID = mainID;
