@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.ColorFilter;
 import android.graphics.Paint;
+import android.graphics.PixelFormat;
 import android.graphics.Point;
 import android.graphics.Typeface;
 import android.net.Uri;
@@ -20,6 +21,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
 import android.text.method.PasswordTransformationMethod;
 import android.util.TypedValue;
+import android.view.SurfaceView;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
@@ -292,8 +294,9 @@ public class MainActivity extends AppCompatActivity {
             addContentView(roomList, roomList_params);
         });
 
-        api.onGetImage(image -> {
-            puzzleBitmap = image;
+        api.onGetGameParam(param -> {
+            // TODO
+            // set received params
             TurnToGameView();
         });
 
@@ -645,7 +648,9 @@ public class MainActivity extends AppCompatActivity {
     public void gameStart() {
         api.startGame();
         Toast.makeText(this, "Transferring image...", Toast.LENGTH_LONG).show();
-        api.image(puzzleBitmap, response -> {
+        api.gameParam(split, pattern, puzzleBitmap, new int[]{1}, response -> {
+            // TODO
+            // change new int[]{1} to random sequence
             TurnToGameView();
         });
     }
