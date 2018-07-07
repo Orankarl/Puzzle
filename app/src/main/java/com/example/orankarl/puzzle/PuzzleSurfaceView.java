@@ -5,6 +5,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PorterDuff;
@@ -26,9 +27,11 @@ import java.util.ListIterator;
 import java.util.Locale;
 
 public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Callback, Runnable {
+    private Context context;
     private SurfaceHolder holder;
     private Paint paint;
     private Canvas canvas;
+    private Bitmap bitmap;
     private ArrayList<PuzzlePieceGroup> pieces = new ArrayList<>();
     private boolean isChosen = false, needUpdate = false, isSingle, isOnline, isFinished = false, needOnMoveUpdate = false;
     private int chosenPieceIndex, pickedPieceIndex;
