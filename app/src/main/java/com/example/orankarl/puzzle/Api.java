@@ -543,6 +543,7 @@ public class Api {
     class MoveToResponse {
         double X, Y;
         String username;
+        int pieceIndex;
     }
     interface MoveToCallback {
         void onResponse(MoveToResponse response);
@@ -557,6 +558,7 @@ public class Api {
 
     class RotateResponse {
         String username;
+        int pieceIndex;
     }
     interface RotateCallback {
         void onResponse(RotateResponse response);
@@ -571,6 +573,7 @@ public class Api {
 
     class ReleaseResponse {
         String username;
+        int pieceIndex;
     }
     interface ReleaseCallback {
         void onResponse(ReleaseResponse response);
