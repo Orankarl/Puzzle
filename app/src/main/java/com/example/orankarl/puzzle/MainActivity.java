@@ -3,6 +3,7 @@ package com.example.orankarl.puzzle;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.content.res.AssetManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
@@ -32,6 +33,8 @@ import static com.example.orankarl.puzzle.MainSurfaceView.screenW;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
     public int pattern;
     public boolean isRank;
     public boolean isHost;
+    public boolean isSelected;
     public static Bitmap background;
 
     public Typeface font;
@@ -62,7 +66,6 @@ public class MainActivity extends AppCompatActivity {
     SurfaceViewEditText editText_username;
     SurfaceViewEditText editText_password;
     SurfaceViewEditText editText_nickname;
-
 
     public Bitmap puzzleBitmap;
 
@@ -147,6 +150,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(new MainSurfaceView(this));
         viewState = 0;
         isOnline = false;
+        isSelected = false;
 
         puzzleBitmap = null;
 
@@ -385,6 +389,22 @@ public class MainActivity extends AppCompatActivity {
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
         startActivityForResult(intent, 1);
+    }
+
+    public void onPictureRechoosePressed() {
+        isSelected = false;
+    }
+
+    public void onChoosePreSetPicturePressed(int i) {
+        AssetManager assetManager = getAssets();
+        try {
+            InputStream is = assetManager.open("PreSetImage/image" + Integer.toString(i + 1) + ".jpg");
+            puzzleBitmap = BitmapFactory.decodeStream(is);
+            setContentView(new ChoosePatternView(this));
+            viewState = 5;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void onLoginButtonPressed() {
@@ -708,6 +728,7 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         ChoosePictureView pictureView = new ChoosePictureView(this);
         pictureView.origin_bitmap = puzzleBitmap;
+        isSelected = true;
         setContentView(pictureView);
     }
 
