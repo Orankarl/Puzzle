@@ -75,6 +75,9 @@ public class PuzzlePieceGroup {
         PuzzlePiece mainPiece = pieceGroup.getMainPiece();
 //        mainPiece.setPosX(mainPiece.getPosX() + biasX);
 //        mainPiece.setPosY(mainPiece.getPosY() + biasY);
+        if (pieceGroup.deltaHeight > deltaHeight) deltaHeight = pieceGroup.deltaHeight;
+        if (deltaWidth < pieceGroup.deltaWidth) deltaWidth = pieceGroup.deltaWidth;
+        updateLength();
         attachedPiece.add(mainPiece);
         attachedID.add(id);
         biasListX.add(biasX);
@@ -104,15 +107,33 @@ public class PuzzlePieceGroup {
             matrix.setRotate(90*rotate);
             int biasX = getHorizontalBias(mainID) * horizontalLength;
             int biasY = getVerticalBias(mainID) * verticalLength;
-            if (biasX == 0) biasX += horizontalDelta;
-            if (biasY == 0) biasY += verticalDelta;
+
+//            Log.d("biasY ", String.valueOf(biasY));
+//            Log.d("rotate", String.valueOf(rotate));
+
+            if (getHorizontalBias(mainID) == 0 && (rotate == 1 || rotate == 2)) {
+                biasX += horizontalDelta;
+//                Log.d("biasX+", String.valueOf(biasX));
+            }
+            if (getVerticalBias(mainID) == 0 && (rotate == 2 || rotate == 3)) {
+                biasY += verticalDelta;
+//                Log.d("biasY+", String.valueOf(biasY));
+            }
             Bitmap bitmap = Bitmap.createBitmap(mainPiece.getBitmap(), 0, 0, mainPiece.getBitmap().getWidth(), mainPiece.getBitmap().getHeight(), matrix, true);
             canvas.drawBitmap(bitmap, mainPiece.getPosX() + biasX, mainPiece.getPosY() + biasY, paint);
             for (int i = 0; i < attachedPiece.size(); i++) {
                 biasX = getHorizontalBias(attachedID.get(i)) * horizontalLength;
                 biasY = getVerticalBias(attachedID.get(i)) * verticalLength;
-                if (biasX == 0) biasX += horizontalDelta;
-                if (biasY == 0) biasY += verticalDelta;
+//                Log.d("biasY ", String.valueOf(biasY));
+//                Log.d("rotate", String.valueOf(rotate));
+                if (getHorizontalBias(attachedID.get(i)) == 0 && (rotate == 1 || rotate == 2)) {
+                    biasX += horizontalDelta;
+//                    Log.d("biasX+", String.valueOf(biasX));
+                }
+                if (getVerticalBias(attachedID.get(i)) == 0 && (rotate == 2 || rotate == 3)) {
+                    biasY += verticalDelta;
+//                    Log.d("biasY+", String.valueOf(biasY));
+                }
                 bitmap = Bitmap.createBitmap(attachedPiece.get(i).getBitmap(), 0, 0, attachedPiece.get(i).getBitmap().getWidth(), attachedPiece.get(i).getBitmap().getHeight(), matrix, true);
                 canvas.drawBitmap(bitmap, mainPiece.getPosX() + biasX, mainPiece.getPosY() + biasY, paint);
             }
@@ -128,6 +149,8 @@ public class PuzzlePieceGroup {
         updateLength();
         setPosX(getPosX() + oldHorizontalBias  - getHorizontalBias(mainID) * horizontalLength);
         setPosY(getPosY() + oldVerticalBias - getVerticalBias(mainID) * verticalLength);
+        Log.d("biasX:", String.valueOf(getHorizontalBias(mainID) * horizontalLength));
+        Log.d("biasY:", String.valueOf(getVerticalBias(mainID) * verticalLength));
     }
 
     void updateLength() {
@@ -143,6 +166,7 @@ public class PuzzlePieceGroup {
             verticalDelta = deltaWidth;
         }
         Log.d("h&v length", String.valueOf(horizontalLength) + " " + String.valueOf(verticalLength));
+        Log.d("h&v delta", String.valueOf(horizontalDelta) + " " + String.valueOf(verticalDelta));
     }
 
     boolean isNeighbor(PuzzlePieceGroup pieceGroup) {
@@ -271,20 +295,16 @@ public class PuzzlePieceGroup {
                 realBiasY = biasY;
                 break;
             case 1:
-                realBiasX = rowCount - biasY;
-                realBiasY = biasX;
+                realBiasX = rowCount - biasY - 1;
                 break;
             case 2:
-                realBiasX = rowCount - biasX;
-                realBiasY = rowCount - biasY;
+                realBiasX = rowCount - biasX - 1;
                 break;
             case 3:
                 realBiasX = biasY;
-                realBiasY = rowCount - biasX;
                 break;
             default:
                 realBiasX = biasX;
-                realBiasY = biasY;
         }
         return realBiasX;
     }
@@ -301,10 +321,10 @@ public class PuzzlePieceGroup {
                 realBiasY = biasX;
                 break;
             case 2:
-                realBiasY = rowCount - biasY;
+                realBiasY = rowCount - biasY - 1;
                 break;
             case 3:
-                realBiasY = rowCount - biasX;
+                realBiasY = rowCount - biasX - 1;
                 break;
             default:
                 realBiasY = biasY;

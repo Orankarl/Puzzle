@@ -423,6 +423,7 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
                     if (piece.isInPiece(event.getX(), event.getY())) {
                         if (lastIndex == index && currentDownTime - lastDownTime < 300) {
                             pieces.get(index).rotate90();
+                            MainActivity.api.rotate(index);
 
                             lastDownTime = currentDownTime;
                             break;
@@ -492,8 +493,8 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
             draw();
             long end = System.currentTimeMillis();
             try {
-                if (end - start < 15) {
-                    Thread.sleep(15 - (end - start));
+                if (end - start < 16) {
+                    Thread.sleep(16 - (end - start));
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();
