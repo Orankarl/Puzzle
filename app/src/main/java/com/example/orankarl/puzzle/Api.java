@@ -505,6 +505,10 @@ public class Api {
     public void pick(int pieceIndex) {
         _socket.emit("pickPiece", pieceIndex);
     }
+    
+    public void rotate() {
+        _socket.emit("rotatePiece");
+    }
 
     public void moveTo(double X, double Y) {
         JSONObject j = new JSONObject();
@@ -551,7 +555,19 @@ public class Api {
         });
     }
 
-
+    class RotateResponse {
+        String username;
+    }
+    interface RotateCallback {
+        void onResponse(RotateResponse response);
+    }
+    public void onRotate(RotateCallback cb) {
+        _socket.on("rotatePiece", response -> {
+            _handler.post(() -> {
+                cb.onResponse(new Gson().fromJson(response[0].toString(), RotateResponse.class));
+            });
+        });
+    }
 
     class ReleaseResponse {
         String username;
