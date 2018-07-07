@@ -506,8 +506,8 @@ public class Api {
         _socket.emit("pickPiece", pieceIndex);
     }
     
-    public void rotate() {
-        _socket.emit("rotatePiece");
+    public void rotate(int pieceIndex) {
+        _socket.emit("rotatePiece", pieceIndex);
     }
 
     public void moveTo(double X, double Y) {
