@@ -50,10 +50,10 @@ public class ChooseSplitView extends SurfaceView implements SurfaceHolder.Callba
     }
 
     private void init() {
-        Bitmap bmpButtonSplit1_origin = BitmapFactory.decodeResource(resources, R.drawable.pattern1);
-        Bitmap bmpButtonSplit1Pressed_origin = BitmapFactory.decodeResource(resources, R.drawable.pattern1);
-        Bitmap bmpButtonSplit2_origin = BitmapFactory.decodeResource(resources, R.drawable.pattern2);
-        Bitmap bmpButtonSplit2Pressed_origin = BitmapFactory.decodeResource(resources, R.drawable.pattern2);
+        Bitmap bmpButtonSplit1_origin = BitmapFactory.decodeResource(resources, R.drawable.split1);
+        Bitmap bmpButtonSplit1Pressed_origin = BitmapFactory.decodeResource(resources, R.drawable.split1);
+        Bitmap bmpButtonSplit2_origin = BitmapFactory.decodeResource(resources, R.drawable.split2);
+        Bitmap bmpButtonSplit2Pressed_origin = BitmapFactory.decodeResource(resources, R.drawable.split2);
 
         Bitmap bmpButtonSplit1 = Scale(bmpButtonSplit1_origin);
         Bitmap bmpButtonSplit1Pressed = Scale(bmpButtonSplit1Pressed_origin);

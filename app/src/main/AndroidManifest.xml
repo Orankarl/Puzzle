@@ -24,7 +24,7 @@
         </activity>
         <activity android:name=".PuzzleActivity"
             android:exported="true"
-            android:theme="@style/Theme.AppCompat.NoActionBar"></activity>
+            android:theme="@style/Theme.AppCompat.NoActionBar"/>
     </application>
 
 </manifest>

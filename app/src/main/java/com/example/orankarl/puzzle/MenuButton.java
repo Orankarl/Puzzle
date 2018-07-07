@@ -1,11 +1,16 @@
 package com.example.orankarl.puzzle;
 
 import android.content.Context;
+import android.content.res.AssetManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.util.Log;
 import android.view.MotionEvent;
+
+import java.io.IOException;
+import java.io.InputStream;
 
 /*
     A menu button designed for being represented in Custom SurfaceView
@@ -19,6 +24,8 @@ public class MenuButton {
     private Bitmap bmpBackground, bmpButton, bmpButtonPressed;
     private int posX, posY;
     private boolean isPressed;
+
+    final public static int PRESET_OFFSET = 100;
 
     public MenuButton(Context context, Bitmap bmpButton, Bitmap bmpButtonPressed, int x, int y) {
         this.context = context;
@@ -149,10 +156,55 @@ public class MenuButton {
                         case 23:    // Register 注册
                             activity.onRegisterButtonPressed();
                             break;
+                        case 24:    // ChoosePicture 重新选择预设图片
+                            activity.onPictureRechoosePressed();
+                            break;
+                    }
+                    // preset image clicked
+                    for (int i = 0; i < ChoosePictureView.PRESET_IMAGES; ++i) {
+                        if (whichClick == PRESET_OFFSET + i) {
+                            activity.onChoosePreSetPicturePressed(i);
+                        }
                     }
                 }
             }
         }
 
+    }
+
+    public void onTouchEventPuzzle(MotionEvent event, Context context) {
+        // 获取当前触控位置
+        int pointX = (int) event.getX();
+        int pointyY = (int) event.getY();
+
+        // 当用户是按下和移动时
+        if (event.getAction() == MotionEvent.ACTION_DOWN
+                || event.getAction() == MotionEvent.ACTION_MOVE) {
+
+            // 判定用户是否点击按钮
+            if (pointX > posX && pointX < posX + bmpButton.getWidth()) {
+                if (pointyY > posY && pointyY < posY + bmpButton.getHeight()) {
+                    isPressed = true;
+                    Log.d("StartButton", "DOWN");
+                } else {
+                    isPressed = false;
+                }
+            } else {
+                isPressed = false;
+            }
+
+            // 当用于是抬起动作时
+        } else if (event.getAction() == MotionEvent.ACTION_UP) {
+            // 判断抬起时是否点击按钮,防止用户移动到别处
+            if (pointX > posX && pointX < posX + bmpButton.getWidth()) {
+                if (pointyY > posY && pointyY < posY + bmpButton.getHeight()) {
+                    isPressed = false;//抬起后重置 还原Button状态为未按下状态
+                    Log.d("StartButton", "UP");
+                    PuzzleActivity activity = (PuzzleActivity) context;
+                    //activity.onButtonPressed();
+                    activity.returnToMainActivity();
+                }
+            }
+        }
     }
 }

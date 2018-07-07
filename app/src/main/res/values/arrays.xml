@@ -100,4 +100,14 @@
         <item>0.0</item>
         <item>0.0</item>
     </string-array>
+    <string-array name="horizontal_zsc_x">
+        <item>0.0</item>
+        <item>0.690983</item>
+        <item>1.0</item>
+    </string-array>
+    <string-array name="horizontal_zsc_y">
+        <item>0.0</item>
+        <item>0.309017</item>
+        <item>0.0</item>
+    </string-array>
 </resources>

@@ -17,7 +17,7 @@ public class CutUtil {
     /*
         Class for cut image into pieces with paths from StoredPath.
      */
-    public static final String type1 = "flat", type2 = "classic";
+    public static final String type1 = "flat", type2 = "classic", type3 = "zsc";
     public static ArrayList<Bitmap> cutImage(Bitmap bitmap, String pathType, int count) {
         ArrayList<Bitmap> pieces = new ArrayList<>();
         SparseArray<ArrayList<Float>> paths = StoredPath.getPaths();
@@ -31,20 +31,29 @@ public class CutUtil {
         border_vertical_x = scalePath(paths.get(StoredPath.flat_horizontal_y), 1.0f * width / rowCount);
         border_vertical_y = scalePath(paths.get(StoredPath.flat_horizontal_x), 1.0f * height / rowCount);
         if (pathType.equals(type1)) {
-            horizontal_x = scalePath(paths.get(StoredPath.flat_horizontal_x), 1.0f * width / rowCount);
-            horizontal_y = scalePath(paths.get(StoredPath.flat_horizontal_y), 1.0f * height / rowCount);
-            vertical_x = scalePath(paths.get(StoredPath.flat_vertical_x), 1.0f * width / rowCount);
-            vertical_y = scalePath(paths.get(StoredPath.flat_vertical_y), 1.0f * height / rowCount);
+//            horizontal_x = scalePath(paths.get(StoredPath.flat_horizontal_x), 1.0f * width / rowCount);
+//            horizontal_y = scalePath(paths.get(StoredPath.flat_horizontal_y), 1.0f * height / rowCount);
+//            vertical_x = scalePath(paths.get(StoredPath.flat_vertical_x), 1.0f * width / rowCount);
+//            vertical_y = scalePath(paths.get(StoredPath.flat_vertical_y), 1.0f * height / rowCount);
+            horizontal_x = scalePath(paths.get(StoredPath.zsc_horizontal_x), 1.0f * width / rowCount);
+            horizontal_y = scalePath(paths.get(StoredPath.zsc_horizontal_y), 1.0f * height / rowCount);
+            vertical_x = scalePath(paths.get(StoredPath.zsc_horizontal_y), 1.0f * width / rowCount);
+            vertical_y = scalePath(paths.get(StoredPath.zsc_horizontal_x), 1.0f * height / rowCount);
         } else if (pathType.equals(type2)){
             horizontal_x = scalePath(paths.get(StoredPath.classic_horizontal_x), 1.0f * width / rowCount);
             horizontal_y = scalePath(paths.get(StoredPath.classic_horizontal_y), 1.0f * height / rowCount);
             vertical_x = scalePath(paths.get(StoredPath.classic_horizontal_y), 1.0f * width / rowCount);
             vertical_y = scalePath(paths.get(StoredPath.classic_horizontal_x), 1.0f * height / rowCount);
+        } else if (pathType.equals(type3)) {
+            horizontal_x = scalePath(paths.get(StoredPath.zsc_horizontal_x), 1.0f * width / rowCount);
+            horizontal_y = scalePath(paths.get(StoredPath.zsc_horizontal_y), 1.0f * height / rowCount);
+            vertical_x = scalePath(paths.get(StoredPath.zsc_horizontal_y), 1.0f * width / rowCount);
+            vertical_y = scalePath(paths.get(StoredPath.zsc_horizontal_x), 1.0f * height / rowCount);
         } else {
             horizontal_x = scalePath(paths.get(StoredPath.flat_horizontal_x), 1.0f * width / rowCount);
             horizontal_y = scalePath(paths.get(StoredPath.flat_horizontal_y), 1.0f * height / rowCount);
-            vertical_x = scalePath(paths.get(StoredPath.flat_vertical_x), 1.0f * width / rowCount);
-            vertical_y = scalePath(paths.get(StoredPath.flat_vertical_y), 1.0f * height / rowCount);
+            vertical_x = scalePath(paths.get(StoredPath.flat_horizontal_y), 1.0f * width / rowCount);
+            vertical_y = scalePath(paths.get(StoredPath.flat_horizontal_x), 1.0f * height / rowCount);
         }
         if (count == 4) {
             //顺序为从左到右，从上到下

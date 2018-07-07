@@ -3,6 +3,7 @@ package com.example.orankarl.puzzle;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.content.res.AssetManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
@@ -32,12 +33,15 @@ import android.widget.Toast;
 import static com.example.orankarl.puzzle.MainSurfaceView.screenH;
 import static com.example.orankarl.puzzle.MainSurfaceView.screenW;
 
+import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-    final Api api = new Api("45.77.183.226", 5000, new Handler(Looper.getMainLooper()));
+    public static final Api api = new Api("45.77.183.226", 5000, new Handler(Looper.getMainLooper()));
 
     LocalDatabase mDbHelper;
     String token_tmp = "";
@@ -52,8 +56,9 @@ public class MainActivity extends AppCompatActivity {
     public int pattern;
     public boolean isRank;
     public boolean isHost;
-    public Bitmap background;
     public String host;
+    public boolean isSelected;
+    public static Bitmap background;
 
     public Typeface font;
 
@@ -64,7 +69,6 @@ public class MainActivity extends AppCompatActivity {
     SurfaceViewEditText editText_username;
     SurfaceViewEditText editText_password;
     SurfaceViewEditText editText_nickname;
-
 
     public Bitmap puzzleBitmap;
 
@@ -149,6 +153,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(new MainSurfaceView(this));
         viewState = 0;
         isOnline = false;
+        isSelected = false;
 
         puzzleBitmap = null;
 
@@ -190,6 +195,8 @@ public class MainActivity extends AppCompatActivity {
             roomList.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_expandable_list_item_1, data));
             roomList.setOnItemClickListener((parent, view, position, id) -> {
                 api.enterRoom(roomListResponse.rooms[position].username);
+                pattern = roomListResponse.rooms[position].pattern;
+                split = roomListResponse.rooms[position].split;
                 comeInRoom();
             });
 
@@ -386,6 +393,22 @@ public class MainActivity extends AppCompatActivity {
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
         startActivityForResult(intent, 1);
+    }
+
+    public void onPictureRechoosePressed() {
+        isSelected = false;
+    }
+
+    public void onChoosePreSetPicturePressed(int i) {
+        AssetManager assetManager = getAssets();
+        try {
+            InputStream is = assetManager.open("PreSetImage/image" + Integer.toString(i + 1) + ".jpg");
+            puzzleBitmap = BitmapFactory.decodeStream(is);
+            setContentView(new ChoosePatternView(this));
+            viewState = 5;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void onLoginButtonPressed() {
@@ -648,15 +671,42 @@ public class MainActivity extends AppCompatActivity {
     public void gameStart() {
         api.startGame();
         Toast.makeText(this, "Transferring image...", Toast.LENGTH_LONG).show();
-        api.gameParam(split, pattern, puzzleBitmap, new int[]{1}, response -> {
-            // TODO
-            // change new int[]{1} to random sequence
+        if (isOnline) {
+            api.gameParam(split, pattern, puzzleBitmap, new int[]{1}, response -> {
+                // TODO
+                // change new int[]{1} to random sequence
+                TurnToGameView();
+            });
+        } else {
             TurnToGameView();
-        });
+        }
+
     }
 
     private void TurnToGameView() {
         Toast.makeText(this, "Go!", Toast.LENGTH_LONG).show();
+        Intent intent = new Intent(this, PuzzleActivity.class);
+        Bitmap bitmap = BitmapUtil.setImgSize(this.puzzleBitmap, (int) (0.8*screenW), 0);
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+//        if (puzzleBitmap != null) {
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+            byte[] bitmapByte = stream.toByteArray();
+            intent.putExtra("picture", bitmapByte);
+//        }
+
+        String filename = "picture";
+//        BitmapUtil.saveBitmap2file(puzzleBitmap, filename);
+//        intent.putExtra("picture", filename);
+        intent.putExtra("isOnline", isOnline);
+        intent.putExtra("isSingle", isSingle);
+        intent.putExtra("pattern", pattern);
+        if (split == 1) {
+            intent.putExtra("split", 9);
+        } else {
+            intent.putExtra("split", 16);
+        }
+
+        startActivity(intent);
     }
 
     public int getTextWidth(Paint paint, String str) {
@@ -687,6 +737,7 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         ChoosePictureView pictureView = new ChoosePictureView(this);
         pictureView.origin_bitmap = puzzleBitmap;
+        isSelected = true;
         setContentView(pictureView);
     }
 
