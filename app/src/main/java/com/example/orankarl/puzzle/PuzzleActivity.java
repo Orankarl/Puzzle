@@ -9,10 +9,13 @@ import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
 
+import java.util.ArrayList;
+
 public class PuzzleActivity extends AppCompatActivity {
 
     int pattern, split;
     boolean isOnline, isSingle;
+    ArrayList<Integer> posIndexList;
     Bitmap bitmap;
 
     @Override
@@ -35,10 +38,14 @@ public class PuzzleActivity extends AppCompatActivity {
             byte[] bytes = intent.getByteArrayExtra("picture");
             Log.d("bytes", String.valueOf(bytes));
             bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+
+            if (isOnline && !isSingle) {
+                posIndexList = intent.getIntegerArrayListExtra("posIndexList");
+            }
         }
 
 
-        setContentView(new PuzzleSurfaceView(this, bitmap, pattern, split, isSingle, isOnline));
+        setContentView(new PuzzleSurfaceView(this, bitmap, pattern, split, isSingle, isOnline, posIndexList));
 
     }
 

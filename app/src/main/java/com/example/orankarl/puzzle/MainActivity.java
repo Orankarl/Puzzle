@@ -38,6 +38,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -71,6 +72,8 @@ public class MainActivity extends AppCompatActivity {
     SurfaceViewEditText editText_nickname;
 
     public Bitmap puzzleBitmap;
+
+    ArrayList<Integer> posIndexList;
 
     @Override
     public void onBackPressed() {
@@ -302,8 +305,15 @@ public class MainActivity extends AppCompatActivity {
         });
 
         api.onGetGameParam(param -> {
-            // TODO
-            // set received params
+            split = param.split;
+            pattern = param.pattern;
+
+            int pieceCount;
+            if (param.split == 1) pieceCount = 9;
+            else pieceCount = 16;
+            for (int i = 0; i < pieceCount; i++) {
+                posIndexList.add(param.sequence[i]);
+            }
             TurnToGameView();
         });
 
@@ -672,9 +682,19 @@ public class MainActivity extends AppCompatActivity {
         api.startGame();
         Toast.makeText(this, "Transferring image...", Toast.LENGTH_LONG).show();
         if (isOnline) {
-            api.gameParam(split, pattern, puzzleBitmap, new int[]{1}, response -> {
-                // TODO
-                // change new int[]{1} to random sequence
+            int pieceCount;
+            if (split == 1) pieceCount = 9;
+            else pieceCount = 16;
+            posIndexList = new ArrayList<>();
+            for (int i = 0; i < pieceCount; i++) {
+                posIndexList.add(i);
+            }
+            Collections.shuffle(posIndexList);
+            int[] posArray = new int[pieceCount];
+            for (int i = 0; i < pieceCount; i++) {
+                posArray[i] = posIndexList.get(i);
+            }
+            api.gameParam(split, pattern, puzzleBitmap, posArray, response -> {
                 TurnToGameView();
             });
         } else {
@@ -704,6 +724,9 @@ public class MainActivity extends AppCompatActivity {
             intent.putExtra("split", 9);
         } else {
             intent.putExtra("split", 16);
+        }
+        if (isOnline && !isSingle) {
+            intent.putIntegerArrayListExtra("posIndexList", posIndexList);
         }
 
         startActivity(intent);

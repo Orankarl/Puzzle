@@ -48,13 +48,14 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
     int minute, second;
     MenuButton buttonBack;
     double RATIO;
+    ArrayList<Integer> posIndexList;
 
     PuzzleActivity activity = (PuzzleActivity) getContext();
 
     public static int screenW, screenH;
     private Resources resources = this.getResources();
     boolean flag = true;
-    public PuzzleSurfaceView(Context context, Bitmap bitmap, int pattern, int split, boolean isSingle, boolean isOnline) {
+    public PuzzleSurfaceView(Context context, Bitmap bitmap, int pattern, int split, boolean isSingle, boolean isOnline, ArrayList<Integer> posIndexList) {
         super(context);
         holder = this.getHolder();
         holder.addCallback(this);
@@ -73,6 +74,7 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
         rowCount = (int) Math.sqrt(pieceCount);
         this.isSingle = isSingle;
         this.isOnline = isOnline;
+        if (isOnline && !isSingle) this.posIndexList = posIndexList;
     }
 
     private void init() {
@@ -198,7 +200,13 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
         ArrayList<Bitmap> cutImages = CutUtil.cutImage(bitmap, pattern, pieceCount);
         for (int i = 0; i < pieceCount; i++) {
 //                PuzzlePieceGroup pieceGroup = ;
-            pieces.add(new PuzzlePieceGroup(new PuzzlePiece(cutImages.get(i), posList.get(i).x, posList.get(i).y), i, rowCount, pieceWidth, pieceHeight));
+            if (!isSingle && isOnline) {
+                pieces.add(new PuzzlePieceGroup(new PuzzlePiece(cutImages.get(i), posList.get(posIndexList.get(i)).x, posList.get(posIndexList.get(i)).y), i, rowCount, pieceWidth, pieceHeight));
+            } else {
+                Collections.shuffle(posList);
+                pieces.add(new PuzzlePieceGroup(new PuzzlePiece(cutImages.get(i), posList.get(i).x, posList.get(i).y), i, rowCount, pieceWidth, pieceHeight));
+            }
+
         }
 
         for (int i = 0; i < pieceCount; i++) {
@@ -328,11 +336,17 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
                     isPieceNeedPaint[i] = false;
                     if (pieces.get(chosenPieceIndex).getAttachedPiece().size() == pieceCount - 1) {
                         isFinished = true;
-                        if (this.pattern == CutUtil.type1) {
-                            MainActivity.api.newResult(1, minute * 60 + second, response->{});
-                        } else if (this.pattern == CutUtil.type2) {
-                            MainActivity.api.newResult(2, minute * 60 + second, response->{});
+                        int pattern, split;
+                        if (this.pattern.equals(CutUtil.type1)) {
+                            pattern = 1;
+                        } else if (this.pattern.equals(CutUtil.type2)) {
+                            pattern = 2;
+                        } else {
+                            pattern = 1;
                         }
+                        if (this.pieceCount == 9) split = 1;
+                        else split = 2;
+                        MainActivity.api.newResult(pattern, split, minute * 60 + second, response->{});
 
                     }
                 }
@@ -343,13 +357,19 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
                 if (pieces.get(pickedPieceIndex).isNeighbor(pieces.get(i)) && pieces.get(pickedPieceIndex).isCloseEnough(pieces.get(i))) {
                     pieces.get(pickedPieceIndex).addPieceGroup(pieces.get(i));
                     isPieceNeedPaint[i] = false;
-                    if (pieces.get(pickedPieceIndex).getAttachedPiece().size() == pieceCount - 1) {
+                    if (pieces.get(chosenPieceIndex).getAttachedPiece().size() == pieceCount - 1) {
                         isFinished = true;
-                        if (this.pattern == CutUtil.type1) {
-                            MainActivity.api.newResult(1, minute * 60 + second, response->{});
-                        } else if (this.pattern == CutUtil.type2) {
-                            MainActivity.api.newResult(2, minute * 60 + second, response->{});
+                        int pattern, split;
+                        if (this.pattern.equals(CutUtil.type1)) {
+                            pattern = 1;
+                        } else if (this.pattern.equals(CutUtil.type2)) {
+                            pattern = 2;
+                        } else {
+                            pattern = 1;
                         }
+                        if (this.pieceCount == 9) split = 1;
+                        else split = 2;
+                        MainActivity.api.newResult(pattern, split, minute * 60 + second, response->{});
 
                     }
                 }
@@ -495,7 +515,7 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
             posList.add(new Tuple((screenW - 2*spacing - 3*pieceWidth)/2, (screenH - 2*spacing - 3*pieceHeight) / 2 + pieceHeight*2 + spacing*2));
             posList.add(new Tuple((screenW - 2*spacing - 3*pieceWidth)/2 + pieceWidth + spacing, (screenH - 2*spacing - 3*pieceHeight) / 2 + pieceHeight*2 + spacing*2));
             posList.add(new Tuple((screenW - 2*spacing - 3*pieceWidth)/2 + pieceWidth*2 + spacing*2, (screenH - 2*spacing - 3*pieceHeight) / 2 + pieceHeight*2 + spacing*2));
-            Collections.shuffle(posList);
+//            Collections.shuffle(posList);
         } else if (pieceCount == 16) {
             posList.add(new Tuple((screenW - 3*spacing - 4*pieceWidth)/2, (screenH - 3*spacing - 4*pieceHeight) / 2));
             posList.add(new Tuple((screenW - 3*spacing - 4*pieceWidth)/2 + pieceWidth + spacing, (screenH - 3*spacing - 4*pieceHeight) / 2));
@@ -517,7 +537,7 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
             posList.add(new Tuple((screenW - 3*spacing - 4*pieceWidth)/2 + pieceWidth*2 + spacing*2, (screenH - 3*spacing - 4*pieceHeight) / 2 + pieceHeight*3 + spacing*3));
             posList.add(new Tuple((screenW - 3*spacing - 4*pieceWidth)/2 + pieceWidth*3 + spacing*3, (screenH - 3*spacing - 4*pieceHeight) / 2 + pieceHeight*3 + spacing*3));
 
-            Collections.shuffle(posList);
+//            Collections.shuffle(posList);
         }
     }
 }
