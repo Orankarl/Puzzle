@@ -1,7 +1,9 @@
 package com.example.orankarl.puzzle;
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -20,30 +22,37 @@ public class PuzzlePieceGroup {
     private ArrayList<Integer> attachedID;
     private int rowCount;
     private int rotate = 0;
+    private int horizontalLength, verticalLength;
     PuzzlePieceGroup(PuzzlePiece piece, int mainID, int rowCount, int pieceWidth, int pieceHeight) {
         mainPiece = piece;
         this.mainID = mainID;
         this.pieceWidth = pieceWidth;
         this.pieceHeight = pieceHeight;
+        horizontalLength = pieceWidth;
+        verticalLength = pieceHeight;
         attachedPiece = new ArrayList<>();
         biasListX = new ArrayList<>();
         biasListY = new ArrayList<>();
         attachedID = new ArrayList<>();
         this.rowCount = rowCount;
-        mainBiasX = (mainID % rowCount) * pieceWidth;
-        mainBiasY = (mainID / rowCount) * pieceHeight;
+        mainBiasX = mainID % rowCount;
+        mainBiasY = mainID / rowCount;
+
+        setPosX(getPosX() - getHorizontalBias(mainID) * horizontalLength);
+        setPosY(getPosY() - getVerticalBias(mainID) * verticalLength);
     }
     boolean isInPiece(float x, float y) {
-        if (mainPiece.isInPiece(x, y)) return true;
-        for (PuzzlePiece piece:attachedPiece) {
-            if (piece.isInPiece(x, y)) return true;
+        if (mainPiece.isInPiece(x - getHorizontalBias(mainID) * horizontalLength, y - getVerticalBias(mainID) * verticalLength, rotate)) return true;
+        for (int i = 0; i < attachedID.size(); i++) {
+            PuzzlePiece piece = attachedPiece.get(i);
+            if (piece.isInPiece(x - getHorizontalBias(attachedID.get(i)) * horizontalLength, y - getVerticalBias(attachedID.get(i)) * verticalLength, rotate)) return true;
         }
         return false;
     }
 
     void addPiece(PuzzlePiece piece, int id) {
-        int biasX = (id % rowCount) * pieceWidth - mainBiasX;
-        int biasY = (id / rowCount) * pieceHeight - mainBiasY;
+        int biasX = id % rowCount - mainBiasX;
+        int biasY = id / rowCount - mainBiasY;
         piece.setPosX(mainPiece.getPosX() + biasX);
         piece.setPosY(mainPiece.getPosY() + biasY);
         attachedPiece.add(piece);
@@ -54,8 +63,8 @@ public class PuzzlePieceGroup {
 
     void addPieceGroup(PuzzlePieceGroup pieceGroup) {
         int id = pieceGroup.getMainID();
-        int biasX = (id % rowCount) * pieceWidth - mainBiasX;
-        int biasY = (id / rowCount) * pieceHeight - mainBiasY;
+        int biasX = id % rowCount - mainBiasX;
+        int biasY = id / rowCount - mainBiasY;
 //        Log.d("mainID anotherMainID:", String.valueOf(mainID) + " " + String.valueOf(pieceGroup.mainID));
         PuzzlePiece mainPiece = pieceGroup.getMainPiece();
 //        mainPiece.setPosX(mainPiece.getPosX() + biasX);
@@ -79,14 +88,46 @@ public class PuzzlePieceGroup {
     }
 
     Canvas draw(Canvas canvas, Paint paint) {
-        canvas.drawBitmap(mainPiece.getBitmap(), mainPiece.getPosX(), mainPiece.getPosY(), paint);
-        for (int i = 0; i < attachedPiece.size(); i++) {
-            canvas.drawBitmap(attachedPiece.get(i).getBitmap(), mainPiece.getPosX()+biasListX.get(i), mainPiece.getPosY()+biasListY.get(i), paint);
-        }
+//        if (rotate == 0) {
+//            canvas.drawBitmap(mainPiece.getBitmap(), mainPiece.getPosX(), mainPiece.getPosY(), paint);
+//            for (int i = 0; i < attachedPiece.size(); i++) {
+//                canvas.drawBitmap(attachedPiece.get(i).getBitmap(), mainPiece.getPosX()+biasListX.get(i), mainPiece.getPosY()+biasListY.get(i), paint);
+//            }
+//        } else {
+            Matrix matrix = new Matrix();
+            matrix.setRotate(90*rotate);
+            Bitmap bitmap = Bitmap.createBitmap(mainPiece.getBitmap(), 0, 0, mainPiece.getBitmap().getWidth(), mainPiece.getBitmap().getHeight(), matrix, true);
+            canvas.drawBitmap(bitmap, mainPiece.getPosX() + getHorizontalBias(mainID) * horizontalLength, mainPiece.getPosY() + getVerticalBias(mainID) * verticalLength, paint);
+            for (int i = 0; i < attachedPiece.size(); i++) {
+                bitmap = Bitmap.createBitmap(attachedPiece.get(i).getBitmap(), 0, 0, attachedPiece.get(i).getBitmap().getWidth(), attachedPiece.get(i).getBitmap().getHeight(), matrix, true);
+                canvas.drawBitmap(bitmap, mainPiece.getPosX() + getHorizontalBias(attachedID.get(i)) * horizontalLength, mainPiece.getPosY() + getVerticalBias(attachedID.get(i)) * verticalLength, paint);
+            }
+//        }
+
         return canvas;
     }
 
+    void rotate90() {
+        int oldHorizontalBias = getHorizontalBias(mainID) * horizontalLength;
+        int oldVerticalBias = getVerticalBias(mainID) * verticalLength;
+        rotate = (rotate + 1) % 4;
+        updateLength();
+        setPosX(getPosX() + oldHorizontalBias  - getHorizontalBias(mainID) * horizontalLength);
+        setPosY(getPosY() + oldVerticalBias - getVerticalBias(mainID) * verticalLength);
+    }
+
+    void updateLength() {
+        if (rotate % 2 == 0) {
+            horizontalLength = pieceWidth;
+            verticalLength = pieceHeight;
+        } else {
+            horizontalLength = pieceHeight;
+            verticalLength = pieceWidth;
+        }
+    }
+
     boolean isNeighbor(PuzzlePieceGroup pieceGroup) {
+        if (rotate != pieceGroup.rotate) return false;
         ArrayList<Integer> selfAttachedID = getAttachedID();
         selfAttachedID.add(mainID);
         ArrayList<Integer> anotherAttachedID = pieceGroup.getAttachedID();
@@ -139,13 +180,56 @@ public class PuzzlePieceGroup {
     }
 
     boolean isCloseEnough(PuzzlePieceGroup pieceGroup) {
-        double closeRatio = 0.1;
+        double closeRatio = 0.2;
         int selfBiasX = (mainID % rowCount) * pieceWidth;
         int selfBiasY = (mainID / rowCount) * pieceHeight;
         int biasX = (pieceGroup.getMainID() % rowCount) * pieceWidth;
         int biasY = (pieceGroup.getMainID() / rowCount) * pieceHeight;
-        if (Math.abs((getPosX() - mainBiasX) - (pieceGroup.getPosX() - pieceGroup.mainBiasX)) < closeRatio * pieceWidth
-                && Math.abs((getPosY() - mainBiasY) - (pieceGroup.getPosY() - pieceGroup.mainBiasY)) < closeRatio * pieceHeight) {
+        int realBiasX1, realBiasY1, realBiasX2, realBiasY2;
+        switch (rotate) {
+            case 0:
+                realBiasX1 = mainBiasX;
+                realBiasY1 = mainBiasY;
+                realBiasX2 = pieceGroup.mainBiasX;
+                realBiasY2 = pieceGroup.mainBiasY;
+                break;
+            case 1:
+                realBiasX1 = rowCount - mainBiasY;
+                realBiasY1 = mainBiasX;
+                realBiasX2 = rowCount - pieceGroup.mainBiasY;
+                realBiasY2 = pieceGroup.mainBiasX;
+                break;
+            case 2:
+                realBiasX1 = rowCount - mainBiasX;
+                realBiasY1 = rowCount - mainBiasY;
+                realBiasX2 = rowCount - pieceGroup.mainBiasX;
+                realBiasY2 = rowCount - pieceGroup.mainBiasY;
+                break;
+            case 3:
+                realBiasX1 = mainBiasY;
+                realBiasY1 = rowCount - mainBiasX;
+                realBiasX2 = pieceGroup.mainBiasY;
+                realBiasY2 = rowCount - pieceGroup.mainBiasX;
+                break;
+            default:
+                realBiasX1 = mainBiasX;
+                realBiasY1 = mainBiasY;
+                realBiasX2 = pieceGroup.mainBiasX;
+                realBiasY2 = pieceGroup.mainBiasY;
+        }
+//        if (Math.abs((getPosX() - realBiasX1 * horizontalLength) - (pieceGroup.getPosX() - realBiasX2 * horizontalLength)) < closeRatio * horizontalLength
+//                && Math.abs((getPosY() - realBiasY1 * verticalLength) - (pieceGroup.getPosY() - realBiasY2 * verticalLength)) < closeRatio * verticalLength) {
+////            Log.d("id of 2 pieces:", String.valueOf(mainID) + " " + String.valueOf(pieceGroup.mainID));
+////            Log.d("posX,posY,biasX,biasY:", String.valueOf(getPosX()) + " " + String.valueOf(getPosY()) + " " + String.valueOf(mainBiasX) + " " + String.valueOf(mainBiasY));
+////            Log.d("posX,posY,biasX,biasY:", String.valueOf(pieceGroup.getPosX()) + " " + String.valueOf(pieceGroup.getPosY())
+////                    + " " + String.valueOf(pieceGroup.mainBiasX) + " " + String.valueOf(pieceGroup.mainBiasY));
+////            Log.d("pieceWidth Height:", String.valueOf(pieceWidth) + " " + String.valueOf(pieceHeight));
+////            Log.d("value1:", String.valueOf(Math.abs((getPosX() - mainBiasX) - (pieceGroup.getPosX() - pieceGroup.mainBiasX))));
+////            Log.d("value2:", String.valueOf(Math.abs((getPosY() - mainBiasY) - (pieceGroup.getPosY() - pieceGroup.mainBiasY))));
+//            return true;
+//        }
+        if (Math.abs((getPosX()) - (pieceGroup.getPosX())) < closeRatio * horizontalLength
+                && Math.abs((getPosY()) - (pieceGroup.getPosY())) < closeRatio * verticalLength) {
 //            Log.d("id of 2 pieces:", String.valueOf(mainID) + " " + String.valueOf(pieceGroup.mainID));
 //            Log.d("posX,posY,biasX,biasY:", String.valueOf(getPosX()) + " " + String.valueOf(getPosY()) + " " + String.valueOf(mainBiasX) + " " + String.valueOf(mainBiasY));
 //            Log.d("posX,posY,biasX,biasY:", String.valueOf(pieceGroup.getPosX()) + " " + String.valueOf(pieceGroup.getPosY())
@@ -158,6 +242,57 @@ public class PuzzlePieceGroup {
         return false;
     }
 
+    int getHorizontalBias(int id) {
+        int biasX = id % rowCount;
+        int biasY = id / rowCount;
+        int realBiasX, realBiasY;
+        switch (rotate) {
+            case 0:
+                realBiasX = biasX;
+                realBiasY = biasY;
+                break;
+            case 1:
+                realBiasX = rowCount - biasY;
+                realBiasY = biasX;
+                break;
+            case 2:
+                realBiasX = rowCount - biasX;
+                realBiasY = rowCount - biasY;
+                break;
+            case 3:
+                realBiasX = biasY;
+                realBiasY = rowCount - biasX;
+                break;
+            default:
+                realBiasX = biasX;
+                realBiasY = biasY;
+        }
+        return realBiasX;
+    }
+
+    int getVerticalBias(int id) {
+        int biasX = id % rowCount;
+        int biasY = id / rowCount;
+        int realBiasX, realBiasY;
+        switch (rotate) {
+            case 0:
+                realBiasY = biasY;
+                break;
+            case 1:
+                realBiasY = biasX;
+                break;
+            case 2:
+                realBiasY = rowCount - biasY;
+                break;
+            case 3:
+                realBiasY = rowCount - biasX;
+                break;
+            default:
+                realBiasY = biasY;
+        }
+        return realBiasY;
+    }
+
     public int getRowCount() {
         return rowCount;
     }
@@ -165,13 +300,13 @@ public class PuzzlePieceGroup {
     void setPosX(int x) {
         mainPiece.setPosX(x);
         for (int i = 0; i < attachedPiece.size(); i++) {
-            attachedPiece.get(i).setPosX(x + biasListX.get(i));
+            attachedPiece.get(i).setPosX(x);
         }
     }
     void setPosY(int y) {
         mainPiece.setPosY(y);
         for (int i = 0; i < attachedPiece.size(); i++) {
-            attachedPiece.get(i).setPosY(y + biasListY.get(i));
+            attachedPiece.get(i).setPosY(y);
         }
     }
     int getPosX() {

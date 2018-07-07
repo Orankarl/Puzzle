@@ -1,5 +1,6 @@
 package com.example.orankarl.puzzle;
 
+import android.app.job.JobInfo;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -13,9 +14,11 @@ import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -49,12 +52,15 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
     MenuButton buttonBack;
     double RATIO;
     ArrayList<Integer> posIndexList;
+    int lastIndex;
+    long lastDownTime;
 
     PuzzleActivity activity = (PuzzleActivity) getContext();
 
     public static int screenW, screenH;
     private Resources resources = this.getResources();
     boolean flag = true;
+
     public PuzzleSurfaceView(Context context, Bitmap bitmap, int pattern, int split, boolean isSingle, boolean isOnline, ArrayList<Integer> posIndexList) {
         super(context);
         holder = this.getHolder();
@@ -403,6 +409,7 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
 
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
+                long currentDownTime = event.getDownTime();
                 ListIterator<Integer> listIterator = drawOrder.listIterator(drawOrder.size());
                 while (listIterator.hasPrevious()) {
                     int index = listIterator.previous();
@@ -410,6 +417,11 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
                     if (isPicked[index]) continue;
                     PuzzlePieceGroup piece = pieces.get(index);
                     if (piece.isInPiece(event.getX(), event.getY())) {
+                        if (lastIndex == index && currentDownTime - lastDownTime < 300) {
+                            pieces.get(index).rotate90();
+                            lastDownTime = currentDownTime;
+                            break;
+                        }
                         isChosen = true;
                         chosenPieceIndex = index;
                         touchX = event.getX();
@@ -422,6 +434,8 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
                             isPicked[index] = true;
                             pickedPieceIndex = index;
                         }
+                        lastDownTime = currentDownTime;
+                        lastIndex = index;
                         break;
                     }
                 }
