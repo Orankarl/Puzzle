@@ -44,7 +44,8 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
     boolean[] isPieceNeedPaint, isPicked;
     ArrayList<Tuple> posList = new ArrayList<>();
     String pattern = CutUtil.type1, timeStr;
-    long startTime, minute, second;
+    long startTime;
+    int minute, second;
     MenuButton buttonBack;
 
     PuzzleActivity activity = (PuzzleActivity) getContext();
@@ -121,56 +122,65 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
 
         initPiecePos();
 
-        if (pieceCount == 4) {
-            spacing  = screenW / 10;
-
-            ArrayList<Bitmap> cutImages = CutUtil.cutImage(bitmap, CutUtil.type2, 4);
-            PuzzlePiece piece1 = new PuzzlePiece(cutImages.get(0), (screenW - spacing) / 2 - cutImages.get(0).getWidth(),
-                    (screenH - spacing) / 2 - cutImages.get(0).getHeight());
-            PuzzlePiece piece2 = new PuzzlePiece(cutImages.get(1), (screenW + spacing) / 2,
-                    (screenH - spacing) / 2 - cutImages.get(1).getHeight());
-            PuzzlePiece piece3 = new PuzzlePiece(cutImages.get(2), (screenW - spacing) / 2 - cutImages.get(0).getWidth(),
-                    (screenH + spacing) / 2);
-            PuzzlePiece piece4 = new PuzzlePiece(cutImages.get(3), (screenW + spacing) / 2,
-                    (screenH + spacing) / 2);
-
-            PuzzlePieceGroup pieceGroup1 = new PuzzlePieceGroup(piece1, 0, 2, bitmap.getWidth()/2, bitmap.getHeight()/2);
-            PuzzlePieceGroup pieceGroup2 = new PuzzlePieceGroup(piece2, 1, 2, bitmap.getWidth()/2, bitmap.getHeight()/2);
-            PuzzlePieceGroup pieceGroup3 = new PuzzlePieceGroup(piece3, 2, 2, bitmap.getWidth()/2, bitmap.getHeight()/2);
-            PuzzlePieceGroup pieceGroup4 = new PuzzlePieceGroup(piece4, 3, 2, bitmap.getWidth()/2, bitmap.getHeight()/2);
-//        pieceGroup1.addPieceGroup(pieceGroup2);
-//        pieceGroup1.addPieceGroup(pieceGroup3);
-//        pieceGroup1.addPieceGroup(pieceGroup4);
-            pieces.add(pieceGroup1);
-            pieces.add(pieceGroup2);
-            pieces.add(pieceGroup3);
-            pieces.add(pieceGroup4);
-
-            for (int i = 0; i < 4; i++) {
-                drawOrder.offer(i);
-            }
-        } else if (pieceCount == 9) {
-            spacing = screenW / 20;
-            ArrayList<Bitmap> cutImages = CutUtil.cutImage(bitmap, CutUtil.type2, 9);
-            PuzzlePiece piece1 = new PuzzlePiece(cutImages.get(0), posList.get(0).x, posList.get(0).y);
-            for (int i = 0; i < 9; i++) {
+//        if (pieceCount == 4) {
+//            spacing  = screenW / 10;
+//
+//            ArrayList<Bitmap> cutImages = CutUtil.cutImage(bitmap, CutUtil.type2, 4);
+//            PuzzlePiece piece1 = new PuzzlePiece(cutImages.get(0), (screenW - spacing) / 2 - cutImages.get(0).getWidth(),
+//                    (screenH - spacing) / 2 - cutImages.get(0).getHeight());
+//            PuzzlePiece piece2 = new PuzzlePiece(cutImages.get(1), (screenW + spacing) / 2,
+//                    (screenH - spacing) / 2 - cutImages.get(1).getHeight());
+//            PuzzlePiece piece3 = new PuzzlePiece(cutImages.get(2), (screenW - spacing) / 2 - cutImages.get(0).getWidth(),
+//                    (screenH + spacing) / 2);
+//            PuzzlePiece piece4 = new PuzzlePiece(cutImages.get(3), (screenW + spacing) / 2,
+//                    (screenH + spacing) / 2);
+//
+//            PuzzlePieceGroup pieceGroup1 = new PuzzlePieceGroup(piece1, 0, 2, bitmap.getWidth()/2, bitmap.getHeight()/2);
+//            PuzzlePieceGroup pieceGroup2 = new PuzzlePieceGroup(piece2, 1, 2, bitmap.getWidth()/2, bitmap.getHeight()/2);
+//            PuzzlePieceGroup pieceGroup3 = new PuzzlePieceGroup(piece3, 2, 2, bitmap.getWidth()/2, bitmap.getHeight()/2);
+//            PuzzlePieceGroup pieceGroup4 = new PuzzlePieceGroup(piece4, 3, 2, bitmap.getWidth()/2, bitmap.getHeight()/2);
+////        pieceGroup1.addPieceGroup(pieceGroup2);
+////        pieceGroup1.addPieceGroup(pieceGroup3);
+////        pieceGroup1.addPieceGroup(pieceGroup4);
+//            pieces.add(pieceGroup1);
+//            pieces.add(pieceGroup2);
+//            pieces.add(pieceGroup3);
+//            pieces.add(pieceGroup4);
+//
+//            for (int i = 0; i < 4; i++) {
+//                drawOrder.offer(i);
+//            }
+//        } else if (pieceCount == 9) {
+//            spacing = screenW / 20;
+//            ArrayList<Bitmap> cutImages = CutUtil.cutImage(bitmap, pattern, 9);
+//            PuzzlePiece piece1 = new PuzzlePiece(cutImages.get(0), posList.get(0).x, posList.get(0).y);
+//            for (int i = 0; i < 9; i++) {
+////                PuzzlePieceGroup pieceGroup = ;
+//                pieces.add(new PuzzlePieceGroup(new PuzzlePiece(cutImages.get(i), posList.get(i).x, posList.get(i).y), i, rowCount, pieceWidth, pieceHeight));
+//            }
+//
+//            for (int i = 0; i < 9; i++) {
+//                drawOrder.offer(i);
+//            }
+//        } else if (pieceCount == 16) {
+//            ArrayList<Bitmap> cutImages = CutUtil.cutImage(bitmap, pattern, 16);
+//            for (int i = 0; i < 16; i++) {
+////                PuzzlePieceGroup pieceGroup = ;
+//                pieces.add(new PuzzlePieceGroup(new PuzzlePiece(cutImages.get(i), posList.get(i).x, posList.get(i).y), i, rowCount, pieceWidth, pieceHeight));
+//            }
+//
+//            for (int i = 0; i < 16; i++) {
+//                drawOrder.offer(i);
+//            }
+//        }
+        ArrayList<Bitmap> cutImages = CutUtil.cutImage(bitmap, pattern, pieceCount);
+        for (int i = 0; i < pieceCount; i++) {
 //                PuzzlePieceGroup pieceGroup = ;
-                pieces.add(new PuzzlePieceGroup(new PuzzlePiece(cutImages.get(i), posList.get(i).x, posList.get(i).y), i, rowCount, pieceWidth, pieceHeight));
-            }
+            pieces.add(new PuzzlePieceGroup(new PuzzlePiece(cutImages.get(i), posList.get(i).x, posList.get(i).y), i, rowCount, pieceWidth, pieceHeight));
+        }
 
-            for (int i = 0; i < 9; i++) {
-                drawOrder.offer(i);
-            }
-        } else if (pieceCount == 16) {
-            ArrayList<Bitmap> cutImages = CutUtil.cutImage(bitmap, CutUtil.type2, 16);
-            for (int i = 0; i < 16; i++) {
-//                PuzzlePieceGroup pieceGroup = ;
-                pieces.add(new PuzzlePieceGroup(new PuzzlePiece(cutImages.get(i), posList.get(i).x, posList.get(i).y), i, rowCount, pieceWidth, pieceHeight));
-            }
-
-            for (int i = 0; i < 16; i++) {
-                drawOrder.offer(i);
-            }
+        for (int i = 0; i < pieceCount; i++) {
+            drawOrder.offer(i);
         }
 
         Bitmap bmpButtonBack = BitmapFactory.decodeResource(resources, R.drawable.button_back);
@@ -217,8 +227,8 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
                 if (!isFinished) {
                     timeStr = "所用时间：";
                     long deltaMillis = System.currentTimeMillis() - startTime;
-                    second = deltaMillis / 1000 % 60;
-                    minute = deltaMillis / (60000) % 60;
+                    second = (int) (deltaMillis / 1000 % 60);
+                    minute = (int) (deltaMillis / (60000) % 60);
                     if (minute < 10) timeStr += "0";
                     timeStr += String.valueOf(minute) + ":";
                     if (second < 10) timeStr += "0";
@@ -278,7 +288,15 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
             if (pieces.get(chosenPieceIndex).isNeighbor(pieces.get(i)) && pieces.get(chosenPieceIndex).isCloseEnough(pieces.get(i))) {
                 pieces.get(chosenPieceIndex).addPieceGroup(pieces.get(i));
                 isPieceNeedPaint[i] = false;
-                if (pieces.get(chosenPieceIndex).getAttachedPiece().size() == pieceCount - 1) isFinished = true;
+                if (pieces.get(chosenPieceIndex).getAttachedPiece().size() == pieceCount - 1) {
+                    isFinished = true;
+                    if (this.pattern == CutUtil.type1) {
+                        MainActivity.api.newResult(1, minute * 60 + second, response->{});
+                    } else if (this.pattern == CutUtil.type2) {
+                        MainActivity.api.newResult(2, minute * 60 + second, response->{});
+                    }
+
+                }
             }
         }
     }
