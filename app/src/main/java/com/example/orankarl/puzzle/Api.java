@@ -6,6 +6,7 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.util.Base64;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -164,7 +165,7 @@ public class Api {
         int pattern;
         int[] sequence;
         Bitmap image;
-        byte[] _imageBase64;
+        String _imageBase64;
     }
     interface GetGameParamCallback {
         void onResponse(GetGameParamResponse response);
@@ -203,8 +204,9 @@ public class Api {
             data.put("token", _token);
             data.put("split", split);
             data.put("pattern", pattern);
-            data.put("sequence", sequence);
-            data.put("image", Base64.encode(stream.toByteArray(), Base64.DEFAULT));
+            JSONArray seq = new JSONArray(sequence);
+            data.put("sequence", seq);
+            data.put("image", Base64.encodeToString(stream.toByteArray(), Base64.DEFAULT));
         } catch (JSONException e) {
             e.printStackTrace();
         }
