@@ -192,6 +192,8 @@ public class MainActivity extends AppCompatActivity {
             roomList.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_expandable_list_item_1, data));
             roomList.setOnItemClickListener((parent, view, position, id) -> {
                 api.enterRoom(roomListResponse.rooms[position].username);
+                pattern = roomListResponse.rooms[position].pattern;
+                split = roomListResponse.rooms[position].split;
                 comeInRoom();
             });
 
