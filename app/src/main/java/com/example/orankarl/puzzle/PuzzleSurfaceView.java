@@ -265,7 +265,7 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
                 if (isChosen && !isFinished) {
                     canvas1 = pieces.get(chosenPieceIndex).draw(canvas1, paint);
                 }
-                if (!isSingle && isOnline && isPicked[pickedPieceIndex]) {
+                if (!isSingle && isOnline && isPicked[pickedPieceIndex] && !isFinished) {
                     canvas1 = pieces.get(pickedPieceIndex).draw(canvas1, paint);
                 }
                 //draw time
@@ -347,7 +347,6 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
                         if (this.pieceCount == 9) split = 1;
                         else split = 2;
                         MainActivity.api.newResult(pattern, split, minute * 60 + second, response->{});
-
                     }
                 }
             }
@@ -359,6 +358,7 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
                     isPieceNeedPaint[i] = false;
                     if (pieces.get(chosenPieceIndex).getAttachedPiece().size() == pieceCount - 1) {
                         isFinished = true;
+                        Log.d("isFinished", "");
                         int pattern, split;
                         if (this.pattern.equals(CutUtil.type1)) {
                             pattern = 1;
@@ -370,7 +370,6 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
                         if (this.pieceCount == 9) split = 1;
                         else split = 2;
                         MainActivity.api.newResult(pattern, split, minute * 60 + second, response->{});
-
                     }
                 }
             }
@@ -390,7 +389,10 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
     public boolean onTouchEvent(MotionEvent event) {
 //        buttonStart.onTouchEvent(event, 0);
 //        buttonChangeAccount.onTouchEvent(event, 5);
-        if (isFinished) buttonBack.onTouchEventPuzzle(event, activity);
+        if (isFinished) {
+            buttonBack.onTouchEventPuzzle(event, activity);
+            return true;
+        }
 
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:

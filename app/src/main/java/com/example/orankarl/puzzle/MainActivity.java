@@ -311,9 +311,12 @@ public class MainActivity extends AppCompatActivity {
             int pieceCount;
             if (param.split == 1) pieceCount = 9;
             else pieceCount = 16;
+            posIndexList = new ArrayList<>();
             for (int i = 0; i < pieceCount; i++) {
                 posIndexList.add(param.sequence[i]);
             }
+
+            puzzleBitmap = param.image;
             TurnToGameView();
         });
 
@@ -321,7 +324,8 @@ public class MainActivity extends AppCompatActivity {
             if (puzzleBitmap == null)
                 return;
             if (viewState == 8) {
-                TurnToGameView();
+                if (isHost) return;
+//                TurnToGameView();
             }
         });
     }
