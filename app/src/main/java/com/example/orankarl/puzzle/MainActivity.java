@@ -42,7 +42,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-    public static final Api api = new Api("45.77.183.226", 5000, new Handler(Looper.getMainLooper()));
+    public static final Api api = new Api("39.108.99.67", 5000, new Handler(Looper.getMainLooper()));
 
     LocalDatabase mDbHelper;
     String token_tmp = "";
