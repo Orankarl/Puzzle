@@ -678,12 +678,13 @@ public class MainActivity extends AppCompatActivity {
     private void TurnToGameView() {
         Toast.makeText(this, "游戏开始!", Toast.LENGTH_LONG).show();
         Intent intent = new Intent(this, PuzzleActivity.class);
+        Bitmap bitmap = BitmapUtil.setImgSize(this.puzzleBitmap, (int) (0.8*screenW), 0);
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        if (puzzleBitmap != null) {
-            puzzleBitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+//        if (puzzleBitmap != null) {
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
             byte[] bitmapByte = stream.toByteArray();
             intent.putExtra("picture", bitmapByte);
-        }
+//        }
 
         String filename = "picture";
 //        BitmapUtil.saveBitmap2file(puzzleBitmap, filename);

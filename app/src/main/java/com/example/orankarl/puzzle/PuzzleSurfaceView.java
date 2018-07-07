@@ -11,6 +11,7 @@ import android.graphics.Path;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -247,11 +248,30 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
 
                 //draw finish view
                 if (isFinished) {
+                    //1.获取当前设备的屏幕大小
+
+                    DisplayMetrics displayMetrics = new DisplayMetrics();
+                    activity.getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+
+                    //2.计算与你开发时设定的屏幕大小的纵横比(这里假设你开发时定的屏幕大小是480*800)
+
+                    int screenWidth = displayMetrics.widthPixels;
+                    int screenHeight = displayMetrics.heightPixels;
+                    float ratioWidth = (float)screenWidth / 480;
+                    float ratioHeight = (float)screenHeight / 800;
+
+                    double RATIO = Math.min(ratioWidth, ratioHeight);
+
+                    //3.根据上一步计算出来的最小纵横比来确定字体的大小(假定在480*800屏幕下字体大小设定为35)
+
+                    int TEXT_SIZE = (int) Math.round(35 * RATIO);
+
+
                     //finish text
                     String finishStr = "完成！";
                     Paint newPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
                     newPaint.setColor(Color.BLACK);
-                    newPaint.setTextSize(60);
+                    newPaint.setTextSize(TEXT_SIZE);
                     newPaint.setTextAlign(Paint.Align.CENTER);
 
                     Rect rect1 = new Rect();
