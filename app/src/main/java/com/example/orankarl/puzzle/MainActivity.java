@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
 
     public static double RATIO;
     public static int viewState;    //MainSurfaceView: 0, LoginView: 1, MainSurfaceView2: 2, RoomView: 3, ChoosePictureView: 4, ChoosePatternView: 5, ChooseSplitView: 6,
-                                      //RoomListView: 7, MemberListView: 8, RankView: 9, RegisterView: 10
+                                      //RoomListView: 7, MemberListView: 8, RankView: 9, RegisterView: 10, CutView 11
     public static boolean isOnline;
     public static boolean isSingle;
     public static int split;
@@ -87,24 +87,8 @@ public class MainActivity extends AppCompatActivity {
                 }
                 break;
             case 5:
-                if (!isOnline) {
-                    if (isRank) {
-                        setContentView(new MainSurfaceView(this));
-                        viewState = 0;
-                    }
-                    else {
-                        setContentView(new ChoosePictureView(this));
-                        viewState = 4;
-                    }
-                }
-                else if (isRank) {
-                    setContentView(new MainSurfaceView2(this));
-                    viewState = 2;
-                }
-                else {
-                    setContentView(new ChoosePictureView(this));
-                    viewState = 4;
-                }
+                setContentView(new CutPictureView(this));
+                viewState = 11;
                 break;
             case 6:
                 setContentView(new ChoosePatternView(this));
@@ -127,6 +111,27 @@ public class MainActivity extends AppCompatActivity {
             case 10:
                 onLogButtonPressed();
                 break;
+            case 11:
+                if (!isOnline) {
+                    if (isRank) {
+                        setContentView(new MainSurfaceView(this));
+                        viewState = 0;
+                    }
+                    else {
+                        setContentView(new ChoosePictureView(this));
+                        viewState = 4;
+                    }
+                }
+                else if (isRank) {
+                    setContentView(new MainSurfaceView2(this));
+                    viewState = 2;
+                }
+                else {
+                    setContentView(new ChoosePictureView(this));
+                    viewState = 4;
+                }
+                break;
+
         }
     }
 
@@ -466,15 +471,19 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onChoosePictureConfirmButtonPressed() {
+        setContentView(new CutPictureView(this));
+        viewState = 11;
+    }
+    public void onCutPictureConfirmButtonPressed(){
         setContentView(new ChoosePatternView(this));
         viewState = 5;
     }
-
     public void onRankButtonPressed() {
         isRank = true;
         setContentView(new ChoosePatternView(this));
         viewState = 5;
     }
+
 
     public void onChoosePatternButton1Pressed() {
         pattern = 1;
@@ -487,7 +496,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(new ChooseSplitView(this));
         viewState = 6;
     }
-
     public void onChooseSplitButton1Pressed() {
         split = 1;
         if (isRank) {

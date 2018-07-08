@@ -149,6 +149,9 @@ public class MenuButton {
                         case 23:    // Register 注册
                             activity.onRegisterButtonPressed();
                             break;
+                        case 24:   //CutPictureView 确定
+                            activity.onCutPictureConfirmButtonPressed();
+                            break;
                     }
                 }
             }
