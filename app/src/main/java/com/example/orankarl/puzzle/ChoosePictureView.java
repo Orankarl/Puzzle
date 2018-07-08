@@ -144,6 +144,7 @@ public class ChoosePictureView extends SurfaceView implements SurfaceHolder.Call
             scale = scaleWidth > scaleHeight ? scaleHeight : scaleWidth;
             matrix.postScale(scale, scale);
             bitmap = Bitmap.createBitmap(origin_bitmap, 0, 0, origin_width, origin_height, matrix, true);
+            activity.puzzleBitmap = bitmap;
         }
     }
 

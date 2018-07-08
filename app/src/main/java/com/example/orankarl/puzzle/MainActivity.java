@@ -1,5 +1,6 @@
 package com.example.orankarl.puzzle;
 
+import android.annotation.SuppressLint;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Intent;
@@ -24,6 +25,7 @@ import android.support.v7.widget.AppCompatTextView;
 import android.text.InputType;
 import android.text.method.PasswordTransformationMethod;
 import android.util.TypedValue;
+import android.util.Xml;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,6 +35,8 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckedTextView;
 import android.widget.FrameLayout;
 import android.widget.Toast;
+
+import org.xmlpull.v1.XmlPullParser;
 
 import static com.example.orankarl.puzzle.MainSurfaceView.screenH;
 import static com.example.orankarl.puzzle.MainSurfaceView.screenW;
@@ -109,7 +113,8 @@ public class MainActivity extends AppCompatActivity {
                 }
                 break;
             case 5:
-                setContentView(new CutPictureView(this));
+                @SuppressLint("ResourceType") XmlPullParser parser = getResources().getXml(R.layout.activity_main);
+                setContentView(new CutPictureView(this, Xml.asAttributeSet(parser)));
                 viewState = 11;
                 break;
             case 6:
@@ -422,6 +427,7 @@ public class MainActivity extends AppCompatActivity {
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
         startActivityForResult(intent, 1);
+
     }
 
     public void onPictureRechoosePressed() {
@@ -433,7 +439,9 @@ public class MainActivity extends AppCompatActivity {
         try {
             InputStream is = assetManager.open("PreSetImage/image" + Integer.toString(i + 1) + ".jpg");
             puzzleBitmap = BitmapFactory.decodeStream(is);
-            setContentView(new CutPictureView(this));
+
+            @SuppressLint("ResourceType") XmlPullParser parser = getResources().getXml(R.layout.activity_main);
+            setContentView(new CutPictureView(this,Xml.asAttributeSet(parser)));
             viewState = 5;
         } catch (IOException e) {
             e.printStackTrace();
@@ -552,7 +560,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onChoosePictureConfirmButtonPressed() {
-        setContentView(new CutPictureView(this));
+
+        @SuppressLint("ResourceType") XmlPullParser parser = getResources().getXml(R.layout.activity_main);
+        setContentView(new CutPictureView(this,Xml.asAttributeSet(parser)));
         viewState = 11;
     }
     public void onCutPictureConfirmButtonPressed(){
