@@ -11,15 +11,13 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
-import static com.example.orankarl.puzzle.MainActivity.RATIO;
-import static com.example.orankarl.puzzle.MainActivity.getTextWidth;
-
 public class MemberListView extends SurfaceView implements SurfaceHolder.Callback, Runnable{
     private Context context;
     private SurfaceHolder holder;
     private Paint paint;
-    private Thread thread;
     private Canvas canvas;
+
+    MainActivity activity = (MainActivity)getContext();
 
     public Bitmap origin_bitmap = null;
     public Bitmap bitmap = null;
@@ -60,17 +58,18 @@ public class MemberListView extends SurfaceView implements SurfaceHolder.Callbac
         try {
             canvas = holder.lockCanvas();
             if (canvas != null) {
-                canvas.drawColor(Color.WHITE);
+                canvas.drawBitmap(activity.background, 0, 0, paint);
 
-                int TEXT_SIZE = (int)Math.round(100 * RATIO);
+                int TEXT_SIZE = (int)Math.round(100 * activity.RATIO);
                 Paint textPaint = new Paint();
+                textPaint.setTypeface(activity.font);
                 textPaint.setColor(Color.BLACK);
                 textPaint.setTextSize(TEXT_SIZE);
 
-                String title = "成员列表";
-                canvas.drawText(title, screenW / 2 - getTextWidth(textPaint, title) / 2, screenH / 15 + textPaint.getTextSize() , textPaint);
+                String title = activity.host + "'s Room";
+                canvas.drawText(title, screenW / 2 - activity.getTextWidth(textPaint, title) / 2, screenH / 15 + textPaint.getTextSize() , textPaint);
 
-                if (MainActivity.isHost) {
+                if (activity.isHost) {
                     buttonClose.draw(canvas, paint);
                     buttonStart.draw(canvas, paint);
                 }
@@ -79,7 +78,7 @@ public class MemberListView extends SurfaceView implements SurfaceHolder.Callbac
                 }
             }
         } catch (Exception e) {
-
+            e.printStackTrace();
         } finally {
             if (canvas != null) holder.unlockCanvasAndPost(canvas);
         }
@@ -87,7 +86,7 @@ public class MemberListView extends SurfaceView implements SurfaceHolder.Callbac
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if (MainActivity.isHost) {
+        if (activity.isHost) {
             buttonClose.onTouchEvent(event, 21);
             buttonStart.onTouchEvent(event, 22);
         }
@@ -119,7 +118,7 @@ public class MemberListView extends SurfaceView implements SurfaceHolder.Callbac
         screenH = this.getHeight();
         init();
         flag = true;
-        thread = new Thread(this);
+        Thread thread = new Thread(this);
         thread.start();
     }
 

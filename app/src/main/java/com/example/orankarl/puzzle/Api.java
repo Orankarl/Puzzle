@@ -4,10 +4,13 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.util.Base64;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,6 +31,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
+import okhttp3.internal.publicsuffix.PublicSuffixDatabase;
 
 import com.github.nkzawa.socketio.client.IO;
 import com.github.nkzawa.socketio.client.Socket;
@@ -43,6 +47,7 @@ public class Api {
     private int _port;
     private Socket _socket;
     private Handler _handler;
+    private String _token;
 
     // Initialization part
     Api(String url, int port, Handler handler) {
@@ -60,6 +65,10 @@ public class Api {
 
     public boolean connected() {
         return _socket.connected();
+    }
+
+    public void setToken(String token) {
+        _token = token;
     }
 
     // Core part
@@ -112,43 +121,6 @@ public class Api {
         _execute(urlBuilder, method, data, cb);
     }
 
-    private void execute(
-            byte[] data,
-            RequestCallback cb)
-    {
-        HttpUrl.Builder urlBuilder = new HttpUrl.Builder()
-                .scheme("http")
-                .host(_url)
-                .port(_port)
-                .addPathSegment("api")
-                .addPathSegment("image");
-        RequestBody body = new MultipartBody.Builder()
-                .setType(MultipartBody.FORM)
-                .addFormDataPart("image", "image.jpg",
-                        RequestBody.create(MediaType.parse("image/jpeg"), data))
-                .build();
-        Request request = new Request.Builder()
-                .post(body).url(urlBuilder.build()).build();
-        _client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                e.printStackTrace();
-            }
-
-            @Override
-            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                String data = " { \"status\": -1 } ";
-                if (response.isSuccessful()) {
-                    ResponseBody body = response.body();
-                    if (body != null)
-                        data = body.string();
-                }
-                final String _data = data;
-                _handler.post(() -> cb.onFinish(_data));
-            }
-        });
-    }
-
     private void _execute(
             HttpUrl.Builder urlBuilder,
             String method,
@@ -187,62 +159,60 @@ public class Api {
         });
     }
 
-    private interface ImageResponseCallback {
-        void onFinish(Bitmap bitmap);
+    // Game param
+    class GetGameParamResponse {
+        int status;
+        int split;
+        int pattern;
+        int[] sequence;
+        Bitmap image;
+        String _imageBase64;
     }
-    private void getImage(String url, final ImageResponseCallback cb) {
-        HttpUrl.Builder urlBuilder = new HttpUrl.Builder()
-                .scheme("http")
-                .host(_url)
-                .port(_port)
-                .addPathSegment("api")
-                .addPathSegment("image");
-        Request request = new Request.Builder()
-                .url(url).get().build();
-        _client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+    interface GetGameParamCallback {
+        void onResponse(GetGameParamResponse response);
+    }
+    public void onGetGameParam(GetGameParamCallback cb) {
+        _socket.on("gameParam", (response0) -> {
+            JSONObject data = new JSONObject();
+            try {
+                data.put("token", _token);
+            } catch (JSONException e) {
                 e.printStackTrace();
             }
-
-            @Override
-            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                if (response.isSuccessful()) {
-                    ResponseBody body = response.body();
-                    if (body != null) {
-                        InputStream stream = body.byteStream();
-                        final Bitmap bitmap = BitmapFactory.decodeStream(stream);
-                        _handler.post(() -> cb.onFinish(bitmap));
-                    }
-                }
-            }
+            execute("gameParam", "GET", data, response -> {
+                GetGameParamResponse r = new Gson().fromJson(response, GetGameParamResponse.class);
+                byte[] binary = Base64.decode(r._imageBase64, Base64.DEFAULT);
+                r.image = BitmapFactory.decodeByteArray(binary, 0, binary.length);
+                cb.onResponse(r);
+            });
         });
     }
 
-    // Image
-    class ImageResponse {
+    class GameParamResponse {
         int status;
     }
-    interface ImageCallback {
-        void onResponse(ImageResponse response);
+    interface GameParamCallback {
+        void onResponse(GameParamResponse response);
     }
-    public void image(Bitmap image, final ImageCallback cb)
+    public void gameParam(
+            int split, int pattern, Bitmap image,
+            int[] sequence, final GameParamCallback cb)
     {
-        if (image.getHeight() > 500 || image.getWidth() > 500) {
-            double ratio = image.getWidth();
-            ratio /= image.getHeight();
-            if (ratio > 1) {
-                image.setWidth(500);
-                image.setHeight((int)Math.round(500 / ratio));
-            } else {
-                image.setWidth((int)Math.round(500 * ratio));
-                image.setHeight(500);
-            }
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        image.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+        JSONObject data = new JSONObject();
+        try {
+            data.put("token", _token);
+            data.put("split", split);
+            data.put("pattern", pattern);
+            JSONArray seq = new JSONArray(sequence);
+            data.put("sequence", seq);
+            data.put("image", Base64.encodeToString(stream.toByteArray(), Base64.DEFAULT));
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
-        ByteArrayOutputStream jpegSteam = new ByteArrayOutputStream();
-        image.compress(Bitmap.CompressFormat.JPEG, 100, jpegSteam);
-        execute(jpegSteam.toByteArray(), response -> {
-            cb.onResponse(new Gson().fromJson(response, ImageResponse.class));
+        execute("gameParam", "POST", data, response -> {
+            cb.onResponse(new Gson().fromJson(response, GameParamResponse.class));
         });
     }
 
@@ -264,7 +234,10 @@ public class Api {
             e.printStackTrace();
         }
         execute("login", "POST", data, response -> {
-            cb.onResponse(new Gson().fromJson(response, LoginResponse.class));
+            LoginResponse r = new Gson().fromJson(response, LoginResponse.class);
+            _token = r.token;
+            socketAuth(r.token);
+            cb.onResponse(r);
         });
     }
 
@@ -298,11 +271,13 @@ public class Api {
     interface UserInfoCallback {
         void onResponse(UserInfoResponse response);
     }
-    public void userInfo(String token, UserInfoCallback cb)
+    public void userInfo(UserInfoCallback cb)
     {
+        if (_token == null)
+            return;
         JSONObject data = new JSONObject();
         try {
-            data.put("token", token);
+            data.put("token", _token);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -317,14 +292,17 @@ public class Api {
     interface NewResultCallback {
         void onResponse(NewResultResponse response);
     }
-    public void newResult(String token, int pattern, int time, NewResultCallback cb)
+    public void newResult(int pattern, int split, int time, NewResultCallback cb)
     {
+        if (_token == null)
+            return;
         Long timestamp = System.currentTimeMillis();
         JSONObject data = new JSONObject();
         try {
-            data.put("token", token);
+            data.put("token", _token);
             data.put("pattern", pattern);
             data.put("time", time);
+            data.put("split", split);
             data.put("timestamp", timestamp);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -359,6 +337,8 @@ public class Api {
 
     // Socket part
     public void socketAuth(String token) {
+        if (_token == null)
+            _token = token;
         _socket.emit("auth", token);
     }
 
@@ -512,20 +492,6 @@ public class Api {
         });
     }
 
-
-    interface GetImageCallback {
-        void onResponse(Bitmap bitmap);
-    }
-    public void onGetImage(GetImageCallback cb) {
-        _socket.on("getImage", response -> {
-            getImage(response[0].toString(), bitmap -> {
-                _handler.post(() -> {
-                    cb.onResponse(bitmap);
-                });
-            });
-        });
-    }
-
     interface CancelRoomCallBack {
         void onResponse();
     }
@@ -539,8 +505,12 @@ public class Api {
     public void pick(int pieceIndex) {
         _socket.emit("pickPiece", pieceIndex);
     }
+    
+    public void rotate(int pieceIndex) {
+        _socket.emit("rotatePiece", pieceIndex);
+    }
 
-    public void moveTo(int X, int Y) {
+    public void moveTo(double X, double Y) {
         JSONObject j = new JSONObject();
         try {
             j.put("X", X);
@@ -571,9 +541,9 @@ public class Api {
     }
 
     class MoveToResponse {
-        int X;
-        int Y;
+        double X, Y;
         String username;
+        int pieceIndex;
     }
     interface MoveToCallback {
         void onResponse(MoveToResponse response);
@@ -586,8 +556,24 @@ public class Api {
         });
     }
 
+    class RotateResponse {
+        String username;
+        int pieceIndex;
+    }
+    interface RotateCallback {
+        void onResponse(RotateResponse response);
+    }
+    public void onRotate(RotateCallback cb) {
+        _socket.on("rotatePiece", response -> {
+            _handler.post(() -> {
+                cb.onResponse(new Gson().fromJson(response[0].toString(), RotateResponse.class));
+            });
+        });
+    }
+
     class ReleaseResponse {
         String username;
+        int pieceIndex;
     }
     interface ReleaseCallback {
         void onResponse(ReleaseResponse response);

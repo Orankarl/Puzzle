@@ -12,9 +12,6 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
-import static com.example.orankarl.puzzle.MainActivity.RATIO;
-import static com.example.orankarl.puzzle.MainActivity.getTextWidth;
-
 public class ChooseSplitView extends SurfaceView implements SurfaceHolder.Callback, Runnable {
     private Context context;
     private SurfaceHolder holder;
@@ -28,6 +25,8 @@ public class ChooseSplitView extends SurfaceView implements SurfaceHolder.Callba
     MenuButton buttonSplit2;
     MenuButton buttonBack;
     boolean flag = true;
+
+    MainActivity activity = (MainActivity)getContext();
 
     public ChooseSplitView(Context context) {
         super(context);
@@ -51,10 +50,10 @@ public class ChooseSplitView extends SurfaceView implements SurfaceHolder.Callba
     }
 
     private void init() {
-        Bitmap bmpButtonSplit1_origin = BitmapFactory.decodeResource(resources, R.drawable.pattern1);
-        Bitmap bmpButtonSplit1Pressed_origin = BitmapFactory.decodeResource(resources, R.drawable.pattern1);
-        Bitmap bmpButtonSplit2_origin = BitmapFactory.decodeResource(resources, R.drawable.pattern2);
-        Bitmap bmpButtonSplit2Pressed_origin = BitmapFactory.decodeResource(resources, R.drawable.pattern2);
+        Bitmap bmpButtonSplit1_origin = BitmapFactory.decodeResource(resources, R.drawable.split1);
+        Bitmap bmpButtonSplit1Pressed_origin = BitmapFactory.decodeResource(resources, R.drawable.split1);
+        Bitmap bmpButtonSplit2_origin = BitmapFactory.decodeResource(resources, R.drawable.split2);
+        Bitmap bmpButtonSplit2Pressed_origin = BitmapFactory.decodeResource(resources, R.drawable.split2);
 
         Bitmap bmpButtonSplit1 = Scale(bmpButtonSplit1_origin);
         Bitmap bmpButtonSplit1Pressed = Scale(bmpButtonSplit1Pressed_origin);
@@ -78,19 +77,20 @@ public class ChooseSplitView extends SurfaceView implements SurfaceHolder.Callba
         try {
             canvas = holder.lockCanvas();
             if (canvas != null) {
-                canvas.drawColor(Color.WHITE);
+                canvas.drawBitmap(activity.background, 0, 0, paint);
 
                 buttonSplit1.draw(canvas, paint);
                 buttonSplit2.draw(canvas, paint);
                 buttonBack.draw(canvas, paint);
 
-                int TEXT_SIZE = (int)Math.round(100 * RATIO);
+                int TEXT_SIZE = (int)Math.round(100 * activity.RATIO);
                 Paint textPaint = new Paint();
+                textPaint.setTypeface(activity.font);
                 textPaint.setColor(Color.BLACK);
                 textPaint.setTextSize(TEXT_SIZE);
 
-                String title = "选择拼图分割模式";
-                canvas.drawText(title, screenW / 2 - getTextWidth(textPaint, title) / 2, screenH * 2 / 3 + textPaint.getTextSize() , textPaint);
+                String title = "Choose split size";
+                canvas.drawText(title, screenW / 2 - activity.getTextWidth(textPaint, title) / 2, screenH * 2 / 3 + textPaint.getTextSize() , textPaint);
             }
         } catch (Exception e) {
 

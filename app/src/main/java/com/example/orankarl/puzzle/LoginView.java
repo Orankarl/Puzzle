@@ -7,19 +7,18 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Typeface;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-
-import static com.example.orankarl.puzzle.MainActivity.RATIO;
-import static com.example.orankarl.puzzle.MainActivity.getTextWidth;
 
 public class LoginView extends SurfaceView implements SurfaceHolder.Callback, Runnable{
     private Context context;
     private SurfaceHolder holder;
     private Paint paint;
-    private Thread thread;
     private Canvas canvas;
+
+    MainActivity activity = (MainActivity)getContext();
 
     public int TextSize;
 
@@ -55,22 +54,28 @@ public class LoginView extends SurfaceView implements SurfaceHolder.Callback, Ru
         try {
             canvas = holder.lockCanvas();
             if (canvas != null) {
-                canvas.drawColor(Color.WHITE);
+                canvas.drawBitmap(activity.background, 0, 0, paint);
 
-                int TEXT_SIZE = (int)Math.round(120 * RATIO);
+                int TEXT_SIZE = (int)Math.round(120 * activity.RATIO);
                 Paint textPaint = new Paint();
+                textPaint.setTypeface(activity.font);
                 textPaint.setColor(Color.BLACK);
                 textPaint.setTextSize(TEXT_SIZE);
+                textPaint.setTypeface(activity.font);
 
-                String title = "登录";
-                canvas.drawText(title, screenW / 2 - getTextWidth(textPaint, title) / 2, screenH / 10 + textPaint.getTextSize() , textPaint);
+                String title = "Login";
+                canvas.drawText(title,
+                        screenW / 2 - activity.getTextWidth(textPaint, title) / 2,
+                        screenH / 10 + textPaint.getTextSize() ,
+                        textPaint
+                );
 
                 textPaint.setTextSize(TextSize);
 
                 String text1 = "Username: ";
                 String text2 = "Password: ";
-                canvas.drawText(text1, 0, 9, screenW / 2 - getTextWidth(textPaint, text1), screenH / 3 + textPaint.getTextSize() , textPaint);
-                canvas.drawText(text2, 0, 9, screenW / 2 - getTextWidth(textPaint, text2), screenH / 2 + textPaint.getTextSize() , textPaint);
+                canvas.drawText(text1, 0, 9, screenW / 2 - activity.getTextWidth(textPaint, text1), screenH / 3 + textPaint.getTextSize() , textPaint);
+                canvas.drawText(text2, 0, 9, screenW / 2 - activity.getTextWidth(textPaint, text2), screenH / 2 + textPaint.getTextSize() , textPaint);
 
                 buttonLogin.draw(canvas, paint);
                 buttonRegister.draw(canvas, paint);
@@ -111,8 +116,7 @@ public class LoginView extends SurfaceView implements SurfaceHolder.Callback, Ru
         screenH = this.getHeight();
         init();
         flag = true;
-        thread = new Thread(this);
-        thread.start();
+        new Thread(this).start();
     }
 
     @Override

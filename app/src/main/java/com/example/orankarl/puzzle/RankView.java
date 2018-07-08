@@ -11,9 +11,6 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
-import static com.example.orankarl.puzzle.MainActivity.RATIO;
-import static com.example.orankarl.puzzle.MainActivity.getTextWidth;
-
 public class RankView extends SurfaceView implements SurfaceHolder.Callback, Runnable {
     private Context context;
     private SurfaceHolder holder;
@@ -25,6 +22,8 @@ public class RankView extends SurfaceView implements SurfaceHolder.Callback, Run
     private Resources resources = this.getResources();
     MenuButton buttonBack;
     boolean flag = true;
+
+    MainActivity activity = (MainActivity)getContext();
 
     public String[] rank_id;
     public int[] time;
@@ -58,17 +57,18 @@ public class RankView extends SurfaceView implements SurfaceHolder.Callback, Run
         try {
             canvas = holder.lockCanvas();
             if (canvas != null) {
-                canvas.drawColor(Color.WHITE);
+                canvas.drawBitmap(activity.background, 0, 0, paint);
 
-                int TEXT_SIZE = (int)Math.round(100 * RATIO);
+                int TEXT_SIZE = (int)Math.round(100 * activity.RATIO);
                 Paint textPaint = new Paint();
+                textPaint.setTypeface(activity.font);
                 textPaint.setColor(Color.BLACK);
                 textPaint.setTextSize(TEXT_SIZE);
 
-                String title = "排行榜";
-                canvas.drawText(title, screenW / 2 - getTextWidth(textPaint, title) / 2, screenH / 15 + textPaint.getTextSize() , textPaint);
+                String title = "Rank";
+                canvas.drawText(title, screenW / 2 - activity.getTextWidth(textPaint, title) / 2, screenH / 15 + textPaint.getTextSize() , textPaint);
 
-                TEXT_SIZE = (int)Math.round(60 * RATIO);
+                TEXT_SIZE = (int)Math.round(60 * activity.RATIO);
                 textPaint.setTextSize(TEXT_SIZE);
 
                 int[] minute = new int[10];
@@ -88,7 +88,7 @@ public class RankView extends SurfaceView implements SurfaceHolder.Callback, Run
 
                 for (int i = 0; i < 10; i++) {
                     String num = "" + (i + 1);
-                    canvas.drawText(num, screenW / 6 - getTextWidth(textPaint, num) / 2, screenH * (i + 3) / 15 + textPaint.getTextSize() , textPaint);
+                    canvas.drawText(num, screenW / 6 - activity.getTextWidth(textPaint, num) / 2, screenH * (i + 3) / 15 + textPaint.getTextSize() , textPaint);
                     canvas.drawText(rank_id[i], screenW / 3, screenH * (i + 3) / 15 + textPaint.getTextSize() , textPaint);
                     if (minute[i] == 0 && second[i] == 0)
                         canvas.drawText("-:--", screenW * 3 / 4, screenH * (i + 3) / 15 + textPaint.getTextSize() , textPaint);

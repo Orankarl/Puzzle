@@ -12,9 +12,6 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
-import static com.example.orankarl.puzzle.MainActivity.RATIO;
-import static com.example.orankarl.puzzle.MainActivity.getTextWidth;
-
 public class ChoosePatternView extends SurfaceView implements SurfaceHolder.Callback, Runnable {
     private Context context;
     private SurfaceHolder holder;
@@ -28,6 +25,8 @@ public class ChoosePatternView extends SurfaceView implements SurfaceHolder.Call
     MenuButton buttonPattern2;
     MenuButton buttonBack;
     boolean flag = true;
+
+    MainActivity activity = (MainActivity)getContext();
 
     public ChoosePatternView(Context context) {
         super(context);
@@ -78,19 +77,20 @@ public class ChoosePatternView extends SurfaceView implements SurfaceHolder.Call
         try {
             canvas = holder.lockCanvas();
             if (canvas != null) {
-                canvas.drawColor(Color.WHITE);
+                canvas.drawBitmap(activity.background, 0, 0, paint);
 
                 buttonPattern1.draw(canvas, paint);
                 buttonPattern2.draw(canvas, paint);
                 buttonBack.draw(canvas, paint);
 
-                int TEXT_SIZE = (int)Math.round(100 * RATIO);
+                int TEXT_SIZE = (int)Math.round(100 * activity.RATIO);
                 Paint textPaint = new Paint();
+                textPaint.setTypeface(activity.font);
                 textPaint.setColor(Color.BLACK);
                 textPaint.setTextSize(TEXT_SIZE);
 
-                String title = "选择拼图样式";
-                canvas.drawText(title, screenW / 2 - getTextWidth(textPaint, title) / 2, screenH * 2 / 3 + textPaint.getTextSize() , textPaint);
+                String title = "Choose a puzzle pattern";
+                canvas.drawText(title, screenW / 2 - activity.getTextWidth(textPaint, title) / 2, screenH * 2 / 3 + textPaint.getTextSize() , textPaint);
             }
         } catch (Exception e) {
 

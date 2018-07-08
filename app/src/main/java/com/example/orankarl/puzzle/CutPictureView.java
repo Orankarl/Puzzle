@@ -11,8 +11,12 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+
+import static android.graphics.BitmapFactory.decodeStream;
 import static com.example.orankarl.puzzle.MainActivity.RATIO;
-import static com.example.orankarl.puzzle.MainActivity.getTextWidth;
 
 public class CutPictureView extends SurfaceView implements SurfaceHolder.Callback, Runnable{
     private Context context;
@@ -26,6 +30,40 @@ public class CutPictureView extends SurfaceView implements SurfaceHolder.Callbac
     boolean flag = true;
     MenuButton buttonBack;
     MenuButton buttonConfirm;
+
+    MainActivity activity = (MainActivity)getContext();
+
+    private Bitmap decodeFile(File f) {
+        Bitmap b = null;
+        try {
+            // Decode image size
+            BitmapFactory.Options o = new BitmapFactory.Options();
+            o.inJustDecodeBounds = true;
+
+            FileInputStream fis = new FileInputStream(f);
+            decodeStream(fis, null, o);
+            fis.close();
+            int IMAGE_MAX_SIZE = 1000;
+            int scale = 1;
+            if (o.outHeight > IMAGE_MAX_SIZE || o.outWidth > IMAGE_MAX_SIZE) {
+                scale = (int) Math.pow(
+                        2,
+                        (int) Math.round(Math.log(IMAGE_MAX_SIZE
+                                / (double) Math.max(o.outHeight, o.outWidth))
+                                / Math.log(0.5)));
+            }
+
+            // Decode with inSampleSize
+            BitmapFactory.Options o2 = new BitmapFactory.Options();
+            o2.inSampleSize = scale;
+            fis = new FileInputStream(f);
+            b = decodeStream(fis, null, o2);
+            fis.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return b;
+    }
 
     public  CutPictureView(Context context){
         super(context);
@@ -62,7 +100,7 @@ public class CutPictureView extends SurfaceView implements SurfaceHolder.Callbac
                 textPaint.setTextSize(TEXT_SIZE);
 
                 String title = "选取正方形截图";
-                canvas.drawText(title, screenW / 2 - getTextWidth(textPaint, title) / 2, screenH * 2 / 3 + textPaint.getTextSize() , textPaint);
+                canvas.drawText(title, screenW / 2 - activity.getTextWidth(textPaint, title) / 2, screenH * 2 / 3 + textPaint.getTextSize() , textPaint);
             }
         } catch (Exception e) {
 

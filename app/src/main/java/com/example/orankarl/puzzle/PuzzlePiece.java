@@ -28,8 +28,12 @@ public class PuzzlePiece {
         }
         return true;
     }
-    boolean isInPiece(float x, float y) {
-        return !(x < posX) && !(x > posX + width) && !(y < posY) && !(y > posY + height);
+    boolean isInPiece(float x, float y, int rotate) {
+        if (rotate == 0 || rotate == 2) {
+            return !(x < posX) && !(x > posX + width) && !(y < posY) && !(y > posY + height);
+        } else {
+            return !(x < posX) && !(x > posX + height) && !(y < posY) && !(y > posY + width);
+        }
     }
     void addDiff(float x, float y) {
         posX += x;

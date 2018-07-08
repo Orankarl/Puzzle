@@ -18,6 +18,8 @@ public class MainSurfaceView2 extends SurfaceView implements SurfaceHolder.Callb
     private Thread thread;
     private Canvas canvas;
 
+    MainActivity activity = (MainActivity)getContext();
+
     public static int screenW, screenH;
     private Resources resources = this.getResources();
     MenuButton buttonSingle;
@@ -62,7 +64,7 @@ public class MainSurfaceView2 extends SurfaceView implements SurfaceHolder.Callb
         try {
             canvas = holder.lockCanvas();
             if (canvas != null) {
-                canvas.drawColor(Color.WHITE);
+                canvas.drawBitmap(activity.background, 0, 0, paint);
 
                 buttonSingle.draw(canvas, paint);
                 buttonMulti.draw(canvas, paint);
