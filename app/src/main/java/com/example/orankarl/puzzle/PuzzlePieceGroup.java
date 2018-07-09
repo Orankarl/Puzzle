@@ -24,7 +24,7 @@ public class PuzzlePieceGroup {
     private int rotate = 0;
     private int horizontalLength, verticalLength, horizontalDelta, verticalDelta;
     private int deltaWidth, deltaHeight;
-    PuzzlePieceGroup(PuzzlePiece piece, int mainID, int rowCount, int pieceWidth, int pieceHeight) {
+    PuzzlePieceGroup(PuzzlePiece piece, int mainID, int rowCount, int pieceWidth, int pieceHeight, int rotate) {
         mainPiece = piece;
         this.mainID = mainID;
         this.pieceWidth = pieceWidth;
@@ -38,6 +38,7 @@ public class PuzzlePieceGroup {
         this.rowCount = rowCount;
         mainBiasX = mainID % rowCount;
         mainBiasY = mainID / rowCount;
+        this.rotate = rotate;
 
         setPosX(getPosX() - getHorizontalBias(mainID) * horizontalLength);
         setPosY(getPosY() - getVerticalBias(mainID) * verticalLength);

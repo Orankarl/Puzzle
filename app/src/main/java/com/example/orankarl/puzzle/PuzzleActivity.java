@@ -15,7 +15,7 @@ public class PuzzleActivity extends AppCompatActivity {
 
     int pattern, split;
     boolean isOnline, isSingle;
-    ArrayList<Integer> posIndexList;
+    ArrayList<Integer> posIndexList, rotateList;
     Bitmap bitmap;
 
     @Override
@@ -41,11 +41,12 @@ public class PuzzleActivity extends AppCompatActivity {
 
             if (isOnline && !isSingle) {
                 posIndexList = intent.getIntegerArrayListExtra("posIndexList");
+                rotateList = intent.getIntegerArrayListExtra("rotateList");
             }
         }
 
 
-        setContentView(new PuzzleSurfaceView(this, bitmap, pattern, split, isSingle, isOnline, posIndexList));
+        setContentView(new PuzzleSurfaceView(this, bitmap, pattern, split, isSingle, isOnline, posIndexList, rotateList));
 
     }
 
