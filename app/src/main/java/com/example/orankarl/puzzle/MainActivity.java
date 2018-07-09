@@ -113,9 +113,21 @@ public class MainActivity extends AppCompatActivity {
                 }
                 break;
             case 5:
-                @SuppressLint("ResourceType") XmlPullParser parser = getResources().getXml(R.layout.activity_main);
-                setContentView(new CutPictureView(this, Xml.asAttributeSet(parser)));
-                viewState = 11;
+                if(!isRank) {
+                    @SuppressLint("ResourceType") XmlPullParser parser = getResources().getXml(R.layout.activity_main);
+                    setContentView(new CutPictureView(this, Xml.asAttributeSet(parser)));
+                    viewState = 11;
+                }
+                else {
+                    if (isOnline) {
+                        setContentView(new MainSurfaceView2(this));
+                        viewState = 2;
+                    }
+                    else {
+                        setContentView(new MainSurfaceView(this));
+                        viewState = 0;
+                    }
+                }
                 break;
             case 6:
                 setContentView(new ChoosePatternView(this));
