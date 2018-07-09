@@ -165,6 +165,7 @@ public class Api {
         int split;
         int pattern;
         int[] sequence;
+        int[] rotation;
         Bitmap image;
         String _imageBase64;
     }
@@ -196,7 +197,8 @@ public class Api {
     }
     public void gameParam(
             int split, int pattern, Bitmap image,
-            int[] sequence, final GameParamCallback cb)
+            int[] sequence, int[] rotation,
+            final GameParamCallback cb)
     {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         image.compress(Bitmap.CompressFormat.JPEG, 100, stream);
@@ -207,6 +209,8 @@ public class Api {
             data.put("pattern", pattern);
             JSONArray seq = new JSONArray(sequence);
             data.put("sequence", seq);
+            JSONArray rot = new JSONArray(rotation);
+            data.put("rotation", rot);
             data.put("image", Base64.encodeToString(stream.toByteArray(), Base64.DEFAULT));
         } catch (JSONException e) {
             e.printStackTrace();
