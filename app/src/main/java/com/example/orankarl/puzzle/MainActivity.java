@@ -765,9 +765,9 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void gameStart() {
-        api.startGame();
-        Toast.makeText(this, "Transferring image...", Toast.LENGTH_LONG).show();
-        if (isOnline) {
+        if (isOnline && !isSingle) {
+            api.startGame();
+            Toast.makeText(this, "Transferring image...", Toast.LENGTH_LONG).show();
             int pieceCount;
             if (split == 1) pieceCount = 9;
             else pieceCount = 16;
