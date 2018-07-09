@@ -28,6 +28,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.ListIterator;
 import java.util.Locale;
+import java.util.Random;
 
 public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Callback, Runnable {
     private Context context;
@@ -46,6 +47,7 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
     int spacing;
     boolean[] isPieceNeedPaint, isPicked;
     ArrayList<Tuple> posList = new ArrayList<>();
+    ArrayList<Integer> rotateList = new ArrayList<>();
     String pattern = CutUtil.type1, timeStr;
     long startTime;
     int minute, second;
@@ -61,7 +63,7 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
     private Resources resources = this.getResources();
     boolean flag = true;
 
-    public PuzzleSurfaceView(Context context, Bitmap bitmap, int pattern, int split, boolean isSingle, boolean isOnline, ArrayList<Integer> posIndexList) {
+    public PuzzleSurfaceView(Context context, Bitmap bitmap, int pattern, int split, boolean isSingle, boolean isOnline, ArrayList<Integer> posIndexList, ArrayList<Integer> rotateList) {
         super(context);
         holder = this.getHolder();
         holder.addCallback(this);
@@ -83,7 +85,10 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
         rowCount = (int) Math.sqrt(pieceCount);
         this.isSingle = isSingle;
         this.isOnline = isOnline;
-        if (isOnline && !isSingle) this.posIndexList = posIndexList;
+        if (isOnline && !isSingle) {
+            this.posIndexList = posIndexList;
+            this.rotateList = rotateList;
+        }
     }
 
     private void init() {
@@ -212,12 +217,19 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
 //        }
         ArrayList<Bitmap> cutImages = CutUtil.cutImage(bitmap, pattern, pieceCount);
         if (isSingle) Collections.shuffle(posList);
+        if (isSingle) {
+            Random random = new Random();
+            rotateList.clear();
+            for (int i = 0; i < pieceCount; i++) {
+                rotateList.add(random.nextInt(4));
+            }
+        }
         for (int i = 0; i < pieceCount; i++) {
 //                PuzzlePieceGroup pieceGroup = ;
             if (!isSingle && isOnline) {
-                pieces.add(new PuzzlePieceGroup(new PuzzlePiece(cutImages.get(i), posList.get(posIndexList.get(i)).x, posList.get(posIndexList.get(i)).y), i, rowCount, pieceWidth, pieceHeight));
+                pieces.add(new PuzzlePieceGroup(new PuzzlePiece(cutImages.get(i), posList.get(posIndexList.get(i)).x, posList.get(posIndexList.get(i)).y), i, rowCount, pieceWidth, pieceHeight, rotateList.get(i)));
             } else {
-                pieces.add(new PuzzlePieceGroup(new PuzzlePiece(cutImages.get(i), posList.get(i).x, posList.get(i).y), i, rowCount, pieceWidth, pieceHeight));
+                pieces.add(new PuzzlePieceGroup(new PuzzlePiece(cutImages.get(i), posList.get(i).x, posList.get(i).y), i, rowCount, pieceWidth, pieceHeight, rotateList.get(i)));
             }
 
         }

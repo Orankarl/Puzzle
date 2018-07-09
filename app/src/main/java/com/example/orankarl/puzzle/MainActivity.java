@@ -48,6 +48,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
     public static final Api api = new Api("39.108.99.67", 5000, new Handler(Looper.getMainLooper()));
@@ -82,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
 
     public Bitmap puzzleBitmap, smallBitmap, afterCutBitmap;
 
-    ArrayList<Integer> posIndexList;
+    ArrayList<Integer> posIndexList, rotateList;
 
     @Override
     public void onBackPressed() {
@@ -346,6 +347,10 @@ public class MainActivity extends AppCompatActivity {
             posIndexList = new ArrayList<>();
             for (int i = 0; i < pieceCount; i++) {
                 posIndexList.add(param.sequence[i]);
+            }
+            rotateList = new ArrayList<>();
+            for (int i = 0; i < pieceCount; i++) {
+//                rotateList.add()
             }
 
             puzzleBitmap = param.image;
@@ -780,6 +785,16 @@ public class MainActivity extends AppCompatActivity {
             for (int i = 0; i < pieceCount; i++) {
                 posArray[i] = posIndexList.get(i);
             }
+
+            Random random = new Random();
+            rotateList = new ArrayList<>();
+            for (int i = 0; i < pieceCount; i++) {
+                rotateList.add(random.nextInt(4));
+            }
+            int[] rotateArray = new int[pieceCount];
+            for (int i = 0; i < pieceCount; i++) {
+                rotateArray[i] = rotateList.get(i);
+            }
             api.gameParam(split, pattern, puzzleBitmap, posArray, response -> {
                 TurnToGameView();
             });
@@ -813,6 +828,7 @@ public class MainActivity extends AppCompatActivity {
         }
         if (isOnline && !isSingle) {
             intent.putIntegerArrayListExtra("posIndexList", posIndexList);
+            intent.putIntegerArrayListExtra("rotateList", rotateList);
         }
 
         startActivity(intent);
