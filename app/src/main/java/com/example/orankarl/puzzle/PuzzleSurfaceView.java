@@ -385,7 +385,7 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
                 if (pieces.get(pickedPieceIndex).isNeighbor(pieces.get(i)) && pieces.get(pickedPieceIndex).isCloseEnough(pieces.get(i))) {
                     pieces.get(pickedPieceIndex).addPieceGroup(pieces.get(i));
                     isPieceNeedPaint[i] = false;
-                    if (pieces.get(chosenPieceIndex).getAttachedPiece().size() == pieceCount - 1) {
+                    if (pieces.get(pickedPieceIndex).getAttachedPiece().size() == pieceCount - 1) {
                         isFinished = true;
                         Log.d("isFinished", "");
                         int pattern, split;
