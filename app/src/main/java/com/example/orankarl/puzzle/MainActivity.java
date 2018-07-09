@@ -350,7 +350,7 @@ public class MainActivity extends AppCompatActivity {
             }
             rotateList = new ArrayList<>();
             for (int i = 0; i < pieceCount; i++) {
-//                rotateList.add()
+                rotateList.add(param.rotation[i]);
             }
 
             puzzleBitmap = param.image;
@@ -795,7 +795,7 @@ public class MainActivity extends AppCompatActivity {
             for (int i = 0; i < pieceCount; i++) {
                 rotateArray[i] = rotateList.get(i);
             }
-            api.gameParam(split, pattern, puzzleBitmap, posArray, response -> {
+            api.gameParam(split, pattern, puzzleBitmap, posArray, rotateArray, response -> {
                 TurnToGameView();
             });
         } else {
