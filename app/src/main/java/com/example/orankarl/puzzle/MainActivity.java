@@ -254,7 +254,8 @@ public class MainActivity extends AppCompatActivity {
                 comeInRoom();
             });
 
-            ((ViewGroup)roomList.getParent()).removeView(roomList);
+            if(roomList.getParent()!=null)
+                ((ViewGroup)roomList.getParent()).removeView(roomList);
             addContentView(roomList, roomList_params);
         });
 
