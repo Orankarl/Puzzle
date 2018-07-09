@@ -14,6 +14,7 @@ import android.graphics.PathEffect;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -156,7 +157,8 @@ public class CutPictureView extends SurfaceView implements SurfaceHolder.Callbac
         float right = left + width;
         float bottom = top + height;
         mFloatRect = new RectF(left, top, right, bottom);
-        mDefaultRect = new RectF(left, top, right, bottom);
+//        mDefaultRect = new RectF(left, top, right, bottom);
+        mDefaultRect = new RectF(left, top, left + activity.smallBitmap.getWidth(), top + activity.smallBitmap.getHeight());
 
     }
     private void drawFloatRect(Canvas canvas) {
@@ -186,9 +188,11 @@ public class CutPictureView extends SurfaceView implements SurfaceHolder.Callbac
     private void setFloatRectChange() {
         float x = mMoveX - mTouchX;
         float y = mMoveY - mTouchY;
+
         if (mDefaultRect.left <= mFloatRect.left + x && mDefaultRect.right >= mFloatRect.right + x) {
             mFloatRect.left += x;
             mFloatRect.right += x;
+//            Log.d("1 left&right", String.valueOf(mFloatRect.left) + " " + String.valueOf(mFloatRect.right));
         } else if (mDefaultRect.left > mFloatRect.left + x && mDefaultRect.right >= mFloatRect.right + x) {
             float offx = mDefaultRect.left - mFloatRect.left;
             mFloatRect.left = mDefaultRect.left;
@@ -210,6 +214,9 @@ public class CutPictureView extends SurfaceView implements SurfaceHolder.Callbac
             mFloatRect.bottom = mDefaultRect.bottom;
             mFloatRect.top += offy;
         }
+//        Log.d("x y", String.valueOf(x) + " " + String.valueOf(y));
+//        Log.d("onMove left&top", String.valueOf(mFloatRect.left) + " " + String.valueOf(mFloatRect.top));
+//        Log.d("onMove default left&top", String.valueOf(mDefaultRect.left) + " " + String.valueOf(mDefaultRect.top));
         invalidate();
     }
 
@@ -231,7 +238,6 @@ public class CutPictureView extends SurfaceView implements SurfaceHolder.Callbac
 
                 Paint paint = new Paint();
                 paint.setColor(mFloatColor);
-
 
                 // 绘制截图框外部部分
                 canvas.save();
@@ -293,8 +299,8 @@ public class CutPictureView extends SurfaceView implements SurfaceHolder.Callbac
             draw();
             long end = System.currentTimeMillis();
             try {
-                if (end - start < 50) {
-                    Thread.sleep(50 - (end - start));
+                if (end - start < 16) {
+                    Thread.sleep(16 - (end - start));
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();
