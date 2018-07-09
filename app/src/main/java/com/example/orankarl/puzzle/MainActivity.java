@@ -80,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
     SurfaceViewEditText editText_password;
     SurfaceViewEditText editText_nickname;
 
-    public Bitmap puzzleBitmap;
+    public Bitmap puzzleBitmap, smallBitmap, afterCutBitmap;
 
     ArrayList<Integer> posIndexList;
 
@@ -442,7 +442,7 @@ public class MainActivity extends AppCompatActivity {
 
             @SuppressLint("ResourceType") XmlPullParser parser = getResources().getXml(R.layout.activity_main);
             setContentView(new CutPictureView(this,Xml.asAttributeSet(parser)));
-            viewState = 5;
+            viewState = 11;
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -566,8 +566,12 @@ public class MainActivity extends AppCompatActivity {
         viewState = 11;
     }
     public void onCutPictureConfirmButtonPressed(){
+        puzzleBitmap = afterCutBitmap;
         setContentView(new ChoosePatternView(this));
         viewState = 5;
+
+//        setContentView(new ChoosePictureView(this));
+//        viewState = 4;
     }
     public void onRankButtonPressed() {
         isRank = true;

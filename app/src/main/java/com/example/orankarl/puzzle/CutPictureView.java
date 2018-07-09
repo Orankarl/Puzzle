@@ -26,6 +26,7 @@ import java.util.jar.Attributes;
 
 import static android.graphics.BitmapFactory.decodeStream;
 import static com.example.orankarl.puzzle.MainActivity.RATIO;
+import static com.example.orankarl.puzzle.MainSurfaceView.screenW;
 
 public class CutPictureView extends SurfaceView implements SurfaceHolder.Callback, Runnable{
     private Context context;
@@ -126,6 +127,8 @@ public class CutPictureView extends SurfaceView implements SurfaceHolder.Callbac
     }
 
     private void init() {
+        activity.smallBitmap = BitmapUtil.setImgSize(activity.puzzleBitmap, (int) (0.8*screenW), 0);
+
         this.setFloatRect();
         Bitmap bmpButtonconfirm = BitmapFactory.decodeResource(resources, R.drawable.button_confirm);
         Bitmap bmpButtonconfirmpressed = BitmapFactory.decodeResource(resources, R.drawable.button_confirm_pressed);
@@ -139,14 +142,16 @@ public class CutPictureView extends SurfaceView implements SurfaceHolder.Callbac
         posY = MainSurfaceView.screenH - bmpButtonBack.getHeight() * 5 / 4;
         buttonBack = new MenuButton(context, bmpButtonBack, bmpButtonBackPressed, posX, posY);
 
-
+        activity.afterCutBitmap = getCutBitmap();
     }
 
     private void setFloatRect() {
-        float width = activity.puzzleBitmap.getWidth();
-        float height = activity.puzzleBitmap.getHeight();
-        float left = MainSurfaceView.screenW / 2 - activity.puzzleBitmap.getWidth() / 2;
-        float top = MainSurfaceView.screenH / 3 - activity.puzzleBitmap.getHeight() / 2;
+        float width = activity.smallBitmap.getWidth();
+        float height = activity.smallBitmap.getHeight();
+//        float left = MainSurfaceView.screenW / 2 - activity.puzzleBitmap.getWidth() / 2;
+//        float top = MainSurfaceView.screenH / 3 - activity.puzzleBitmap.getHeight() / 2;
+        float left = MainSurfaceView.screenW / 2 - activity.smallBitmap.getWidth() / 2;
+        float top = MainSurfaceView.screenH / 3 - activity.smallBitmap.getHeight() / 2;
         if (width < height) height =width;else width = height;
         float right = left + width;
         float bottom = top + height;
@@ -214,7 +219,7 @@ public class CutPictureView extends SurfaceView implements SurfaceHolder.Callbac
         float top = (mFloatRect.top - mDefaultRect.top);
         float width = mFloatRect.width() ;
         float height = mFloatRect.height();
-        Bitmap dstBitmap = Bitmap.createBitmap(activity.puzzleBitmap, (int) left, (int) top, (int) width, (int) height);
+        Bitmap dstBitmap = Bitmap.createBitmap(activity.smallBitmap, (int) left, (int) top, (int) width, (int) height);
         return dstBitmap;
     }
     public void draw(){
@@ -222,7 +227,7 @@ public class CutPictureView extends SurfaceView implements SurfaceHolder.Callbac
             canvas = holder.lockCanvas();
             if (canvas != null) {
                 canvas.drawColor(Color.WHITE);
-                canvas.drawBitmap(activity.puzzleBitmap, MainSurfaceView.screenW / 2 - activity.puzzleBitmap.getWidth() / 2, MainSurfaceView.screenH / 3 - activity.puzzleBitmap.getHeight() / 2, paint);
+                canvas.drawBitmap(activity.smallBitmap, MainSurfaceView.screenW / 2 - activity.smallBitmap.getWidth() / 2, MainSurfaceView.screenH / 3 - activity.smallBitmap.getHeight() / 2, paint);
 
                 Paint paint = new Paint();
                 paint.setColor(mFloatColor);
@@ -274,6 +279,10 @@ public class CutPictureView extends SurfaceView implements SurfaceHolder.Callbac
                 mTouchX = mMoveX;
                 mTouchY = mMoveY;
                 break;
+            case MotionEvent.ACTION_UP:
+                activity.afterCutBitmap = getCutBitmap();
+                break;
+
         }
         return true;
     }
