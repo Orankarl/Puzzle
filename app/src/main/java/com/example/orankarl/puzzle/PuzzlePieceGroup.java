@@ -143,6 +143,13 @@ public class PuzzlePieceGroup {
         return canvas;
     }
 
+    public void setRotate(int rotate) {
+        while(this.rotate != rotate) {
+            this.rotate = (this.rotate+1) % 4;
+            rotate90();
+        }
+    }
+
     void rotate90() {
         int oldHorizontalBias = getHorizontalBias(mainID) * horizontalLength;
         int oldVerticalBias = getVerticalBias(mainID) * verticalLength;
@@ -372,5 +379,9 @@ public class PuzzlePieceGroup {
         ArrayList<Integer> newList = new ArrayList<>(Arrays.asList(new Integer[attachedID.size()]));
         Collections.copy(newList, attachedID);
         return newList;
+    }
+
+    public int getRotate() {
+        return rotate;
     }
 }

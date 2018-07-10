@@ -123,7 +123,8 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
             });
 
             MainActivity.api.onRotate(response ->{
-                pieces.get(response.pieceIndex).rotate90();
+//                pieces.get(response.pieceIndex).rotate90();
+                pieces.get(response.pieceIndex).setRotate(response.angle);
             });
         }
 
@@ -435,7 +436,7 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
                     if (piece.isInPiece(event.getX(), event.getY())) {
                         if (lastIndex == index && currentDownTime - lastDownTime < 300) {
                             pieces.get(index).rotate90();
-                            MainActivity.api.rotate(index);
+                            MainActivity.api.rotate(index, pieces.get(index).getRotate());
 
                             lastDownTime = currentDownTime;
                             break;
