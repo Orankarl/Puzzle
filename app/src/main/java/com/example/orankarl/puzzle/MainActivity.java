@@ -646,7 +646,7 @@ public class MainActivity extends AppCompatActivity {
             }
             int count = 0;
             for (Api.RankResponseEntry i : rankResponse.rank) {
-                rankView.rank_id[count] = i.nickname;
+                rankView.rank_id[count] = i.username;
                 rankView.time[count] = i.time;
                 count++;
             }
