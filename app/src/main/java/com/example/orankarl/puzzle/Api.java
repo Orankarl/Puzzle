@@ -510,8 +510,15 @@ public class Api {
         _socket.emit("pickPiece", pieceIndex);
     }
     
-    public void rotate(int pieceIndex) {
-        _socket.emit("rotatePiece", pieceIndex);
+    public void rotate(int pieceIndex, int angle) {
+        JSONObject j = new JSONObject();
+        try {
+            j.put("pieceIndex", pieceIndex);
+            j.put("angle", angle);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        _socket.emit("rotatePiece", j);
     }
 
     public void moveTo(double X, double Y) {
@@ -563,6 +570,7 @@ public class Api {
     class RotateResponse {
         String username;
         int pieceIndex;
+        int angle;
     }
     interface RotateCallback {
         void onResponse(RotateResponse response);
