@@ -124,6 +124,7 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
 
             MainActivity.api.onRotate(response ->{
 //                pieces.get(response.pieceIndex).rotate90();
+                Log.d("onRotate", String.valueOf(response.pieceIndex) + " " + String.valueOf(response.angle));
                 pieces.get(response.pieceIndex).setRotate(response.angle);
             });
         }

@@ -144,10 +144,13 @@ public class PuzzlePieceGroup {
     }
 
     public void setRotate(int rotate) {
-        while(this.rotate != rotate) {
-            this.rotate = (this.rotate+1) % 4;
-            rotate90();
-        }
+        if (this.rotate == rotate) return;
+        int oldHorizontalBias = getHorizontalBias(mainID) * horizontalLength;
+        int oldVerticalBias = getVerticalBias(mainID) * verticalLength;
+        this.rotate = rotate;
+        updateLength();
+        setPosX(getPosX() + oldHorizontalBias  - getHorizontalBias(mainID) * horizontalLength);
+        setPosY(getPosY() + oldVerticalBias - getVerticalBias(mainID) * verticalLength);
     }
 
     void rotate90() {
