@@ -348,6 +348,7 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
                     MainActivity.api.newResult(pattern, split, minute * 60 + second, response -> {
                     });
                 }
+                break;
             }
         }
     }
@@ -380,6 +381,7 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
                     MainActivity.api.newResult(pattern, split, minute * 60 + second, response -> {
                     });
                 }
+                break;
             }
         }
     }
