@@ -10,28 +10,25 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URISyntaxException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.zip.GZIPOutputStream;
 
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.HttpUrl;
 import okhttp3.MediaType;
-import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
-import okhttp3.internal.publicsuffix.PublicSuffixDatabase;
 
 import com.github.nkzawa.socketio.client.IO;
 import com.github.nkzawa.socketio.client.Socket;
@@ -131,12 +128,22 @@ public class Api {
         if (method.equals("GET")) {
             urlBuilder = JsonToQueryParams(urlBuilder, data);
             requestBuilder = requestBuilder.get();
-        } else {
-            RequestBody body = RequestBody.create(
-                    MediaType.parse("application/json; charset=utf-8"),
-                    data.toString()
-            );
-            requestBuilder = requestBuilder.post(body);
+        } else if (method.equals("POST")) {
+            try {
+                byte raw[] = data.toString().getBytes("UTF-8");
+                ByteArrayOutputStream arr = new ByteArrayOutputStream();
+                OutputStream zipper = new GZIPOutputStream(arr);
+                zipper.write(raw);
+                zipper.close();
+                RequestBody body = RequestBody.create(
+                        MediaType.parse("application/json; charset=utf-8"),
+                        arr.toByteArray()
+                );
+                requestBuilder = requestBuilder.post(body)
+                        .header("Content-Encoding", "gzip");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         Request request = requestBuilder.url(urlBuilder.build()).build();
         _client.newCall(request).enqueue(new Callback() {
