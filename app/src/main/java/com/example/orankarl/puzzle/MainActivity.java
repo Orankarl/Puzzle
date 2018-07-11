@@ -852,8 +852,11 @@ public class MainActivity extends AppCompatActivity {
             Uri uri = data.getData();
             ContentResolver cr = this.getContentResolver();
             try {
-                if (uri != null)
+                if (uri != null) {
+                    isSelected = true;
                     puzzleBitmap = BitmapFactory.decodeStream(cr.openInputStream(uri));
+                }
+
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
@@ -861,7 +864,6 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         ChoosePictureView pictureView = new ChoosePictureView(this);
         pictureView.origin_bitmap = puzzleBitmap;
-        isSelected = true;
         setContentView(pictureView);
     }
 
