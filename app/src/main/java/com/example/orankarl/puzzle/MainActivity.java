@@ -251,6 +251,7 @@ public class MainActivity extends AppCompatActivity {
                 api.enterRoom(roomListResponse.rooms[position].username);
                 pattern = roomListResponse.rooms[position].pattern;
                 split = roomListResponse.rooms[position].split;
+                host = roomListResponse.rooms[position].username;
                 comeInRoom();
             });
 
@@ -754,10 +755,6 @@ public class MainActivity extends AppCompatActivity {
         roomList_params.width = size.x * 4 / 5;
 
         roomList.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_expandable_list_item_1, data));
-        roomList.setOnItemClickListener((parent, view, position, id) -> {
-            host = data.get(position);
-            comeInRoom();
-        });
 
         setContentView(new RoomListView(this));
         viewState = 7;
