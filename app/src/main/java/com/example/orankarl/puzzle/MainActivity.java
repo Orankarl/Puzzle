@@ -358,14 +358,14 @@ public class MainActivity extends AppCompatActivity {
             TurnToGameView();
         });
 
-        api.onStartGame(() -> {
+        /*api.onStartGame(() -> {
             if (puzzleBitmap == null)
                 return;
             if (viewState == 8) {
                 if (isHost) return;
 //                TurnToGameView();
             }
-        });
+        });*/
     }
 
     public void onLogButtonPressed() {
@@ -646,7 +646,7 @@ public class MainActivity extends AppCompatActivity {
             }
             int count = 0;
             for (Api.RankResponseEntry i : rankResponse.rank) {
-                rankView.rank_id[count] = i.username;
+                rankView.rank_id[count] = i.nickname;
                 rankView.time[count] = i.time;
                 count++;
             }
@@ -739,6 +739,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void onJoinRoomButtonPressed() {
         List<String> data = new ArrayList<>();
+        puzzleBitmap = null;
 
         isHost = false;
         api.roomList();
@@ -811,7 +812,7 @@ public class MainActivity extends AppCompatActivity {
         Bitmap bitmap = BitmapUtil.setImgSize(this.puzzleBitmap, (int) (0.8*screenW), 0);
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
 //        if (puzzleBitmap != null) {
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 10, stream);
             byte[] bitmapByte = stream.toByteArray();
             intent.putExtra("picture", bitmapByte);
 //        }
