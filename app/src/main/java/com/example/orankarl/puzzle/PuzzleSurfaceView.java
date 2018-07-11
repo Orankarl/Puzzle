@@ -119,6 +119,7 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
 //                Log.d("onMoveTo x&y", String.valueOf(response.X) + " " + String.valueOf(response.Y));
 
 //                checkCombination();
+
             });
 
             MainActivity.api.onRelease(response -> {
@@ -129,7 +130,8 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
                 isPicked[index] = false;
                 pickedMap.remove(response.username);
                 Log.d("onRelease", String.valueOf(pickedPieceIndex));
-                needOnMoveUpdate = true;
+                checkOnMoveCombination(index);
+//                needOnMoveUpdate = true;
 //                pickedPieceIndex = -1;
             });
 
@@ -232,18 +234,18 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
                     drawOrder.offer(chosenPieceIndex);
                     needUpdate = false;
                 }
-                if (needOnMoveUpdate) {
-                    checkCombination();
-                    Iterator<Integer> iterator = drawOrder.iterator();
-                    while(iterator.hasNext()) {
-                        int temp = iterator.next();
-                        if (temp == pickedPieceIndex) {
-                            iterator.remove();
-                        }
-                    }
-                    drawOrder.offer(pickedPieceIndex);
-                    needOnMoveUpdate = false;
-                }
+//                if (needOnMoveUpdate) {
+//                    checkCombination();
+//                    Iterator<Integer> iterator = drawOrder.iterator();
+//                    while(iterator.hasNext()) {
+//                        int temp = iterator.next();
+//                        if (temp == pickedPieceIndex) {
+//                            iterator.remove();
+//                        }
+//                    }
+//                    drawOrder.offer(pickedPieceIndex);
+//                    needOnMoveUpdate = false;
+//                }
                 for (int index : drawOrder) {
                     if (isPieceNeedPaint[index] && !isFinished) {
                         if (isPicked[index]) {
@@ -253,9 +255,9 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
                         }
                     }
                 }
-                if (!isSingle && isOnline && isPicked[pickedPieceIndex] && !isFinished) {
-                    canvas1 = pieces.get(pickedPieceIndex).draw(canvas1, alphaPaint);
-                }
+//                if (!isSingle && isOnline && isPicked[pickedPieceIndex] && !isFinished) {
+//                    canvas1 = pieces.get(pickedPieceIndex).draw(canvas1, alphaPaint);
+//                }
                 if (isChosen && !isFinished) {
                     canvas1 = pieces.get(chosenPieceIndex).draw(canvas1, paint);
                 }
@@ -320,57 +322,76 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
     }
 
     void checkCombination() {
-        if (needUpdate) {
-            for (int i = 0; i < pieces.size(); i++) {
-                if (i == chosenPieceIndex || !isPieceNeedPaint[i]) continue;
-                if (pieces.get(chosenPieceIndex).isNeighbor(pieces.get(i)) && pieces.get(chosenPieceIndex).isCloseEnough(pieces.get(i))) {
-                    int mainPiece = Math.min(chosenPieceIndex, i);
-                    int attachedPiece = Math.max(chosenPieceIndex, i);
-                    pieces.get(mainPiece).addPieceGroup(pieces.get(attachedPiece));
-                    isPieceNeedPaint[attachedPiece] = false;
-                    if (pieces.get(mainPiece).getAttachedPiece().size() == pieceCount - 1) {
-                        isFinished = true;
-                        int pattern, split;
-                        if (this.pattern.equals(CutUtil.type1)) {
-                            pattern = 1;
-                        } else if (this.pattern.equals(CutUtil.type2)) {
-                            pattern = 2;
-                        } else {
-                            pattern = 1;
-                        }
-                        if (this.pieceCount == 9) split = 1;
-                        else split = 2;
-                        MainActivity.api.newResult(pattern, split, minute * 60 + second, response->{});
+        for (int i = 0; i < pieces.size(); i++) {
+            if (i == chosenPieceIndex || !isPieceNeedPaint[i]) continue;
+            if (pieces.get(chosenPieceIndex).isNeighbor(pieces.get(i)) && pieces.get(chosenPieceIndex).isCloseEnough(pieces.get(i))) {
+                int mainPiece = Math.min(chosenPieceIndex, i);
+                int attachedPiece = Math.max(chosenPieceIndex, i);
+                pieces.get(mainPiece).addPieceGroup(pieces.get(attachedPiece));
+                isPieceNeedPaint[attachedPiece] = false;
+                logPieceCount();
+//                    pieces.get(chosenPieceIndex).addPieceGroup(pieces.get(i));
+//                    isPieceNeedPaint[i] = false;
+                if (pieces.get(mainPiece).getAttachedPiece().size() == pieceCount - 1) {
+                    isFinished = true;
+//                        Log.d("needUpdate isFinished", String.valueOf(mainPiece) + " " + String.valueOf(pieces.get(mainPiece).getAttachedPiece().size()));
+                    int pattern, split;
+                    if (this.pattern.equals(CutUtil.type1)) {
+                        pattern = 1;
+                    } else if (this.pattern.equals(CutUtil.type2)) {
+                        pattern = 2;
+                    } else {
+                        pattern = 1;
                     }
-                }
-            }
-        } else if (needOnMoveUpdate) {
-            for (int i = 0; i < pieces.size(); i++) {
-                if (i == pickedPieceIndex || !isPieceNeedPaint[i]) continue;
-                if (pieces.get(pickedPieceIndex).isNeighbor(pieces.get(i)) && pieces.get(pickedPieceIndex).isCloseEnough(pieces.get(i))) {
-                    int mainPiece = Math.min(pickedPieceIndex, i);
-                    int attachedPiece = Math.max(pickedPieceIndex, i);
-                    pieces.get(mainPiece).addPieceGroup(pieces.get(attachedPiece));
-                    isPieceNeedPaint[attachedPiece] = false;
-                    if (pieces.get(mainPiece).getAttachedPiece().size() == pieceCount - 1) {
-                        isFinished = true;
-                        Log.d("isFinished", "");
-                        int pattern, split;
-                        if (this.pattern.equals(CutUtil.type1)) {
-                            pattern = 1;
-                        } else if (this.pattern.equals(CutUtil.type2)) {
-                            pattern = 2;
-                        } else {
-                            pattern = 1;
-                        }
-                        if (this.pieceCount == 9) split = 1;
-                        else split = 2;
-                        MainActivity.api.newResult(pattern, split, minute * 60 + second, response->{});
-                    }
+                    if (this.pieceCount == 9) split = 1;
+                    else split = 2;
+                    MainActivity.api.newResult(pattern, split, minute * 60 + second, response -> {
+                    });
                 }
             }
         }
+    }
 
+    void checkOnMoveCombination(int index) {
+        for (int i = 0; i < pieces.size(); i++) {
+            if (i == index || !isPieceNeedPaint[i]) continue;
+            Log.d("checkOnMove", String.valueOf(index) + " " + String.valueOf(i));
+            if (pieces.get(index).isNeighbor(pieces.get(i)) && pieces.get(index).isCloseEnough(pieces.get(i))) {
+                int mainPiece = Math.min(index, i);
+                int attachedPiece = Math.max(index, i);
+                pieces.get(mainPiece).addPieceGroup(pieces.get(attachedPiece));
+                isPieceNeedPaint[attachedPiece] = false;
+                logPieceCount();
+//                    pieces.get(chosenPieceIndex).addPieceGroup(pieces.get(i));
+//                    isPieceNeedPaint[i] = false;
+                if (pieces.get(mainPiece).getAttachedPiece().size() == pieceCount - 1) {
+                    isFinished = true;
+//                        Log.d("needUpdate isFinished", String.valueOf(mainPiece) + " " + String.valueOf(pieces.get(mainPiece).getAttachedPiece().size()));
+                    int pattern, split;
+                    if (this.pattern.equals(CutUtil.type1)) {
+                        pattern = 1;
+                    } else if (this.pattern.equals(CutUtil.type2)) {
+                        pattern = 2;
+                    } else {
+                        pattern = 1;
+                    }
+                    if (this.pieceCount == 9) split = 1;
+                    else split = 2;
+                    MainActivity.api.newResult(pattern, split, minute * 60 + second, response -> {
+                    });
+                }
+            }
+        }
+    }
+
+    void logPieceCount() {
+        String string = "";
+        for (int i =0; i < pieceCount; i++) {
+            if (isPieceNeedPaint[i]) {
+                string += String.valueOf(i) + " " + String.valueOf(pieces.get(i).getAttachedPiece()) + ";";
+            }
+        }
+        Log.d("pieceCount", string);
     }
 
     void drawPieceGroup(Canvas canvas, PuzzlePieceGroup pieceGroup) {
@@ -441,8 +462,10 @@ public class PuzzleSurfaceView extends SurfaceView implements SurfaceHolder.Call
 //                    updateOrderIndex = chosenPieceIndex;
                     needUpdate = true;
                     if (!isSingle && isOnline) {
-                        if (isPicked[pickedPieceIndex])
+                        if (pickedPieceIndex == chosenPieceIndex)
                             MainActivity.api.release();
+//                        if (isPicked[pickedPieceIndex])
+//                            MainActivity.api.release();
                         isPicked[pickedPieceIndex] = false;
 //                        pickedPieceIndex = -1;
                     }
